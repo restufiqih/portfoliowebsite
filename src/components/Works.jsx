@@ -109,7 +109,7 @@ export default function Works() {
 
         tweenRef.current = gsap.to(track, {
           x: -totalWidth,
-          duration: 45,
+          duration: 20,
           ease: 'none',
           repeat: -1,
         })

@@ -6,7 +6,7 @@ import { useBreakpoint } from '../hooks/useBreakpoint'
 gsap.registerPlugin(ScrollTrigger)
 
 const VIDEO_ID = 'LsS4bPikV-o'
-const EMBED_URL = `https://www.youtube.com/embed/${VIDEO_ID}?mute=1&loop=1&playlist=${VIDEO_ID}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&cc_load_policy=0&playsinline=1&enablejsapi=1&origin=${typeof window !== 'undefined' ? window.location.origin : ''}`
+const EMBED_URL = `https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&mute=1&loop=1&playlist=${VIDEO_ID}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&cc_load_policy=0&playsinline=1&enablejsapi=1&origin=${typeof window !== 'undefined' ? window.location.origin : ''}`
 
 const RotateIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -54,19 +54,19 @@ const brandingRow2 = [brand6, brand7, brand8, brand9, brand10]
 const services = [
   {
     title: 'Product Design',
-    desc: 'Et id sollicitudin cursus vitae fermentum. Diam tellus sed in in quisque magna vitae.',
+    desc: 'Designing intuitive digital products that solve problems.',
     bg: productDesignBg,
     carousel: 'phone',
   },
   {
     title: 'Visual Branding',
-    desc: 'Et id sollicitudin cursus vitae fermentum. Diam tellus sed in in quisque magna vitae.',
+    desc: 'Creating memorable visual identities for brands.',
     bg: visualBrandingBg,
     carousel: 'branding',
   },
   {
     title: 'Landing Page',
-    desc: 'Et id sollicitudin cursus vitae fermentum. Diam tellus sed in in quisque magna vitae.',
+    desc: 'Crafting engaging landing pages that capture attention.',
     bg: landingPageBg,
     carousel: 'landing',
   },
@@ -403,6 +403,18 @@ export default function PhoneSection() {
     )
   }, [])
 
+  useEffect(() => {
+    const onMessage = (e) => {
+      try {
+        const data = JSON.parse(e.data)
+        if (data.event === 'onReady') postCommand('playVideo')
+      } catch {}
+    }
+    window.addEventListener('message', onMessage)
+    const timer = setTimeout(() => postCommand('playVideo'), 2000)
+    return () => { window.removeEventListener('message', onMessage); clearTimeout(timer) }
+  }, [postCommand])
+
   const toggleMute = useCallback(() => {
     if (muted) {
       postCommand('unMute')
@@ -420,13 +432,6 @@ export default function PhoneSection() {
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       const phoneArea = phoneRef.current.closest('section')
-
-      ScrollTrigger.create({
-        trigger: phoneArea,
-        start: 'top 60%',
-        onEnter: () => postCommand('playVideo'),
-        once: true,
-      })
 
       // Section 1 parallax — scrolls slower so section 2 catches up and covers it
       gsap.to(section1Ref.current, {

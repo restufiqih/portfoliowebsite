@@ -38,9 +38,9 @@ export default function Hero() {
         end: 'bottom top',
         scrub: 1,
       }
-      gsap.to(titleRef.current, { y: -120 * scale, ease: 'none', scrollTrigger: scrollFx })
-      gsap.to(descRef.current, { y: -220 * scale, ease: 'none', scrollTrigger: scrollFx })
-      gsap.to(yearRef.current, { y: -180 * scale, ease: 'none', scrollTrigger: scrollFx })
+      gsap.to(titleRef.current, { y: 50 * scale, ease: 'none', scrollTrigger: scrollFx })
+      gsap.to(descRef.current, { y: 200 * scale, ease: 'none', scrollTrigger: scrollFx })
+      gsap.to(yearRef.current, { y: 50 * scale, ease: 'none', scrollTrigger: scrollFx })
     }, sectionRef)
 
     return () => ctx.revert()

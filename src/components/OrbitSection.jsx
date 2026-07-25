@@ -6,11 +6,14 @@ import { useBreakpoint } from '../hooks/useBreakpoint'
 import orbit1 from '../assets/orbit/orbit-1.png'
 import orbit2 from '../assets/orbit/orbit-2.png'
 import orbit3 from '../assets/orbit/orbit-3.png'
+import orbit4 from '../assets/orbit/orbit-4.png'
+import orbit5 from '../assets/orbit/orbit-5.png'
+import orbit6 from '../assets/orbit/orbit-6.png'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const trailImages = [orbit1, orbit2, orbit3, orbit1, orbit2, orbit3]
-const speeds = [1, 0.05, 0.05, 0.05, 0.05, 0.05]
+const trailImages = [orbit6, orbit1, orbit4, orbit5, orbit2, orbit3]
+const speeds = [1, 0.02, 0.02, 0.02, 0.02, 0.02]
 const COUNT = trailImages.length
 
 export default function OrbitSection() {
