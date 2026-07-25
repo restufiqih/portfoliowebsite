@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useBreakpoint } from '../hooks/useBreakpoint'
 
 import bgGradient from '../assets/works/bg-gradient.png'
 import work1 from '../assets/works/work-1.png'
@@ -28,8 +29,8 @@ function RollingButton({ label }) {
     <button
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="bg-black px-[20px] rounded-[9px] inline-flex justify-center items-center cursor-pointer hover:bg-black/85 transition-colors"
-      style={{ height: '46px' }}
+      className="bg-black px-[20px] rounded-[99px] inline-flex justify-center items-center cursor-pointer hover:bg-black/85 transition-colors"
+      style={{ height: '50px' }}
     >
       <div style={{ height: '22px', overflow: 'hidden' }}>
         <div style={{
@@ -81,6 +82,8 @@ export default function Works() {
   const titleRef = useRef(null)
   const carouselRef = useRef(null)
   const ctaRef = useRef(null)
+  const { isMobile, isTablet } = useBreakpoint()
+  const cardWidth = isMobile ? 280 : isTablet ? 320 : 370
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -192,14 +195,14 @@ export default function Works() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center gap-[60px] pb-[100px] pt-[300px]">
+      <div className="relative z-10 flex flex-col items-center gap-8 md:gap-[60px] pb-[50px] md:pb-[80px] lg:pb-[100px] pt-[120px] sm:pt-[180px] md:pt-[240px] lg:pt-[300px]">
 
         {/* Title */}
-        <div ref={titleRef} className="px-[80px] w-full flex flex-col items-center">
-          <p className="text-black text-[60px] font-light font-['Geist'] leading-[70px] tracking-[-2.4px] text-center whitespace-nowrap">
+        <div ref={titleRef} className="px-5 md:px-[80px] w-full flex flex-col items-center">
+          <p className="text-black text-[28px] sm:text-[36px] md:text-[48px] lg:text-[60px] font-light font-['Geist'] leading-[36px] sm:leading-[44px] md:leading-[56px] lg:leading-[70px] tracking-[-1.2px] md:tracking-[-2.4px] text-center">
             Designing products
           </p>
-          <p className="text-black text-[60px] font-light font-['Geist'] leading-[70px] tracking-[-2.4px] text-center whitespace-nowrap">
+          <p className="text-black text-[28px] sm:text-[36px] md:text-[48px] lg:text-[60px] font-light font-['Geist'] leading-[36px] sm:leading-[44px] md:leading-[56px] lg:leading-[70px] tracking-[-1.2px] md:tracking-[-2.4px] text-center">
             that people love to use
           </p>
         </div>
@@ -223,9 +226,9 @@ export default function Works() {
                 href={href}
                 className="work-card block rounded-[30px] overflow-hidden shrink-0"
                 style={{
-                  width: '370px',
+                  width: `${cardWidth}px`,
                   aspectRatio: '500 / 400',
-                  marginTop: `${offset}px`,
+                  marginTop: `${offset * (isMobile ? 0.5 : 1)}px`,
                 }}
               >
                 <img
@@ -239,8 +242,8 @@ export default function Works() {
         </div>
 
         {/* CTA */}
-        <div ref={ctaRef} className="flex flex-col items-center gap-[30px]">
-          <p className="text-center text-[24px] font-light font-['Geist'] leading-[34px] tracking-[-0.48px] w-[604px]">
+        <div ref={ctaRef} className="flex flex-col items-center gap-[20px] md:gap-[30px] px-5">
+          <p className="text-center text-[18px] md:text-[20px] lg:text-[24px] font-light font-['Geist'] leading-[26px] md:leading-[30px] lg:leading-[34px] tracking-[-0.48px] w-full max-w-[604px]">
             <span className="text-black">Curious about the process behind these designs? </span>
             <span ref={highlightRef}>
               {highlightWords.map((w, i) => (

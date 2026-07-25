@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useEffect } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useBreakpoint } from '../hooks/useBreakpoint'
 
 import orbit1 from '../assets/orbit/orbit-1.png'
 import orbit2 from '../assets/orbit/orbit-2.png'
@@ -17,8 +18,10 @@ export default function OrbitSection() {
   const topTextRef = useRef(null)
   const bottomTextRef = useRef(null)
   const imgRefs = useRef([])
+  const { isMobile, scale } = useBreakpoint()
 
   useEffect(() => {
+    if (isMobile) return
     const section = sectionRef.current
     if (!section) return
 
@@ -43,7 +46,6 @@ export default function OrbitSection() {
       cursorY = e.clientY
     }
 
-    // Snap instantly whenever cursor enters the section
     section.addEventListener('mouseenter', snapToMouse)
     window.addEventListener('mousemove', handleMove)
 
@@ -77,12 +79,12 @@ export default function OrbitSection() {
       window.removeEventListener('mousemove', handleMove)
       cancelAnimationFrame(rafId)
     }
-  }, [])
+  }, [isMobile])
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.fromTo(topTextRef.current, { x: -60 }, {
-        x: 20, ease: 'none',
+      gsap.fromTo(topTextRef.current, { x: -60 * scale }, {
+        x: 20 * scale, ease: 'none',
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top 80%',
@@ -90,8 +92,8 @@ export default function OrbitSection() {
           scrub: 1.2,
         },
       })
-      gsap.fromTo(bottomTextRef.current, { x: 60 }, {
-        x: -20, ease: 'none',
+      gsap.fromTo(bottomTextRef.current, { x: 60 * scale }, {
+        x: -20 * scale, ease: 'none',
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top 80%',
@@ -101,7 +103,7 @@ export default function OrbitSection() {
       })
     }, sectionRef)
     return () => ctx.revert()
-  }, [])
+  }, [scale])
 
   return (
     <section
@@ -109,12 +111,12 @@ export default function OrbitSection() {
       className="relative flex flex-col items-center justify-center overflow-hidden"
       style={{
         background: 'linear-gradient(to bottom, #e8e4f5 0%, #f5f3fa 50%, #ffffff 100%)',
-        paddingTop: '360px',
-        paddingBottom: '300px',
+        paddingTop: isMobile ? '120px' : `${360 * scale}px`,
+        paddingBottom: isMobile ? '100px' : `${300 * scale}px`,
         marginTop: '-60px',
       }}
     >
-      {trailImages.map((src, i) => (
+      {!isMobile && trailImages.map((src, i) => (
         <div
           key={i}
           ref={(el) => { imgRefs.current[i] = el }}
@@ -129,17 +131,17 @@ export default function OrbitSection() {
         </div>
       ))}
 
-      <div className="relative z-10 text-center">
+      <div className="relative z-10 text-center px-5">
         <p
           ref={topTextRef}
-          className="text-[90px] font-light font-['Geist'] leading-[104px] tracking-[-3.6px] whitespace-nowrap"
+          className="text-[32px] sm:text-[44px] md:text-[60px] lg:text-[76px] xl:text-[90px] font-light font-['Geist'] leading-[40px] sm:leading-[52px] md:leading-[70px] lg:leading-[88px] xl:leading-[104px] tracking-[-1.2px] md:tracking-[-2.4px] xl:tracking-[-3.6px]"
         >
           <span className="text-black/50">Less </span>
           <span className="text-black">"where do I click?"</span>
         </p>
         <p
           ref={bottomTextRef}
-          className="text-[90px] font-light font-['Geist'] leading-[104px] tracking-[-3.6px] whitespace-nowrap"
+          className="text-[32px] sm:text-[44px] md:text-[60px] lg:text-[76px] xl:text-[90px] font-light font-['Geist'] leading-[40px] sm:leading-[52px] md:leading-[70px] lg:leading-[88px] xl:leading-[104px] tracking-[-1.2px] md:tracking-[-2.4px] xl:tracking-[-3.6px]"
         >
           <span className="text-black/50">More </span>
           <span className="text-black">"that was easy"</span>

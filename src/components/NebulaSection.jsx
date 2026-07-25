@@ -1,6 +1,7 @@
-import { useLayoutEffect, useRef, useCallback, useState } from 'react'
+import { useLayoutEffect, useRef, useCallback, useState, useEffect, useMemo } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useBreakpoint } from '../hooks/useBreakpoint'
 import card1 from '../assets/nebula/card-1.png'
 import card2 from '../assets/nebula/card-2.png'
 import card3 from '../assets/nebula/card-3.png'
@@ -17,17 +18,26 @@ gsap.registerPlugin(ScrollTrigger)
 
 const cardImages = [card5, card6, card9, card1, card2, card3, card4, card7, card8]
 
-const CARD_W = 333
-const CARD_H = 250
-const CARD_SPACING = 360
-const ARC_HALF_W = 900
-const ARC_DEPTH = 220
 const TOTAL_SETS = 3
 const TOTAL_CARDS = cardImages.length * TOTAL_SETS
-const STRIP_W = cardImages.length * CARD_SPACING
+
+function getArcConstants(bp) {
+  if (bp === 'mobile') return { CARD_W: 180, CARD_H: 135, CARD_SPACING: 200, ARC_HALF_W: 500, ARC_DEPTH: 120 }
+  if (bp === 'tablet') return { CARD_W: 250, CARD_H: 188, CARD_SPACING: 280, ARC_HALF_W: 700, ARC_DEPTH: 170 }
+  return { CARD_W: 333, CARD_H: 250, CARD_SPACING: 360, ARC_HALF_W: 900, ARC_DEPTH: 220 }
+}
 
 const line1 = ["I'm", 'also', 'building', 'Nebula', 'Studio.']
 const line2 = ['A', 'design', 'studio', 'helping', 'brands', 'create', 'digital', 'experiences', 'their', 'users', 'actually', 'love.']
+
+const FOOTER_LOGO_PATH = 'M20.0665 57.784C2.10027 44.0243 0.802857 18.1984 15.5649 7.41537C29.0348 -2.42381 44.5474 4.62702 46.2629 17.109C47.9783 29.5909 43.0206 38.2324 32.2545 39.6792C21.4883 41.126 22.1779 28.9728 32.2545 28.9728C40.712 28.9728 50.2255 36.549 56.081 40.9898'
+
+const ctaLinks = [
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/restufiqih/' },
+  { label: 'Dribbble', href: 'https://dribbble.com/restufq' },
+  { label: 'Upwork', href: 'https://www.upwork.com/freelancers/akhdiyatrestufiqih' },
+  { label: 'akhdiyatrestufiqih321@gmail.com', href: 'mailto:akhdiyatrestufiqih321@gmail.com' },
+]
 
 function CharWord({ word, isLast }) {
   return (
@@ -53,11 +63,111 @@ function CharWord({ word, isLast }) {
   )
 }
 
+function CtaRollingButton({ label, href }) {
+  const [hovered, setHovered] = useState(false)
+  return (
+    <a
+      href={href}
+      target={href.startsWith('mailto:') ? undefined : '_blank'}
+      rel={href.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="bg-white/20 px-[20px] rounded-[99px] inline-flex justify-center items-center cursor-pointer"
+      style={{ height: '50px' }}
+    >
+      <div style={{ height: '22px', overflow: 'hidden' }}>
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          transform: hovered ? 'translateY(-22px)' : 'translateY(0px)',
+          transition: 'transform 0.3s ease-in-out',
+        }}>
+          <span className="text-white text-[16px] font-light font-['Geist'] leading-[22px] whitespace-nowrap block">{label}</span>
+          <span className="text-white text-[16px] font-light font-['Geist'] leading-[22px] whitespace-nowrap block">{label}</span>
+        </div>
+      </div>
+    </a>
+  )
+}
+
+function FooterLogo() {
+  const pathRef = useRef(null)
+  const lengthRef = useRef(0)
+  const tweenRef = useRef(null)
+
+  useLayoutEffect(() => {
+    const path = pathRef.current
+    if (!path) return
+    lengthRef.current = path.getTotalLength()
+    gsap.set(path, { strokeDasharray: lengthRef.current, strokeDashoffset: 0 })
+
+    const animate = () => {
+      const tl = gsap.timeline({
+        onComplete: () => {
+          tweenRef.current = gsap.delayedCall(4, animate)
+        },
+      })
+      tl.to(path, {
+        strokeDashoffset: lengthRef.current,
+        duration: 0.8,
+        ease: 'power2.in',
+      })
+      tl.to(path, {
+        strokeDashoffset: 0,
+        duration: 0.8,
+        ease: 'power2.out',
+      })
+      tweenRef.current = tl
+    }
+
+    tweenRef.current = gsap.delayedCall(3, animate)
+
+    return () => {
+      if (tweenRef.current) tweenRef.current.kill()
+    }
+  }, [])
+
+  return (
+    <a
+      href="#"
+      onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+      className="block"
+    >
+      <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path ref={pathRef} d={FOOTER_LOGO_PATH} stroke="white" strokeWidth="5.45455" />
+      </svg>
+    </a>
+  )
+}
+
+function IndonesiaTime() {
+  const [time, setTime] = useState('')
+
+  useEffect(() => {
+    const update = () => {
+      const now = new Date()
+      const formatted = now.toLocaleTimeString('en-US', {
+        timeZone: 'Asia/Jakarta',
+        hour: 'numeric',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true,
+      })
+      setTime(formatted)
+    }
+    update()
+    const id = setInterval(update, 1000)
+    return () => clearInterval(id)
+  }, [])
+
+  return <span>{time}</span>
+}
+
 export default function NebulaSection() {
   const sectionRef = useRef(null)
   const textRef = useRef(null)
   const logoRef = useRef(null)
-  const bottomLogoRef = useRef(null)
+  const ctaRef = useRef(null)
   const cardRefs = useRef([])
   const revealRefs = useRef([])
   const progress = useRef(0)
@@ -65,13 +175,16 @@ export default function NebulaSection() {
   const tooltipRef = useRef(null)
   const mouseClient = useRef({ x: 0, y: 0 })
   const isInSection = useRef(false)
+  const { breakpoint, isMobile } = useBreakpoint()
+  const arc = useMemo(() => getArcConstants(breakpoint), [breakpoint])
+  const STRIP_W = cardImages.length * arc.CARD_SPACING
 
   const checkInSection = useCallback(() => {
-    if (!sectionRef.current || !tooltipRef.current || !bottomLogoRef.current) return
+    if (isMobile || !sectionRef.current || !tooltipRef.current || !ctaRef.current) return
     const rect = sectionRef.current.getBoundingClientRect()
-    const bottomLogoRect = bottomLogoRef.current.getBoundingClientRect()
+    const ctaRect = ctaRef.current.getBoundingClientRect()
     const { x, y } = mouseClient.current
-    const inside = x >= rect.left && x <= rect.right && y >= rect.top && y < bottomLogoRect.top
+    const inside = x >= rect.left && x <= rect.right && y >= rect.top && y < ctaRect.top
     isInSection.current = inside
     tooltipRef.current.style.opacity = inside ? '1' : '0'
     if (inside) {
@@ -107,24 +220,24 @@ export default function NebulaSection() {
 
     cardRefs.current.forEach((el, i) => {
       if (!el) return
-      const baseX = i * CARD_SPACING
+      const baseX = i * arc.CARD_SPACING
       let x = baseX - offset
       const totalW = STRIP_W * TOTAL_SETS
       x = ((x % totalW) + totalW) % totalW
       x -= STRIP_W * 1.5
 
-      const norm = x / ARC_HALF_W
-      const y = -ARC_DEPTH * norm * norm
+      const norm = x / arc.ARC_HALF_W
+      const y = -arc.ARC_DEPTH * norm * norm
 
       const fadeStart = 1.15
-      const absDist = Math.abs(x) / ARC_HALF_W
+      const absDist = Math.abs(x) / arc.ARC_HALF_W
       const opacity = absDist > fadeStart ? Math.max(0, 1 - (absDist - fadeStart) / 0.35) : 1
-      const scale = absDist > 1 ? Math.max(0.85, 1 - (absDist - 1) * 0.3) : 1
+      const s = absDist > 1 ? Math.max(0.85, 1 - (absDist - 1) * 0.3) : 1
 
-      const zIndex = Math.round(x + ARC_HALF_W)
-      gsap.set(el, { x, y, opacity, scale, zIndex })
+      const zIndex = Math.round(x + arc.ARC_HALF_W)
+      gsap.set(el, { x, y, opacity, scale: s, zIndex })
     })
-  }, [])
+  }, [arc, STRIP_W])
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -163,9 +276,9 @@ export default function NebulaSection() {
         backgroundColor: '#1602e1',
         ease: 'none',
         scrollTrigger: {
-          trigger: bottomLogoRef.current,
-          start: 'top 50%',
-          end: 'bottom 50%',
+          trigger: ctaRef.current,
+          start: 'top 40%',
+          end: 'top 10%',
           scrub: true,
         },
       })
@@ -188,9 +301,10 @@ export default function NebulaSection() {
 
   return (
     <section
+      id="about"
       ref={sectionRef}
       style={{ background: '#511ece' }}
-      className="relative overflow-hidden flex flex-col items-center pt-[0] pb-[180px]"
+      className="relative overflow-hidden flex flex-col items-center pt-[0]"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
@@ -217,7 +331,7 @@ export default function NebulaSection() {
 
       <div className="h-[40px]" />
 
-      <div ref={logoRef} className="relative w-full h-[540px]">
+      <div ref={logoRef} className="relative w-full h-[300px] md:h-[420px] lg:h-[540px]">
         <a
           href="https://dribbble.com/nebulaonspace"
           target="_blank"
@@ -250,12 +364,12 @@ export default function NebulaSection() {
             key={i}
             ref={(el) => (cardRefs.current[i] = el)}
             className="absolute will-change-transform"
-            style={{ left: '50%', bottom: 0, marginLeft: -CARD_W / 2 }}
+            style={{ left: '50%', bottom: 0, marginLeft: -arc.CARD_W / 2 }}
           >
             <div
               ref={(el) => (revealRefs.current[i] = el)}
-              className="overflow-hidden rounded-[20px] bg-[#888] will-change-transform"
-              style={{ width: CARD_W, height: CARD_H }}
+              className="overflow-hidden rounded-[12px] md:rounded-[16px] lg:rounded-[20px] bg-[#888] will-change-transform"
+              style={{ width: arc.CARD_W, height: arc.CARD_H }}
             >
               <img
                 src={cardImages[i % cardImages.length]}
@@ -268,11 +382,43 @@ export default function NebulaSection() {
         ))}
       </div>
 
+      {/* CTA / Contact */}
       <div
-        ref={bottomLogoRef}
-        className="flex items-center justify-center w-full py-[160px]"
+        ref={ctaRef}
+        className="relative z-10 w-full flex flex-col gap-10 md:gap-[60px] lg:gap-[80px] items-center justify-center pt-[100px] md:pt-[200px] lg:pt-[300px] pb-[60px] md:pb-[80px] px-5"
+        style={{ minHeight: '100vh' }}
       >
-        <img src={nebulaIconClean} alt="Nebula" className="w-[222px] h-[180px]" />
+        <p className="text-white text-[32px] sm:text-[42px] md:text-[56px] lg:text-[70px] font-light font-['Geist'] leading-[40px] sm:leading-[50px] md:leading-[66px] lg:leading-[84px] tracking-[-1.2px] md:tracking-[-2.8px] text-center">
+          Let's talk about
+          <br />
+          your next project.
+        </p>
+
+        <div className="flex flex-wrap gap-[10px] items-center justify-center">
+          {ctaLinks.map(({ label, href }) => (
+            <CtaRollingButton key={label} label={label} href={href} />
+          ))}
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-[30px] items-center">
+          <div className="flex gap-[10px] items-center">
+            <span className="relative flex h-2.5 w-2.5 items-center justify-center shrink-0">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+            </span>
+            <span className="text-white text-[16px] font-light font-['Geist'] leading-[26px] tracking-[-0.36px]">
+              Based in Indonesia
+            </span>
+          </div>
+          <span className="text-white text-[16px] font-light font-['Geist'] leading-[26px] tracking-[-0.36px]">
+            <IndonesiaTime />
+          </span>
+        </div>
+
+        <div className="flex flex-col gap-[20px] items-center">
+          <FooterLogo />
+
+        </div>
       </div>
     </section>
   )

@@ -1,42 +1,74 @@
-import { useState, useEffect, useLayoutEffect, useRef } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useBreakpoint } from '../hooks/useBreakpoint'
 
 gsap.registerPlugin(ScrollTrigger)
 
 const VIDEO_ID = 'LsS4bPikV-o'
-const EMBED_URL = `https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&mute=1&loop=1&playlist=${VIDEO_ID}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&cc_load_policy=0&playsinline=1`
+const EMBED_URL = `https://www.youtube.com/embed/${VIDEO_ID}?mute=1&loop=1&playlist=${VIDEO_ID}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&cc_load_policy=0&playsinline=1&enablejsapi=1&origin=${typeof window !== 'undefined' ? window.location.origin : ''}`
+
+const RotateIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M6.6825 18.0609C8.14696 19.3421 10.0281 20.0456 11.9739 20.0398C13.9196 20.034 15.7966 19.3192 17.2534 18.0293C18.7101 16.7394 19.6469 14.9628 19.8882 13.0321C20.1295 11.1013 19.6589 9.14883 18.5645 7.54004C17.4701 5.93125 15.8268 4.77648 13.9424 4.29188C12.0579 3.80729 10.0615 4.0261 8.3267 4.90735C6.59194 5.7886 5.23782 7.27189 4.51782 9.07954M4.01782 4.07954V9.07954H9.01782" stroke="#F4F3FE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+)
+
+const VolumeOnIcon = () => (
+  <svg width="24" height="24" viewBox="-2 -3 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M13 4.93381C13.621 5.39954 14.125 6.00346 14.4721 6.69774C14.8193 7.39202 15 8.15758 15 8.93381C15 9.71003 14.8193 10.4756 14.4721 11.1699C14.125 11.8642 13.621 12.4681 13 12.9338M15.7 1.93381C16.744 2.77746 17.586 3.84393 18.1645 5.05513C18.7429 6.26632 19.0431 7.59157 19.0431 8.93381C19.0431 10.276 18.7429 11.6013 18.1645 12.8125C17.586 14.0237 16.744 15.0902 15.7 15.9338M4 11.9338H2C1.73478 11.9338 1.48043 11.8285 1.29289 11.6409C1.10536 11.4534 1 11.199 1 10.9338V6.93381C1 6.66859 1.10536 6.41424 1.29289 6.2267C1.48043 6.03917 1.73478 5.93381 2 5.93381H4L7.5 1.43381C7.5874 1.26404 7.73265 1.13113 7.90949 1.0591C8.08633 0.987073 8.2831 0.980671 8.46425 1.04105C8.6454 1.10144 8.79898 1.22462 8.89723 1.38835C8.99549 1.55208 9.03194 1.74555 9 1.93381V15.9338C9.03194 16.1221 8.99549 16.3155 8.89723 16.4793C8.79898 16.643 8.6454 16.7662 8.46425 16.8266C8.2831 16.887 8.08633 16.8805 7.90949 16.8085C7.73265 16.7365 7.5874 16.6036 7.5 16.4338L4 11.9338Z" stroke="#F4F3FE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+)
+
+const VolumeOffIcon = () => (
+  <svg width="24" height="24" viewBox="-2 -2 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M13 6C13.7483 6.56124 14.3242 7.32114 14.6622 8.19334C15.0002 9.06554 15.0867 10.0151 14.912 10.934M13.535 13.536C13.3679 13.7031 13.1891 13.8582 13 14M15.7 3C17.3049 4.29704 18.4154 6.10621 18.8455 8.12445C19.2755 10.1427 18.9989 12.2474 18.062 14.086M16.386 16.385C16.168 16.6016 15.939 16.8068 15.7 17M7.069 3.054L7.5 2.5C7.5874 2.33023 7.73265 2.19733 7.90949 2.1253C8.08633 2.05327 8.2831 2.04686 8.46425 2.10725C8.6454 2.16763 8.79898 2.29081 8.89723 2.45454C8.99549 2.61827 9.03194 2.81175 9 3V5M9 9V17C9.03194 17.1883 8.99549 17.3817 8.89723 17.5455C8.79898 17.7092 8.6454 17.8324 8.46425 17.8928C8.2831 17.9531 8.08633 17.9467 7.90949 17.8747C7.73265 17.8027 7.5874 17.6698 7.5 17.5L4 13H2C1.73478 13 1.48043 12.8946 1.29289 12.7071C1.10536 12.5196 1 12.2652 1 12V8C1 7.73479 1.10536 7.48043 1.29289 7.2929C1.48043 7.10536 1.73478 7 2 7H4L5.294 5.336M1 1L19 19" stroke="#F4F3FE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+)
+
+import productDesignBg from '../assets/services/product-design.png'
+import landingPageBg from '../assets/services/landing-page.png'
+import visualBrandingBg from '../assets/services/visual-branding.png'
+import slide1 from '../assets/services/slides/slide1.png'
+import slide2 from '../assets/services/slides/slide2.png'
+import slide3 from '../assets/services/slides/slide3.png'
+import landing1 from '../assets/services/slides-landing/landing1.png'
+import landing2 from '../assets/services/slides-landing/landing2.png'
+import landing3 from '../assets/services/slides-landing/landing3.png'
+import brand1 from '../assets/services/slides-branding/brand1.png'
+import brand2 from '../assets/services/slides-branding/brand2.png'
+import brand3 from '../assets/services/slides-branding/brand3.png'
+import brand4 from '../assets/services/slides-branding/brand4.png'
+import brand5 from '../assets/services/slides-branding/brand5.png'
+import brand6 from '../assets/services/slides-branding/brand6.png'
+import brand7 from '../assets/services/slides-branding/brand7.png'
+import brand8 from '../assets/services/slides-branding/brand8.png'
+import brand9 from '../assets/services/slides-branding/brand9.png'
+import brand10 from '../assets/services/slides-branding/brand10.png'
+
+const phoneSlides = [slide1, slide2, slide3]
+const landingSlides = [landing1, landing2, landing3]
+const brandingRow1 = [brand1, brand2, brand3, brand4, brand5]
+const brandingRow2 = [brand6, brand7, brand8, brand9, brand10]
 
 const services = [
   {
     title: 'Product Design',
     desc: 'Et id sollicitudin cursus vitae fermentum. Diam tellus sed in in quisque magna vitae.',
-    gradient: `
-      radial-gradient(ellipse 120% 80% at 20% 30%, #FF85B3cc 0%, transparent 70%),
-      radial-gradient(ellipse 100% 100% at 80% 60%, #F01060cc 0%, transparent 60%),
-      radial-gradient(ellipse 140% 90% at 50% 80%, #FF3D8Aaa 0%, transparent 50%),
-      linear-gradient(135deg, #FF85B3 0%, #FF3D8A 50%, #F01060 100%)
-    `,
-  },
-  {
-    title: 'Landing Page',
-    desc: 'Et id sollicitudin cursus vitae fermentum. Diam tellus sed in in quisque magna vitae.',
-    gradient: `
-      radial-gradient(ellipse 100% 80% at 30% 20%, #C99FFCcc 0%, transparent 60%),
-      radial-gradient(ellipse 120% 100% at 70% 70%, #6B2FD0cc 0%, transparent 55%),
-      radial-gradient(ellipse 80% 80% at 50% 40%, #9B6FE8aa 0%, transparent 50%),
-      linear-gradient(160deg, #B07FF5 0%, #7B3FDB 50%, #5E1FC4 100%)
-    `,
+    bg: productDesignBg,
+    carousel: 'phone',
   },
   {
     title: 'Visual Branding',
     desc: 'Et id sollicitudin cursus vitae fermentum. Diam tellus sed in in quisque magna vitae.',
-    gradient: `
-      radial-gradient(ellipse 100% 80% at 30% 40%, #FFD44Acc 0%, transparent 60%),
-      radial-gradient(ellipse 120% 90% at 80% 30%, #FF8C00cc 0%, transparent 55%),
-      radial-gradient(ellipse 80% 100% at 60% 80%, #FFA726aa 0%, transparent 50%),
-      linear-gradient(135deg, #FFD44A 0%, #FFA726 50%, #FF8000 100%)
-    `,
+    bg: visualBrandingBg,
+    carousel: 'branding',
+  },
+  {
+    title: 'Landing Page',
+    desc: 'Et id sollicitudin cursus vitae fermentum. Diam tellus sed in in quisque magna vitae.',
+    bg: landingPageBg,
+    carousel: 'landing',
   },
 ]
 
@@ -54,7 +86,7 @@ function useRealTime() {
   return time
 }
 
-function IPhoneMockup() {
+function IPhoneMockup({ iframeRef, muted, onToggleMute, onReplay }) {
   const time = useRealTime()
 
   // Figma specs: border-4 black, rounded-[41px], bg-[#bebebe], 309.6 × 670
@@ -152,6 +184,7 @@ function IPhoneMockup() {
           }}
         >
           <iframe
+            ref={iframeRef}
             src={EMBED_URL}
             title="Portfolio video"
             allow="autoplay; encrypted-media"
@@ -159,6 +192,27 @@ function IPhoneMockup() {
           />
         </div>
         <div className="absolute inset-0 z-10" />
+
+        {/* Video Controls */}
+        <div
+          className="absolute z-20 left-1/2 -translate-x-1/2 flex gap-[14px]"
+          style={{ bottom: '26px' }}
+        >
+          <button
+            onClick={onReplay}
+            className="w-[50px] h-[50px] rounded-full flex items-center justify-center cursor-pointer transition-colors hover:bg-black/30"
+            style={{ background: 'rgba(0,0,0,0.5)' }}
+          >
+            <RotateIcon />
+          </button>
+          <button
+            onClick={onToggleMute}
+            className="w-[50px] h-[50px] rounded-full flex items-center justify-center cursor-pointer transition-colors hover:bg-black/30"
+            style={{ background: 'rgba(0,0,0,0.5)' }}
+          >
+            {muted ? <VolumeOffIcon /> : <VolumeOnIcon />}
+          </button>
+        </div>
       </div>
 
       {/* Home Indicator */}
@@ -179,14 +233,145 @@ function IPhoneMockup() {
   )
 }
 
-function ServiceCard({ title, desc, gradient }) {
+const carouselConfigs = {
+  phone: {
+    slides: phoneSlides,
+    smW: 119.665, smH: 247.368,
+    lgW: 145.126, lgH: 300,
+    gap: 20, radius: 4,
+  },
+  landing: {
+    slides: landingSlides,
+    smW: 240, smH: 150,
+    lgW: 317.334, lgH: 198.334,
+    gap: -40, radius: 8,
+  },
+}
+
+function SlideCarousel({ type = 'phone' }) {
+  const cfg = carouselConfigs[type]
+  const [current, setCurrent] = useState(0)
+  const imgRefs = useRef([])
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % cfg.slides.length)
+    }, 3000)
+    return () => clearInterval(id)
+  }, [cfg.slides.length])
+
+  useEffect(() => {
+    const leftCx = -(cfg.lgW / 2 + cfg.gap + cfg.smW / 2)
+    const rightCx = cfg.lgW / 2 + cfg.gap + cfg.smW / 2
+
+    const positions = [
+      { cx: leftCx, w: cfg.smW, h: cfg.smH, zIndex: 1 },
+      { cx: 0, w: cfg.lgW, h: cfg.lgH, zIndex: 3 },
+      { cx: rightCx, w: cfg.smW, h: cfg.smH, zIndex: 1 },
+    ]
+
+    cfg.slides.forEach((_, i) => {
+      const el = imgRefs.current[i]
+      if (!el) return
+      const offset = ((i - current) % cfg.slides.length + cfg.slides.length) % cfg.slides.length
+      const posIndex = offset === 0 ? 1 : offset === 1 ? 2 : 0
+      const pos = positions[posIndex]
+
+      gsap.to(el, {
+        x: pos.cx - pos.w / 2,
+        width: pos.w,
+        height: pos.h,
+        zIndex: pos.zIndex,
+        filter: pos.zIndex === 3 ? 'brightness(1)' : 'brightness(0.4)',
+        duration: 0.7,
+        ease: 'power2.inOut',
+      })
+    })
+  }, [current, cfg])
+
+  return (
+    <div className="w-full relative flex items-center justify-center" style={{ height: 300 }}>
+      {cfg.slides.map((src, i) => (
+        <img
+          key={i}
+          ref={(el) => (imgRefs.current[i] = el)}
+          src={src}
+          alt=""
+          className="absolute"
+          style={{
+            objectFit: 'cover',
+            left: '50%',
+            width: cfg.lgW,
+            height: cfg.lgH,
+            borderRadius: cfg.radius,
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
+function BrandingMarquee() {
+  const IMG_W = 149.466
+  const IMG_H = 112.099
+  const GAP = 9
+  const DURATION = 20
+
+  const renderRow = (images, direction) => {
+    const tripled = [...images, ...images, ...images]
+    const stripW = images.length * (IMG_W + GAP)
+    const animName = direction === 'left' ? 'marqueeLeft' : 'marqueeRight'
+
+    return (
+      <div className="overflow-hidden w-full">
+        <div
+          style={{
+            display: 'flex',
+            gap: GAP,
+            width: stripW * 3,
+            animation: `${animName} ${DURATION}s linear infinite`,
+          }}
+        >
+          {tripled.map((src, i) => (
+            <img
+              key={i}
+              src={src}
+              alt=""
+              className="shrink-0 object-cover"
+              style={{ width: IMG_W, height: IMG_H, borderRadius: 10 }}
+            />
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex flex-col w-full justify-center" style={{ gap: GAP, height: 300 }}>
+      <style>{`
+        @keyframes marqueeLeft {
+          from { transform: translateX(0); }
+          to { transform: translateX(-${(IMG_W + GAP) * 5}px); }
+        }
+        @keyframes marqueeRight {
+          from { transform: translateX(-${(IMG_W + GAP) * 5}px); }
+          to { transform: translateX(0); }
+        }
+      `}</style>
+      {renderRow(brandingRow1, 'left')}
+      {renderRow(brandingRow2, 'right')}
+    </div>
+  )
+}
+
+function ServiceCard({ title, desc, bg, carousel }) {
   return (
     <div
-      className="flex-1 min-w-0 rounded-[30px] overflow-hidden flex flex-col gap-[10px] justify-center px-[40px] py-[50px]"
-      style={{ background: gradient }}
+      className="flex-1 min-w-0 rounded-[30px] overflow-hidden flex flex-col gap-[30px] justify-center pt-[30px] pb-[50px]"
+      style={{ backgroundImage: `url(${bg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
     >
-      <div className="h-[285px] w-full opacity-0 rounded-[4px]" />
-      <div className="flex flex-col gap-[14px] w-full" style={{ filter: 'drop-shadow(0px 0px 5px rgba(0,0,0,0.2))' }}>
+      {carousel === 'branding' ? <BrandingMarquee /> : <SlideCarousel type={carousel} />}
+      <div className="flex flex-col gap-[14px] w-full text-center px-[40px]" style={{ filter: 'drop-shadow(0px 0px 5px rgba(0,0,0,0.2))' }}>
         <p className="text-white text-[30px] font-light font-['Geist'] leading-[36px] tracking-[-0.6px]">
           {title}
         </p>
@@ -206,10 +391,42 @@ export default function PhoneSection() {
   const section1Ref = useRef(null)
   const titleRef = useRef(null)
   const cardsRef = useRef(null)
+  const iframeRef = useRef(null)
+  const [muted, setMuted] = useState(true)
+  const { scale, isMobile } = useBreakpoint()
+
+  const postCommand = useCallback((func, args = []) => {
+    if (!iframeRef.current?.contentWindow) return
+    iframeRef.current.contentWindow.postMessage(
+      JSON.stringify({ event: 'command', func, args }),
+      '*'
+    )
+  }, [])
+
+  const toggleMute = useCallback(() => {
+    if (muted) {
+      postCommand('unMute')
+    } else {
+      postCommand('mute')
+    }
+    setMuted((m) => !m)
+  }, [muted, postCommand])
+
+  const replay = useCallback(() => {
+    postCommand('seekTo', [0, true])
+    postCommand('playVideo')
+  }, [postCommand])
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       const phoneArea = phoneRef.current.closest('section')
+
+      ScrollTrigger.create({
+        trigger: phoneArea,
+        start: 'top 60%',
+        onEnter: () => postCommand('playVideo'),
+        once: true,
+      })
 
       // Section 1 parallax — scrolls slower so section 2 catches up and covers it
       gsap.to(section1Ref.current, {
@@ -225,7 +442,7 @@ export default function PhoneSection() {
 
       // Phone parallax entrance
       gsap.fromTo(phoneRef.current,
-        { y: 150 },
+        { y: 150 * scale },
         {
           y: 0, ease: 'none',
           scrollTrigger: {
@@ -239,7 +456,7 @@ export default function PhoneSection() {
 
       // Left text parallax — from top of phone downward
       gsap.fromTo(leftTextRef.current,
-        { y: -200 },
+        { y: -200 * scale },
         {
           y: 0, ease: 'none',
           scrollTrigger: {
@@ -253,7 +470,7 @@ export default function PhoneSection() {
 
       // Right text parallax — from bottom of phone upward
       gsap.fromTo(rightTextRef.current,
-        { y: 200 },
+        { y: 200 * scale },
         {
           y: 0, ease: 'none',
           scrollTrigger: {
@@ -287,7 +504,7 @@ export default function PhoneSection() {
       )
     }, sectionRef)
     return () => ctx.revert()
-  }, [])
+  }, [scale])
 
   return (
     <div ref={sectionRef}>
@@ -298,22 +515,22 @@ export default function PhoneSection() {
         className="relative w-full overflow-hidden"
         style={{
           background: 'linear-gradient(to bottom, #ffffff 0%, #e8e4f5 100%)',
-          paddingBottom: '240px',
+          paddingBottom: isMobile ? '120px' : '240px',
         }}
       >
-        <div className="flex gap-[100px] items-center px-[100px] pt-[100px]" style={{ minHeight: '670px' }}>
-          <div ref={leftTextRef} className="flex-1 flex flex-col justify-center min-w-0">
-            <p className="text-black text-[60px] font-light font-['Geist'] leading-[70px] tracking-[-2.4px]">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-[100px] items-center px-5 md:px-12 lg:px-[100px] pt-12 md:pt-16 lg:pt-[100px]" style={{ minHeight: isMobile ? 'auto' : '670px' }}>
+          <div ref={leftTextRef} className="flex-1 flex flex-col justify-center min-w-0 order-1 lg:order-none">
+            <p className="text-black text-[28px] sm:text-[36px] md:text-[48px] lg:text-[60px] font-light font-['Geist'] leading-[36px] sm:leading-[44px] md:leading-[56px] lg:leading-[70px] tracking-[-1.2px] md:tracking-[-2.4px]">
               Every project is unique,
             </p>
           </div>
 
-          <div ref={phoneRef}>
-            <IPhoneMockup />
+          <div ref={phoneRef} className="order-first lg:order-none" style={{ transform: isMobile ? 'scale(0.75)' : 'none', transformOrigin: 'center' }}>
+            <IPhoneMockup iframeRef={iframeRef} muted={muted} onToggleMute={toggleMute} onReplay={replay} />
           </div>
 
-          <div ref={rightTextRef} className="flex-1 flex flex-col justify-center min-w-0">
-            <p className="text-black text-[60px] font-light font-['Geist'] leading-[70px] tracking-[-2.4px]">
+          <div ref={rightTextRef} className="flex-1 flex flex-col justify-center min-w-0 order-2 lg:order-none">
+            <p className="text-black text-[28px] sm:text-[36px] md:text-[48px] lg:text-[60px] font-light font-['Geist'] leading-[36px] sm:leading-[44px] md:leading-[56px] lg:leading-[70px] tracking-[-1.2px] md:tracking-[-2.4px]">
               but here's how I approach them.
             </p>
           </div>
@@ -322,20 +539,21 @@ export default function PhoneSection() {
 
       {/* Section 2 — white, rounded top corners, slides over section 1 */}
       <section
-        className="relative bg-white w-full flex flex-col items-center gap-[50px] p-[100px] z-10"
+        id="services"
+        className="relative bg-white w-full flex flex-col items-center gap-8 md:gap-[50px] p-5 sm:p-8 md:p-12 lg:p-[100px] z-10"
         style={{ borderRadius: '60px 60px 0 0', marginTop: '-60px' }}
       >
-        <div ref={titleRef} className="flex flex-col items-center gap-[30px] w-[540px]">
-          <div className="text-black text-[60px] font-light font-['Geist'] leading-[70px] tracking-[-2.4px] text-center">
+        <div ref={titleRef} className="flex flex-col items-center gap-[20px] md:gap-[30px] w-full max-w-[540px]">
+          <div className="text-black text-[32px] sm:text-[40px] md:text-[50px] lg:text-[60px] font-light font-['Geist'] leading-[40px] sm:leading-[48px] md:leading-[60px] lg:leading-[70px] tracking-[-1.2px] md:tracking-[-2.4px] text-center">
             <p>What I'm</p>
             <p>actually good at</p>
           </div>
-          <p className="text-black text-[18px] font-light font-['Geist'] leading-[26px] tracking-[-0.36px] text-center">
+          <p className="text-black text-[16px] md:text-[18px] font-light font-['Geist'] leading-[24px] md:leading-[26px] tracking-[-0.36px] text-center">
             Over the years, I've focused on a few things and worked hard to do them exceptionally well. Here's where I can bring the most value.
           </p>
         </div>
 
-        <div ref={cardsRef} className="flex gap-[24px] items-stretch w-full">
+        <div ref={cardsRef} className="flex flex-col md:flex-row gap-6 md:gap-[24px] items-stretch w-full">
           {services.map((s) => (
             <ServiceCard key={s.title} {...s} />
           ))}

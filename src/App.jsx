@@ -6,7 +6,6 @@ import TrustSection from './components/TrustSection'
 import OrbitSection from './components/OrbitSection'
 import TestimonialSection from './components/TestimonialSection'
 import NebulaSection from './components/NebulaSection'
-import CtaSection from './components/CtaSection'
 export default function App() {
   return (
     <div className="min-h-screen bg-black">
@@ -18,7 +17,6 @@ export default function App() {
       <OrbitSection />
       <TestimonialSection />
       <NebulaSection />
-      <CtaSection />
     </div>
   )
 }

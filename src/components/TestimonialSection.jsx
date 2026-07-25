@@ -3,34 +3,46 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import LogoMarquee from './LogoMarquee'
 import testimonialBg from '../assets/testimonial-bg.png'
+import { useBreakpoint } from '../hooks/useBreakpoint'
+
+import client1Photo from '../assets/clients/client1.png'
+import client2Photo from '../assets/clients/client2.png'
+import client3Photo from '../assets/clients/client3.png'
+import client4Photo from '../assets/clients/client4.png'
+import client5Photo from '../assets/clients/client5.png'
 
 gsap.registerPlugin(ScrollTrigger)
 
 const testimonials = [
   {
-    name: 'Efrem',
-    company: 'HyperTrends Global Inc.',
-    text: '"Akhdiyat is very responsive and very talented. Enjoyed working with him. I would highly recommend others to work with him."',
+    name: 'Anup M.',
+    company: 'CEO @HyperTrends, USA🇺🇸',
+    photo: client1Photo,
+    text: '"Great experience working with the designer. We were able to create amazing designs for our website. The process was fairly straightforward. We would give them instructions, and they would come up with one or two variations and we would provide feedback, and things would get customized. I didn\'t run into any issues, and I will definitely connect with the designers should we need them again."',
   },
   {
-    name: 'Client 2',
-    company: 'Company Name',
-    text: '"Great work and communication throughout the project. Delivered high quality designs on time."',
+    name: 'Joe C.',
+    company: 'Founder @Breathway, UK🇬🇧',
+    photo: client2Photo,
+    text: '"Akhdiyat has done some awesome designs for us. He has excellent skills and vision, with modern UI knowledge and creative designs. He is a great communicator and really easy to work with. Thanks so much for your work on our project! Your design ideas have helped shape our brand and product."',
   },
   {
-    name: 'Client 3',
-    company: 'Company Name',
-    text: '"Exceptional UI/UX skills. Truly understands user needs and translates them into beautiful interfaces."',
+    name: 'Aymane S.',
+    company: 'Founder @Mahkamaty, UAE🇦🇪',
+    photo: client3Photo,
+    text: '"I didn\'t think hiring someone on upwork could result in such amazing experience. Akhdiyat really analyzed the problem and provided a well rounded solution taking into consideration all edge cases."',
   },
   {
-    name: 'Client 4',
-    company: 'Company Name',
-    text: '"Professional, creative, and easy to work with. Will definitely hire again for future projects."',
+    name: 'Patrick M.',
+    company: 'SM @Radar, USA🇺🇸',
+    photo: client4Photo,
+    text: '"Akhdiyat is perhaps the best freelancer I have ever worked with. The quality of his work is spectacular and his responsiveness was terrific despite the time zone differences between us. The app I was creating was only a loose vision, but he was able to take my high level idea and turn it into brilliant designs."',
   },
   {
-    name: 'Client 5',
-    company: 'Company Name',
-    text: '"Outstanding design work that exceeded our expectations. Highly recommended."',
+    name: 'Paul S.',
+    company: 'VP @3conx, Canada🇨🇦',
+    photo: client5Photo,
+    text: '"Akhdiyat is very creative and talented. He listened to my website development needs and did a great job."',
   },
 ]
 
@@ -47,14 +59,23 @@ function ProgressBar({ total, activeIndex, progress, onClickBar }) {
   return (
     <div className="flex gap-[6px] h-[4px] w-full">
       {Array.from({ length: total }).map((_, i) => (
-        <div key={i} className="flex-1 rounded-[99px] overflow-hidden cursor-pointer py-[8px] -my-[8px] flex items-center"
-          onClick={() => onClickBar(i)}>
-          <div className="flex-1 h-[4px] rounded-[99px] overflow-hidden" style={{ background: 'rgba(255,255,255,0.28)' }}>
+        <div
+          key={i}
+          className="flex-1 rounded-[99px] overflow-hidden cursor-pointer py-[8px] -my-[8px] flex items-center"
+          onClick={() => onClickBar(i)}
+        >
+          <div
+            className="flex-1 h-[4px] rounded-[99px] overflow-hidden"
+            style={{ background: 'rgba(255,255,255,0.28)' }}
+          >
             {i < activeIndex && (
               <div className="h-full w-full rounded-[99px] bg-white" />
             )}
             {i === activeIndex && (
-              <div className="h-full rounded-[99px] bg-white" style={{ width: `${progress}%` }} />
+              <div
+                className="h-full rounded-[99px] bg-white"
+                style={{ width: `${progress}%` }}
+              />
             )}
           </div>
         </div>
@@ -72,18 +93,24 @@ function RollingButton({ label, href }) {
       rel="noopener noreferrer"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="self-start bg-black px-[20px] rounded-[9px] inline-flex justify-center items-center cursor-pointer hover:bg-black/85 transition-colors"
-      style={{ height: '46px' }}
+      className="self-start bg-black px-[20px] rounded-[99px] inline-flex justify-center items-center cursor-pointer hover:bg-black/85 transition-colors"
+      style={{ height: '50px' }}
     >
       <div style={{ height: '22px', overflow: 'hidden' }}>
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          transform: hovered ? 'translateY(-22px)' : 'translateY(0px)',
-          transition: 'transform 0.3s ease-in-out',
-        }}>
-          <span className="text-white text-[16px] font-light font-['Geist'] leading-[22px] whitespace-nowrap block">{label}</span>
-          <span className="text-white text-[16px] font-light font-['Geist'] leading-[22px] whitespace-nowrap block">{label}</span>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            transform: hovered ? 'translateY(-22px)' : 'translateY(0px)',
+            transition: 'transform 0.3s ease-in-out',
+          }}
+        >
+          <span className="text-white text-[16px] font-light font-['Geist'] leading-[22px] whitespace-nowrap block">
+            {label}
+          </span>
+          <span className="text-white text-[16px] font-light font-['Geist'] leading-[22px] whitespace-nowrap block">
+            {label}
+          </span>
         </div>
       </div>
     </a>
@@ -92,8 +119,6 @@ function RollingButton({ label, href }) {
 
 export default function TestimonialSection() {
   const [activeIndex, setActiveIndex] = useState(0)
-  // barIndex tracks the progress bar independently of the (animated) content index,
-  // so the bar advances the instant a cycle ends instead of waiting on the slide animation
   const [barIndex, setBarIndex] = useState(0)
   const [progress, setProgress] = useState(0)
   const sectionRef = useRef(null)
@@ -101,6 +126,7 @@ export default function TestimonialSection() {
   const bgRef = useRef(null)
   const leftColRef = useRef(null)
   const rightColRef = useRef(null)
+  const { isMobile } = useBreakpoint()
   const prevIndexRef = useRef(0)
   const intervalDuration = 5000
 
@@ -109,6 +135,15 @@ export default function TestimonialSection() {
 
   const isAnimatingRef = useRef(false)
   const pendingIndexRef = useRef(null)
+
+  const isPausedRef = useRef(false)
+  const pausedElapsedRef = useRef(0)
+  const isHoldingRef = useRef(false)
+
+  const tooltipRef = useRef(null)
+  const cardAreaRef = useRef(null)
+  const mousePos = useRef({ x: 0, y: 0 })
+  const [cardHovered, setCardHovered] = useState(false)
 
   const animateSlide = useCallback((newIndex) => {
     const prevIndex = prevIndexRef.current
@@ -122,14 +157,21 @@ export default function TestimonialSection() {
     const direction = newIndex > prevIndex ? 1 : -1
 
     gsap.to(contentRef.current, {
-      x: direction * -100, opacity: 0, duration: 0.25, ease: 'power2.in',
+      x: direction * -100,
+      opacity: 0,
+      duration: 0.25,
+      ease: 'power2.in',
       onComplete: () => {
         prevIndexRef.current = newIndex
         setActiveIndex(newIndex)
-        gsap.fromTo(contentRef.current,
+        gsap.fromTo(
+          contentRef.current,
           { x: direction * 100, opacity: 0 },
           {
-            x: 0, opacity: 1, duration: 0.3, ease: 'power2.out',
+            x: 0,
+            opacity: 1,
+            duration: 0.3,
+            ease: 'power2.out',
             onComplete: () => {
               isAnimatingRef.current = false
               if (pendingIndexRef.current !== null) {
@@ -137,10 +179,10 @@ export default function TestimonialSection() {
                 pendingIndexRef.current = null
                 animateSlide(pending)
               }
-            }
+            },
           }
         )
-      }
+      },
     })
   }, [])
 
@@ -152,8 +194,52 @@ export default function TestimonialSection() {
     setProgress(0)
   }
 
+  const updateTooltip = useCallback(() => {
+    if (!tooltipRef.current || !cardAreaRef.current) return
+    const rect = cardAreaRef.current.getBoundingClientRect()
+    tooltipRef.current.style.left = `${mousePos.current.x - rect.left + 16}px`
+    tooltipRef.current.style.top = `${mousePos.current.y - rect.top + 16}px`
+  }, [])
+
+  const handleCardMouseMove = useCallback((e) => {
+    mousePos.current = { x: e.clientX, y: e.clientY }
+    updateTooltip()
+  }, [updateTooltip])
+
+  useEffect(() => {
+    if (!cardHovered) return
+    window.addEventListener('scroll', updateTooltip, true)
+    return () => window.removeEventListener('scroll', updateTooltip, true)
+  }, [cardHovered, updateTooltip])
+
+  const [holding, setHolding] = useState(false)
+
+  const handleHoldStart = () => {
+    isHoldingRef.current = true
+    setHolding(true)
+    isPausedRef.current = true
+    pausedElapsedRef.current = Date.now() - startTimeRef.current + offsetRef.current
+  }
+
+  const handleHoldEnd = () => {
+    if (!isHoldingRef.current) return
+    isHoldingRef.current = false
+    setHolding(false)
+    offsetRef.current = pausedElapsedRef.current
+    startTimeRef.current = Date.now()
+    isPausedRef.current = false
+  }
+
+  const handleMouseLeave = () => {
+    if (isHoldingRef.current) {
+      handleHoldEnd()
+    }
+  }
+
   useEffect(() => {
     const id = setInterval(() => {
+      if (isPausedRef.current) return
+
       const elapsed = Date.now() - startTimeRef.current + offsetRef.current
       const currentCycle = Math.floor(elapsed / intervalDuration)
       const newIndex = currentCycle % testimonials.length
@@ -162,20 +248,20 @@ export default function TestimonialSection() {
         animateSlide(newIndex)
       }
 
-      // advance the bar immediately at the boundary so the finishing bar snaps to full
       setBarIndex(newIndex)
       setProgress(((elapsed % intervalDuration) / intervalDuration) * 100)
     }, 50)
     return () => clearInterval(id)
   }, [animateSlide])
 
-  // Parallax: the gradient background drifts upward as the section scrolls through
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.fromTo(bgRef.current,
+      gsap.fromTo(
+        bgRef.current,
         { y: -600 },
         {
-          y: 300, ease: 'none',
+          y: 300,
+          ease: 'none',
           scrollTrigger: {
             trigger: sectionRef.current,
             start: 'top bottom',
@@ -185,20 +271,14 @@ export default function TestimonialSection() {
         }
       )
 
-      // Left column starts higher, right column starts lower — they meet in the middle
-      // once the section is fully in view (converge completes around center of the viewport)
       const converge = {
         trigger: sectionRef.current,
         start: 'top 80%',
         end: 'center center',
         scrub: 1.2,
       }
-      gsap.fromTo(leftColRef.current,
-        { y: -70 }, { y: 0, ease: 'none', scrollTrigger: converge }
-      )
-      gsap.fromTo(rightColRef.current,
-        { y: 70 }, { y: 0, ease: 'none', scrollTrigger: converge }
-      )
+      gsap.fromTo(leftColRef.current, { y: -70 }, { y: 0, ease: 'none', scrollTrigger: converge })
+      gsap.fromTo(rightColRef.current, { y: 70 }, { y: 0, ease: 'none', scrollTrigger: converge })
     }, sectionRef)
     return () => ctx.revert()
   }, [])
@@ -208,9 +288,8 @@ export default function TestimonialSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative bg-white flex flex-col gap-[80px] items-center pt-[100px] pb-[400px] overflow-hidden"
+      className="relative bg-white flex flex-col gap-10 md:gap-[60px] lg:gap-[80px] items-center pt-[80px] md:pt-[120px] lg:pt-[180px] pb-[120px] md:pb-[250px] lg:pb-[400px] overflow-hidden"
     >
-      {/* Background gradient — flipped vertically, positioned at bottom */}
       <div
         className="absolute left-0 w-full pointer-events-none"
         style={{ bottom: '-641px', height: '1413px', transform: 'scaleY(-1)' }}
@@ -218,45 +297,79 @@ export default function TestimonialSection() {
         <img ref={bgRef} src={testimonialBg} alt="" className="w-full h-full object-cover" />
       </div>
 
-      {/* Main content — left text + right card */}
-      <div className="relative z-10 flex items-center justify-center w-full px-[100px]">
-        <div className="flex gap-[80px] items-center w-[950px]">
-          {/* Left side */}
-          <div ref={leftColRef} className="flex-1 flex flex-col gap-[30px] justify-center">
-            <div className="flex flex-col gap-[20px]">
-              <p className="text-black text-[60px] font-light font-['Geist'] leading-[70px] tracking-[-2.4px]">
+      <div className="relative z-10 flex items-center justify-center w-full px-5 md:px-12 lg:px-[100px]">
+        <div className="flex flex-col lg:flex-row gap-10 lg:gap-[80px] items-center w-full max-w-[950px]">
+
+          <div ref={leftColRef} className="flex-1 flex flex-col gap-[20px] md:gap-[30px] justify-center">
+            <div className="flex flex-col gap-[16px] md:gap-[20px]">
+              <p className="text-black text-[28px] sm:text-[36px] md:text-[48px] lg:text-[60px] font-light font-['Geist'] leading-[36px] sm:leading-[44px] md:leading-[56px] lg:leading-[70px] tracking-[-1.2px] md:tracking-[-2.4px]">
                 What clients say
               </p>
-              <div className="text-black text-[18px] font-light font-['Geist'] leading-[26px] tracking-[-0.36px]">
-                <p>My clients explain it better than I ever could. </p>
+              <div className="text-black text-[16px] md:text-[18px] font-light font-['Geist'] leading-[24px] md:leading-[26px] tracking-[-0.36px]">
+                <p>My clients explain it better than I ever could.</p>
                 <p>Their experiences say more about my work than any description I could write.</p>
               </div>
             </div>
 
-            {/* Insights from completed jobs */}
-            <div className="flex flex-col gap-[24px] p-[24px] rounded-[30px]" style={{ background: '#f2f4f7' }}>
+            <div
+              className="flex flex-col gap-[24px] p-[24px] rounded-[30px]"
+              style={{ background: '#f2f4f7' }}
+            >
               <p className="text-black text-[16px] font-light font-['Geist'] leading-[22px]">
                 Insights from completed jobs
               </p>
               <div className="flex flex-wrap gap-[10px]">
                 {insights.map((tag) => (
-                  <div key={tag} className="bg-white h-[38px] flex items-center justify-center px-[14px] rounded-[30px]">
-                    <p className="text-black text-[16px] font-light font-['Geist'] leading-[22px] whitespace-nowrap">{tag}</p>
+                  <div
+                    key={tag}
+                    className="bg-white h-[38px] flex items-center justify-center px-[14px] rounded-[30px]"
+                  >
+                    <p className="text-black text-[16px] font-light font-['Geist'] leading-[22px] whitespace-nowrap">
+                      {tag}
+                    </p>
                   </div>
                 ))}
               </div>
             </div>
 
-            <RollingButton label="See Upwork Profile" href="#" />
+            <RollingButton
+              label="See Upwork Profile"
+              href="https://www.upwork.com/freelancers/akhdiyatrestufiqih"
+            />
           </div>
 
-          {/* Right side — Testimonial card */}
-          <div ref={rightColRef} className="flex-1 bg-black rounded-[30px] flex flex-col gap-[40px] pt-[20px] pb-[60px] px-[20px] overflow-hidden">
-            <ProgressBar total={testimonials.length} activeIndex={barIndex} progress={progress} onClickBar={jumpTo} />
+          <div
+            ref={(el) => { rightColRef.current = el; cardAreaRef.current = el }}
+            className="relative flex-1 bg-black rounded-[30px] flex flex-col gap-[40px] pt-[20px] pb-[20px] px-[20px] overflow-hidden select-none cursor-pointer"
+            onMouseDown={handleHoldStart}
+            onMouseUp={handleHoldEnd}
+            onMouseLeave={(e) => { handleMouseLeave(); setCardHovered(false) }}
+            onMouseEnter={() => setCardHovered(true)}
+            onMouseMove={handleCardMouseMove}
+            onTouchStart={handleHoldStart}
+            onTouchEnd={handleHoldEnd}
+          >
+            <div
+              ref={tooltipRef}
+              className="pointer-events-none absolute z-50 flex items-center justify-center rounded-[99px] bg-white/20 backdrop-blur-md px-[14px] py-[6px] text-[14px] font-light font-['Geist'] text-white tracking-[-0.28px] leading-[20px] whitespace-nowrap transition-opacity duration-200"
+              style={{ opacity: !isMobile && cardHovered && !holding ? 1 : 0 }}
+            >
+              Hold to pause
+            </div>
+            <ProgressBar
+              total={testimonials.length}
+              activeIndex={barIndex}
+              progress={progress}
+              onClickBar={jumpTo}
+            />
 
             <div ref={contentRef}>
               <div className="flex gap-[20px] items-center px-[20px]">
-                <div className="w-[52px] h-[52px] rounded-full bg-white shrink-0" />
+                <img
+                  src={current.photo}
+                  alt={current.name}
+                  className="w-[52px] h-[52px] rounded-full object-cover shrink-0"
+                />
                 <div className="flex flex-col gap-[2px]">
                   <p className="text-white text-[20px] font-light font-['Geist'] leading-[28px] tracking-[-0.4px]">
                     {current.name}
@@ -267,17 +380,17 @@ export default function TestimonialSection() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-center px-[20px] h-[350px]">
-                <p className="text-white text-[20px] font-light font-['Geist'] leading-[28px] tracking-[-0.4px]">
+              <div className="flex items-center justify-center px-[20px] min-h-[200px] md:min-h-[300px] lg:h-[390px]">
+                <p className="text-white text-[16px] md:text-[18px] lg:text-[20px] font-light font-['Geist'] leading-[24px] md:leading-[26px] lg:leading-[28px] tracking-[-0.4px]">
                   {current.text}
                 </p>
               </div>
             </div>
           </div>
+
         </div>
       </div>
 
-      {/* Logo marquee */}
       <div className="relative z-10 w-full">
         <LogoMarquee />
       </div>
