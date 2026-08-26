@@ -3,33 +3,44 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import IdCard from './IdCard'
 import greenBg from '../assets/card_performance/Card Performance.png'
+import upworkLogo from '../assets/card_performance/upwork-logo.svg'
 import { useBreakpoint } from '../hooks/useBreakpoint'
+import { fluid, fluidNeg } from '../utils/fluid'
 
 gsap.registerPlugin(ScrollTrigger)
 
-function StatCard({ value, label }) {
+function StatCard({ value, label, isDesktop }) {
   return (
     <div
-      className="flex-1 min-w-0 flex flex-col p-5 md:p-[30px] rounded-[20px] relative"
+      className="flex-1 min-w-0 flex flex-col rounded-[20px] relative"
       style={{
-        background: 'linear-gradient(to bottom, rgba(255,255,255,0.10), rgba(255,255,255,0.03))',
+        padding: isDesktop ? fluid(22, 30) : 30,
+        background: 'linear-gradient(to bottom, rgba(255,255,255,0.18), rgba(255,255,255,0.07))',
         backdropFilter: 'blur(5px)',
         WebkitBackdropFilter: 'blur(5px)',
       }}
     >
       <div className="absolute inset-0 rounded-[20px] pointer-events-none" style={{
         padding: '1.5px',
-        background: 'linear-gradient(to bottom, rgba(255,255,255,0.2), rgba(255,255,255,0.05))',
+        background: 'linear-gradient(to bottom, rgba(255,255,255,0.4), rgba(255,255,255,0.1))',
         mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
         maskComposite: 'exclude',
         WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
         WebkitMaskComposite: 'xor',
       }} />
       <div className="flex flex-col gap-[6px] text-center w-full">
-        <p className="text-white text-[22px] md:text-[26px] lg:text-[30px] font-light font-['Geist'] leading-[28px] md:leading-[32px] lg:leading-[36px] tracking-[-0.6px]">
+        <p className="text-white font-light font-['Geist'] tracking-[-0.6px]"
+          style={{
+            fontSize: isDesktop ? fluid(22, 30) : 30,
+            lineHeight: isDesktop ? fluid(26, 36) : '36px',
+          }}>
           {value}
         </p>
-        <p className="text-white/80 text-[14px] md:text-[16px] font-light font-['Geist'] leading-[20px] md:leading-[22px]">
+        <p className="text-white/80 font-light font-['Geist']"
+          style={{
+            fontSize: isDesktop ? fluid(12, 16) : 16,
+            lineHeight: isDesktop ? fluid(16, 22) : '22px',
+          }}>
           {label}
         </p>
       </div>
@@ -41,9 +52,21 @@ export default function CardPerformance() {
   const [hovered, setHovered] = useState(false)
   const cardWrapperRef = useRef(null)
   const idCardRef = useRef(null)
+  const idCardMobileRef = useRef(null)
+  const wobbleTimer = useRef(null)
   const containerRef = useRef(null)
   const tooltipRef = useRef(null)
-  const { isMobile } = useBreakpoint()
+  const { isMobile, isDesktop } = useBreakpoint()
+  const [vw, setVw] = useState(typeof window !== 'undefined' ? window.innerWidth : 375)
+
+  useEffect(() => {
+    const onResize = () => setVw(window.innerWidth)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
+  const mobileCardZoom = vw / 330
+  const mobileCardHeight = Math.round(204 * mobileCardZoom)
 
   const mousePos = useRef({ x: 0, y: 0 })
 
@@ -66,25 +89,45 @@ export default function CardPerformance() {
   }, [hovered, updateTooltip])
 
   useLayoutEffect(() => {
-    if (isMobile) return
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: 'top 75%',
-          once: true,
+      if (isMobile) {
+        const mobileIdCard = idCardMobileRef.current
+        if (!mobileIdCard) return
+        gsap.set(mobileIdCard, { rotation: -4 })
+        const wobble = () => {
+          const tl = gsap.timeline({
+            onComplete: () => { wobbleTimer.current = setTimeout(wobble, 5000) }
+          })
+          tl.to(mobileIdCard, { rotation: -1, duration: 0.25, ease: 'power2.out' })
+            .to(mobileIdCard, { rotation: -7, duration: 0.25, ease: 'power2.inOut' })
+            .to(mobileIdCard, { rotation: -4, duration: 0.3, ease: 'power2.out' })
+            .to(mobileIdCard, { duration: 0.4 })
+            .to(mobileIdCard, { rotation: -1, duration: 0.25, ease: 'power2.out' })
+            .to(mobileIdCard, { rotation: -7, duration: 0.25, ease: 'power2.inOut' })
+            .to(mobileIdCard, { rotation: -4, duration: 0.4, ease: 'elastic.out(1, 0.5)' })
         }
-      })
-
-      tl.to(idCardRef.current, { rotation: -1, duration: 0.25, ease: 'power2.out' })
-        .to(idCardRef.current, { rotation: -7, duration: 0.25, ease: 'power2.inOut' })
-        .to(idCardRef.current, { rotation: -4.5, duration: 0.3, ease: 'power2.out' })
-        .to(idCardRef.current, { duration: 0.4 })
-        .to(idCardRef.current, { rotation: -1, duration: 0.25, ease: 'power2.out' })
-        .to(idCardRef.current, { rotation: -7, duration: 0.25, ease: 'power2.inOut' })
-        .to(idCardRef.current, { rotation: -4.5, duration: 0.4, ease: 'elastic.out(1, 0.5)' })
+        wobbleTimer.current = setTimeout(wobble, 2000)
+      } else {
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: 'top 75%',
+            once: true,
+          }
+        })
+        tl.to(idCardRef.current, { rotation: -1, duration: 0.25, ease: 'power2.out' })
+          .to(idCardRef.current, { rotation: -7, duration: 0.25, ease: 'power2.inOut' })
+          .to(idCardRef.current, { rotation: -4.5, duration: 0.3, ease: 'power2.out' })
+          .to(idCardRef.current, { duration: 0.4 })
+          .to(idCardRef.current, { rotation: -1, duration: 0.25, ease: 'power2.out' })
+          .to(idCardRef.current, { rotation: -7, duration: 0.25, ease: 'power2.inOut' })
+          .to(idCardRef.current, { rotation: -4.5, duration: 0.4, ease: 'elastic.out(1, 0.5)' })
+      }
     }, containerRef)
-    return () => ctx.revert()
+    return () => {
+      if (wobbleTimer.current) clearTimeout(wobbleTimer.current)
+      ctx.revert()
+    }
   }, [isMobile])
 
   return (
@@ -93,11 +136,15 @@ export default function CardPerformance() {
       target="_blank"
       rel="noopener noreferrer"
       ref={containerRef}
-      className="relative flex flex-col md:flex-row gap-5 isolate items-center p-6 sm:p-8 md:p-12 lg:p-[70px] rounded-[30px] overflow-hidden md:overflow-visible cursor-pointer w-full max-w-[950px]"
+      className="relative flex flex-col md:flex-row isolate items-center overflow-visible cursor-pointer w-full"
       style={{
         backgroundImage: `url(${greenBg})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
+        maxWidth: isDesktop ? fluid(677, 950) : '950px',
+        padding: isDesktop ? fluid(50, 70) : 20,
+        gap: isDesktop ? fluid(14, 20) : 40,
+        borderRadius: isDesktop ? fluid(21, 30) : '30px',
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -110,12 +157,29 @@ export default function CardPerformance() {
       >
         See Upwork Profile
       </div>
+      {/* Upwork Logo */}
+      <div className="absolute z-[3] hidden md:flex flex-col items-start" style={{
+        top: isDesktop ? fluidNeg(24, 34) : '-34px',
+        right: 0,
+        paddingRight: isDesktop ? fluid(23, 32) : '32px',
+      }}>
+        <img src={upworkLogo} alt="Upwork" style={{
+          width: isDesktop ? fluid(63, 88) : '88px',
+          height: isDesktop ? fluid(17, 24) : '24px',
+        }} />
+      </div>
+
       {/* Left — ID Card */}
       <div className="flex flex-1 items-center self-stretch">
         {isMobile ? (
-          <div className="w-full flex justify-center">
-            <div style={{ width: '100%', maxWidth: '340px', aspectRatio: '463/300' }}>
-              <IdCard />
+          <div className="flex justify-center items-center w-full" style={{ height: mobileCardHeight }}>
+            <div
+              ref={idCardMobileRef}
+              style={{ transform: 'rotate(-4deg)', willChange: 'transform' }}
+            >
+              <div style={{ zoom: mobileCardZoom }}>
+                <IdCard />
+              </div>
             </div>
           </div>
         ) : (
@@ -124,16 +188,16 @@ export default function CardPerformance() {
               ref={idCardRef}
               className="absolute transition-all duration-300 ease-out"
               style={hovered ? {
-                left: '-104.31px',
-                top: '-113.54px',
-                width: '463px',
-                height: '300px',
+                left: isDesktop ? fluidNeg(74, 104) : '-104.31px',
+                top: isDesktop ? fluidNeg(81, 114) : '-113.54px',
+                width: isDesktop ? fluid(330, 463) : '463px',
+                height: isDesktop ? fluid(214, 300) : '300px',
                 transform: 'rotate(0deg)',
               } : {
-                left: '-124.13px',
-                top: '-117.16px',
-                width: '463px',
-                height: '300px',
+                left: isDesktop ? fluidNeg(88, 124) : '-124.13px',
+                top: isDesktop ? fluidNeg(83, 117) : '-117.16px',
+                width: isDesktop ? fluid(330, 463) : '463px',
+                height: isDesktop ? fluid(214, 300) : '300px',
                 transform: 'rotate(-4.5deg)',
               }}
             >
@@ -144,9 +208,9 @@ export default function CardPerformance() {
       </div>
 
       {/* Right — Stats */}
-      <div className="flex flex-1 gap-[14px] md:gap-[20px] items-start min-w-0 relative z-[1] w-full md:w-auto">
-        <StatCard value="55+" label="Projects" />
-        <StatCard value="5/5" label="Ratings" />
+      <div className="flex flex-1 items-start min-w-0 relative z-[1] w-full md:w-auto" style={{ gap: isDesktop ? fluid(14, 20) : 20 }}>
+        <StatCard value="55+" label="Projects" isDesktop={isDesktop} />
+        <StatCard value="5/5" label="Ratings" isDesktop={isDesktop} />
       </div>
     </a>
   )

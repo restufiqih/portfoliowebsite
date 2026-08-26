@@ -1,18 +1,19 @@
 import { useLayoutEffect, useRef, useCallback, useState, useEffect, useMemo } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useBreakpoint } from '../hooks/useBreakpoint'
-import card1 from '../assets/nebula/card-1.png'
-import card2 from '../assets/nebula/card-2.png'
-import card3 from '../assets/nebula/card-3.png'
-import card4 from '../assets/nebula/card-4.png'
-import card5 from '../assets/nebula/card-5.png'
-import card6 from '../assets/nebula/card-6.png'
-import card7 from '../assets/nebula/card-7.png'
-import card8 from '../assets/nebula/card-8.png'
-import card9 from '../assets/nebula/card-9.png'
-import nebulaIcon from '../assets/nebula/nebula-icon.svg'
-import nebulaIconClean from '../assets/nebula/nebula-icon-clean.svg'
+import { useBreakpoint } from '../../hooks/useBreakpoint'
+import { fluid } from '../../utils/fluid'
+import card1 from '../../assets/nebula/card-1.png'
+import card2 from '../../assets/nebula/card-2.png'
+import card3 from '../../assets/nebula/card-3.png'
+import card4 from '../../assets/nebula/card-4.png'
+import card5 from '../../assets/nebula/card-5.png'
+import card6 from '../../assets/nebula/card-6.png'
+import card7 from '../../assets/nebula/card-7.png'
+import card8 from '../../assets/nebula/card-8.png'
+import card9 from '../../assets/nebula/card-9.png'
+import nebulaIcon from '../../assets/nebula/nebula-icon.svg'
+import nebulaIconClean from '../../assets/nebula/nebula-icon-clean.svg'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -21,10 +22,14 @@ const cardImages = [card5, card6, card9, card1, card2, card3, card4, card7, card
 const TOTAL_SETS = 3
 const TOTAL_CARDS = cardImages.length * TOTAL_SETS
 
-function getArcConstants(bp) {
-  if (bp === 'mobile') return { CARD_W: 180, CARD_H: 135, CARD_SPACING: 200, ARC_HALF_W: 500, ARC_DEPTH: 120 }
-  if (bp === 'tablet') return { CARD_W: 250, CARD_H: 188, CARD_SPACING: 280, ARC_HALF_W: 700, ARC_DEPTH: 170 }
-  return { CARD_W: 333, CARD_H: 250, CARD_SPACING: 360, ARC_HALF_W: 900, ARC_DEPTH: 220 }
+function getArcConstants(bp, vw) {
+  if (bp !== 'desktop') return { CARD_W: 180, CARD_H: 135, CARD_SPACING: 200, ARC_HALF_W: 500, ARC_DEPTH: 120 }
+  const t = Math.min(1, Math.max(0, (vw - 1024) / 416))
+  const lerp = (min, max) => min + (max - min) * t
+  return {
+    CARD_W: lerp(240, 333), CARD_H: lerp(180, 250),
+    CARD_SPACING: lerp(260, 360), ARC_HALF_W: lerp(650, 900), ARC_DEPTH: lerp(158, 220),
+  }
 }
 
 const line1 = ["I'm", 'also', 'building', 'Nebula', 'Studio.']
@@ -175,8 +180,14 @@ export default function NebulaSection() {
   const tooltipRef = useRef(null)
   const mouseClient = useRef({ x: 0, y: 0 })
   const isInSection = useRef(false)
-  const { breakpoint, isMobile } = useBreakpoint()
-  const arc = useMemo(() => getArcConstants(breakpoint), [breakpoint])
+  const { breakpoint, isMobile, isDesktop } = useBreakpoint()
+  const [vw, setVw] = useState(typeof window !== 'undefined' ? window.innerWidth : 1440)
+  useEffect(() => {
+    const onResize = () => setVw(window.innerWidth)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+  const arc = useMemo(() => getArcConstants(breakpoint, vw), [breakpoint, vw])
   const STRIP_W = cardImages.length * arc.CARD_SPACING
 
   const checkInSection = useCallback(() => {
@@ -331,7 +342,7 @@ export default function NebulaSection() {
 
       <div className="h-[40px]" />
 
-      <div ref={logoRef} className="relative w-full h-[300px] md:h-[420px] lg:h-[540px]">
+      <div ref={logoRef} className="relative w-full h-[300px]" style={isDesktop ? { height: fluid(389, 540) } : {}}>
         <a
           href="https://dribbble.com/nebulaonspace"
           target="_blank"
@@ -368,8 +379,8 @@ export default function NebulaSection() {
           >
             <div
               ref={(el) => (revealRefs.current[i] = el)}
-              className="overflow-hidden rounded-[12px] md:rounded-[16px] lg:rounded-[20px] bg-[#888] will-change-transform"
-              style={{ width: arc.CARD_W, height: arc.CARD_H }}
+              className="overflow-hidden rounded-[12px] bg-[#888] will-change-transform"
+              style={{ width: arc.CARD_W, height: arc.CARD_H, ...(isDesktop ? { borderRadius: fluid(14, 20) } : {}) }}
             >
               <img
                 src={cardImages[i % cardImages.length]}
@@ -385,10 +396,10 @@ export default function NebulaSection() {
       {/* CTA / Contact */}
       <div
         ref={ctaRef}
-        className="relative z-10 w-full flex flex-col gap-10 md:gap-[60px] lg:gap-[80px] items-center justify-center pt-[100px] md:pt-[200px] lg:pt-[300px] pb-[60px] md:pb-[80px] px-5"
-        style={{ minHeight: '100vh' }}
+        className="relative z-10 w-full flex flex-col gap-10 items-center justify-center pt-[100px] pb-[60px] px-5"
+        style={{ minHeight: '100vh', ...(isDesktop ? { gap: fluid(58, 80), paddingTop: fluid(216, 300), paddingBottom: fluid(58, 80) } : {}) }}
       >
-        <p className="text-white text-[32px] sm:text-[42px] md:text-[56px] lg:text-[70px] font-light font-['Geist'] leading-[40px] sm:leading-[50px] md:leading-[66px] lg:leading-[84px] tracking-[-1.2px] md:tracking-[-2.8px] text-center">
+        <p className="text-white text-[32px] sm:text-[42px] font-light font-['Geist'] tracking-[-1.2px] md:tracking-[-2.8px] text-center" style={isDesktop ? { fontSize: fluid(50, 70), lineHeight: fluid(60, 84) } : {}}>
           Let's talk about
           <br />
           your next project.

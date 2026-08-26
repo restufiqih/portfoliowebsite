@@ -1,7 +1,8 @@
-import { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useMemo, useLayoutEffect, useRef, useCallback } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useBreakpoint } from '../hooks/useBreakpoint'
+import { useBreakpoint } from '../../hooks/useBreakpoint'
+import { fluid } from '../../utils/fluid'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -26,25 +27,25 @@ const VolumeOffIcon = () => (
   </svg>
 )
 
-import productDesignBg from '../assets/services/product-design.png'
-import landingPageBg from '../assets/services/landing-page.png'
-import visualBrandingBg from '../assets/services/visual-branding.png'
-import slide1 from '../assets/services/slides/slide1.png'
-import slide2 from '../assets/services/slides/slide2.png'
-import slide3 from '../assets/services/slides/slide3.png'
-import landing1 from '../assets/services/slides-landing/landing1.png'
-import landing2 from '../assets/services/slides-landing/landing2.png'
-import landing3 from '../assets/services/slides-landing/landing3.png'
-import brand1 from '../assets/services/slides-branding/brand1.png'
-import brand2 from '../assets/services/slides-branding/brand2.png'
-import brand3 from '../assets/services/slides-branding/brand3.png'
-import brand4 from '../assets/services/slides-branding/brand4.png'
-import brand5 from '../assets/services/slides-branding/brand5.png'
-import brand6 from '../assets/services/slides-branding/brand6.png'
-import brand7 from '../assets/services/slides-branding/brand7.png'
-import brand8 from '../assets/services/slides-branding/brand8.png'
-import brand9 from '../assets/services/slides-branding/brand9.png'
-import brand10 from '../assets/services/slides-branding/brand10.png'
+import productDesignBg from '../../assets/services/product-design.png'
+import landingPageBg from '../../assets/services/landing-page.png'
+import visualBrandingBg from '../../assets/services/visual-branding.png'
+import slide1 from '../../assets/services/slides/slide1.png'
+import slide2 from '../../assets/services/slides/slide2.png'
+import slide3 from '../../assets/services/slides/slide3.png'
+import landing1 from '../../assets/services/slides-landing/landing1.png'
+import landing2 from '../../assets/services/slides-landing/landing2.png'
+import landing3 from '../../assets/services/slides-landing/landing3.png'
+import brand1 from '../../assets/services/slides-branding/brand1.png'
+import brand2 from '../../assets/services/slides-branding/brand2.png'
+import brand3 from '../../assets/services/slides-branding/brand3.png'
+import brand4 from '../../assets/services/slides-branding/brand4.png'
+import brand5 from '../../assets/services/slides-branding/brand5.png'
+import brand6 from '../../assets/services/slides-branding/brand6.png'
+import brand7 from '../../assets/services/slides-branding/brand7.png'
+import brand8 from '../../assets/services/slides-branding/brand8.png'
+import brand9 from '../../assets/services/slides-branding/brand9.png'
+import brand10 from '../../assets/services/slides-branding/brand10.png'
 
 const phoneSlides = [slide1, slide2, slide3]
 const landingSlides = [landing1, landing2, landing3]
@@ -248,8 +249,14 @@ const carouselConfigs = {
   },
 }
 
-function SlideCarousel({ type = 'phone' }) {
-  const cfg = carouselConfigs[type]
+function SlideCarousel({ type = 'phone', s = 1 }) {
+  const base = carouselConfigs[type]
+  const cfg = useMemo(() => ({
+    slides: base.slides,
+    smW: base.smW * s, smH: base.smH * s,
+    lgW: base.lgW * s, lgH: base.lgH * s,
+    gap: base.gap * s, radius: base.radius,
+  }), [base, s])
   const [current, setCurrent] = useState(0)
   const imgRefs = useRef([])
 
@@ -290,7 +297,7 @@ function SlideCarousel({ type = 'phone' }) {
   }, [current, cfg])
 
   return (
-    <div className="w-full relative flex items-center justify-center" style={{ height: 300 }}>
+    <div className="w-full relative flex items-center justify-center" style={{ height: 300 * s }}>
       {cfg.slides.map((src, i) => (
         <img
           key={i}
@@ -311,10 +318,10 @@ function SlideCarousel({ type = 'phone' }) {
   )
 }
 
-function BrandingMarquee() {
-  const IMG_W = 149.466
-  const IMG_H = 112.099
-  const GAP = 9
+function BrandingMarquee({ s = 1 }) {
+  const IMG_W = 149.466 * s
+  const IMG_H = 112.099 * s
+  const GAP = 9 * s
   const DURATION = 20
 
   const renderRow = (images, direction) => {
@@ -338,7 +345,7 @@ function BrandingMarquee() {
               src={src}
               alt=""
               className="shrink-0 object-cover"
-              style={{ width: IMG_W, height: IMG_H, borderRadius: 10 }}
+              style={{ width: IMG_W, height: IMG_H, borderRadius: 10 * s }}
             />
           ))}
         </div>
@@ -347,7 +354,7 @@ function BrandingMarquee() {
   }
 
   return (
-    <div className="flex flex-col w-full justify-center" style={{ gap: GAP, height: 300 }}>
+    <div className="flex flex-col w-full justify-center" style={{ gap: GAP, height: 300 * s }}>
       <style>{`
         @keyframes marqueeLeft {
           from { transform: translateX(0); }
@@ -364,24 +371,29 @@ function BrandingMarquee() {
   )
 }
 
-function ServiceCard({ title, desc, bg, carousel }) {
+function ServiceCard({ title, desc, bg, carousel, isDesktop, s = 1 }) {
   return (
     <div
       className="flex-1 min-w-0 rounded-[30px] overflow-hidden flex flex-col gap-[30px] justify-center pt-[30px] pb-[50px]"
-      style={{ backgroundImage: `url(${bg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+      style={{
+        backgroundImage: `url(${bg})`, backgroundSize: 'cover', backgroundPosition: 'center',
+        ...(isDesktop ? { borderRadius: fluid(22, 30), gap: fluid(22, 30), paddingTop: fluid(22, 30), paddingBottom: fluid(36, 50) } : {}),
+      }}
     >
-      {carousel === 'branding' ? <BrandingMarquee /> : <SlideCarousel type={carousel} />}
-      <div className="flex flex-col gap-[14px] w-full text-center px-[40px]" style={{ filter: 'drop-shadow(0px 0px 5px rgba(0,0,0,0.2))' }}>
-        <p className="text-white text-[30px] font-light font-['Geist'] leading-[36px] tracking-[-0.6px]">
+      {carousel === 'branding' ? <BrandingMarquee s={s} /> : <SlideCarousel type={carousel} s={s} />}
+      <div className="flex flex-col gap-[14px] w-full text-center px-[40px]" style={{ filter: 'drop-shadow(0px 0px 5px rgba(0,0,0,0.2))', ...(isDesktop ? { paddingLeft: fluid(29, 40), paddingRight: fluid(29, 40), gap: fluid(10, 14) } : {}) }}>
+        <p className="text-white text-[30px] font-light font-['Geist'] leading-[36px] tracking-[-0.6px]" style={isDesktop ? { fontSize: fluid(22, 30), lineHeight: fluid(26, 36) } : {}}>
           {title}
         </p>
-        <p className="text-white/80 text-[16px] font-normal font-['Geist'] leading-[22px]">
+        <p className="text-white/80 text-[16px] font-normal font-['Geist'] leading-[22px]" style={isDesktop ? { fontSize: fluid(14, 16), lineHeight: fluid(18, 22) } : {}}>
           {desc}
         </p>
       </div>
     </div>
   )
 }
+
+export { IPhoneMockup, ServiceCard, services }
 
 export default function PhoneSection() {
   const sectionRef = useRef(null)
@@ -393,7 +405,23 @@ export default function PhoneSection() {
   const cardsRef = useRef(null)
   const iframeRef = useRef(null)
   const [muted, setMuted] = useState(true)
-  const { scale, isMobile } = useBreakpoint()
+  const { scale, isMobile, isDesktop } = useBreakpoint()
+  const [vw, setVw] = useState(typeof window !== 'undefined' ? window.innerWidth : 1440)
+  useEffect(() => {
+    const onResize = () => setVw(window.innerWidth)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+  const phoneScale = useMemo(() => {
+    if (!isDesktop) return 0.75
+    return Math.min(1, Math.max(0.72, 0.72 + 0.28 * (vw - 1024) / 416))
+  }, [isDesktop, vw])
+
+  const headingStyle = isDesktop ? { fontSize: fluid(43, 60), lineHeight: fluid(50, 70) } : {}
+  const sec1PadStyle = isDesktop ? { paddingLeft: fluid(72, 100), paddingRight: fluid(72, 100), paddingTop: fluid(72, 100), gap: fluid(72, 100) } : {}
+  const sec2PadStyle = isDesktop ? { padding: fluid(72, 100), gap: fluid(36, 50) } : {}
+  const whatStyle = isDesktop ? { fontSize: fluid(43, 60), lineHeight: fluid(50, 70) } : {}
+  const bodyStyle = isDesktop ? { fontSize: fluid(14, 18), lineHeight: fluid(20, 26) } : {}
 
   const postCommand = useCallback((func, args = []) => {
     if (!iframeRef.current?.contentWindow) return
@@ -520,22 +548,24 @@ export default function PhoneSection() {
         className="relative w-full overflow-hidden"
         style={{
           background: 'linear-gradient(to bottom, #ffffff 0%, #e8e4f5 100%)',
-          paddingBottom: isMobile ? '120px' : '240px',
+          paddingBottom: isDesktop ? fluid(173, 240) : '120px',
         }}
       >
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-[100px] items-center px-5 md:px-12 lg:px-[100px] pt-12 md:pt-16 lg:pt-[100px]" style={{ minHeight: isMobile ? 'auto' : '670px' }}>
+        <div className="flex flex-col lg:flex-row gap-8 items-center px-5 pt-12" style={{ minHeight: isDesktop ? fluid(483, 670) : 'auto', ...sec1PadStyle }}>
           <div ref={leftTextRef} className="flex-1 flex flex-col justify-center min-w-0 order-1 lg:order-none">
-            <p className="text-black text-[28px] sm:text-[36px] md:text-[48px] lg:text-[60px] font-light font-['Geist'] leading-[36px] sm:leading-[44px] md:leading-[56px] lg:leading-[70px] tracking-[-1.2px] md:tracking-[-2.4px]">
+            <p className="text-black text-[28px] sm:text-[36px] font-light font-['Geist'] tracking-[-1.2px] md:tracking-[-2.4px]" style={headingStyle}>
               Every project is unique,
             </p>
           </div>
 
-          <div ref={phoneRef} className="order-first lg:order-none" style={{ transform: isMobile ? 'scale(0.75)' : 'none', transformOrigin: 'center' }}>
-            <IPhoneMockup iframeRef={iframeRef} muted={muted} onToggleMute={toggleMute} onReplay={replay} />
+          <div ref={phoneRef} className="order-first lg:order-none">
+            <div style={isDesktop ? { zoom: phoneScale } : { transform: 'scale(0.75)', transformOrigin: 'center' }}>
+              <IPhoneMockup iframeRef={iframeRef} muted={muted} onToggleMute={toggleMute} onReplay={replay} />
+            </div>
           </div>
 
           <div ref={rightTextRef} className="flex-1 flex flex-col justify-center min-w-0 order-2 lg:order-none">
-            <p className="text-black text-[28px] sm:text-[36px] md:text-[48px] lg:text-[60px] font-light font-['Geist'] leading-[36px] sm:leading-[44px] md:leading-[56px] lg:leading-[70px] tracking-[-1.2px] md:tracking-[-2.4px]">
+            <p className="text-black text-[28px] sm:text-[36px] font-light font-['Geist'] tracking-[-1.2px] md:tracking-[-2.4px]" style={headingStyle}>
               but here's how I approach them.
             </p>
           </div>
@@ -545,22 +575,22 @@ export default function PhoneSection() {
       {/* Section 2 — white, rounded top corners, slides over section 1 */}
       <section
         id="services"
-        className="relative bg-white w-full flex flex-col items-center gap-8 md:gap-[50px] p-5 sm:p-8 md:p-12 lg:p-[100px] z-10"
-        style={{ borderRadius: '60px 60px 0 0', marginTop: '-60px' }}
+        className="relative bg-white w-full flex flex-col items-center gap-8 p-5 sm:p-8 z-10"
+        style={{ ...sec2PadStyle, borderRadius: isDesktop ? `${fluid(43, 60)} ${fluid(43, 60)} 0 0` : '60px 60px 0 0', marginTop: isDesktop ? `clamp(-60px, calc(-43px - 17 * (100vw - 1024px) / 416), -43px)` : '-60px' }}
       >
-        <div ref={titleRef} className="flex flex-col items-center gap-[20px] md:gap-[30px] w-full max-w-[540px]">
-          <div className="text-black text-[32px] sm:text-[40px] md:text-[50px] lg:text-[60px] font-light font-['Geist'] leading-[40px] sm:leading-[48px] md:leading-[60px] lg:leading-[70px] tracking-[-1.2px] md:tracking-[-2.4px] text-center">
+        <div ref={titleRef} className="flex flex-col items-center gap-[20px] md:gap-[30px] w-full max-w-[540px]" style={isDesktop ? { maxWidth: fluid(389, 540), gap: fluid(22, 30) } : {}}>
+          <div className="text-black text-[32px] sm:text-[40px] font-light font-['Geist'] tracking-[-1.2px] md:tracking-[-2.4px] text-center" style={whatStyle}>
             <p>What I'm</p>
             <p>actually good at</p>
           </div>
-          <p className="text-black text-[16px] md:text-[18px] font-light font-['Geist'] leading-[24px] md:leading-[26px] tracking-[-0.36px] text-center">
+          <p className="text-black text-[16px] font-light font-['Geist'] leading-[24px] tracking-[-0.36px] text-center" style={bodyStyle}>
             Over the years, I've focused on a few things and worked hard to do them exceptionally well. Here's where I can bring the most value.
           </p>
         </div>
 
-        <div ref={cardsRef} className="flex flex-col md:flex-row gap-6 md:gap-[24px] items-stretch w-full">
-          {services.map((s) => (
-            <ServiceCard key={s.title} {...s} />
+        <div ref={cardsRef} className="flex flex-col md:flex-row gap-6 md:gap-[24px] items-stretch w-full" style={isDesktop ? { gap: fluid(17, 24) } : {}}>
+          {services.map((svc) => (
+            <ServiceCard key={svc.title} {...svc} isDesktop={isDesktop} s={phoneScale} />
           ))}
         </div>
       </section>

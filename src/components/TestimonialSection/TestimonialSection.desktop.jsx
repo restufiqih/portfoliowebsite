@@ -1,15 +1,16 @@
 import { useState, useEffect, useRef, useLayoutEffect, useCallback } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import LogoMarquee from './LogoMarquee'
-import testimonialBg from '../assets/testimonial-bg.png'
-import { useBreakpoint } from '../hooks/useBreakpoint'
+import LogoMarquee from '../LogoMarquee'
+import testimonialBg from '../../assets/testimonial-bg.png'
+import { useBreakpoint } from '../../hooks/useBreakpoint'
+import { fluid } from '../../utils/fluid'
 
-import client1Photo from '../assets/clients/client1.png'
-import client2Photo from '../assets/clients/client2.png'
-import client3Photo from '../assets/clients/client3.png'
-import client4Photo from '../assets/clients/client4.png'
-import client5Photo from '../assets/clients/client5.png'
+import client1Photo from '../../assets/clients/client1.png'
+import client2Photo from '../../assets/clients/client2.png'
+import client3Photo from '../../assets/clients/client3.png'
+import client4Photo from '../../assets/clients/client4.png'
+import client5Photo from '../../assets/clients/client5.png'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -126,7 +127,17 @@ export default function TestimonialSection() {
   const bgRef = useRef(null)
   const leftColRef = useRef(null)
   const rightColRef = useRef(null)
-  const { isMobile } = useBreakpoint()
+  const { isMobile, isDesktop } = useBreakpoint()
+
+  const sectionStyle = isDesktop ? {
+    gap: fluid(58, 80), paddingTop: fluid(130, 180), paddingBottom: fluid(288, 400),
+  } : {}
+  const titleStyle = isDesktop ? { fontSize: fluid(43, 60), lineHeight: fluid(50, 70) } : {}
+  const bodyStyle = isDesktop ? { fontSize: fluid(14, 18), lineHeight: fluid(19, 26) } : {}
+  const cardTextStyle = isDesktop ? { fontSize: fluid(14, 20), lineHeight: fluid(20, 28) } : {}
+  const cardHeightStyle = isDesktop ? { minHeight: fluid(281, 390) } : {}
+  const contentPadStyle = isDesktop ? { paddingLeft: fluid(72, 100), paddingRight: fluid(72, 100) } : {}
+
   const prevIndexRef = useRef(0)
   const intervalDuration = 5000
 
@@ -288,7 +299,8 @@ export default function TestimonialSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative bg-white flex flex-col gap-10 md:gap-[60px] lg:gap-[80px] items-center pt-[80px] md:pt-[120px] lg:pt-[180px] pb-[120px] md:pb-[250px] lg:pb-[400px] overflow-hidden"
+      className="relative bg-white flex flex-col gap-10 items-center pt-[80px] pb-[120px] overflow-hidden"
+      style={sectionStyle}
     >
       <div
         className="absolute left-0 w-full pointer-events-none"
@@ -297,15 +309,15 @@ export default function TestimonialSection() {
         <img ref={bgRef} src={testimonialBg} alt="" className="w-full h-full object-cover" />
       </div>
 
-      <div className="relative z-10 flex items-center justify-center w-full px-5 md:px-12 lg:px-[100px]">
+      <div className="relative z-10 flex items-center justify-center w-full px-5" style={contentPadStyle}>
         <div className="flex flex-col lg:flex-row gap-10 lg:gap-[80px] items-center w-full max-w-[950px]">
 
           <div ref={leftColRef} className="flex-1 flex flex-col gap-[20px] md:gap-[30px] justify-center">
             <div className="flex flex-col gap-[16px] md:gap-[20px]">
-              <p className="text-black text-[28px] sm:text-[36px] md:text-[48px] lg:text-[60px] font-light font-['Geist'] leading-[36px] sm:leading-[44px] md:leading-[56px] lg:leading-[70px] tracking-[-1.2px] md:tracking-[-2.4px]">
+              <p className="text-black text-[28px] sm:text-[36px] font-light font-['Geist'] tracking-[-1.2px] md:tracking-[-2.4px]" style={titleStyle}>
                 What clients say
               </p>
-              <div className="text-black text-[16px] md:text-[18px] font-light font-['Geist'] leading-[24px] md:leading-[26px] tracking-[-0.36px]">
+              <div className="text-black text-[16px] font-light font-['Geist'] leading-[24px] tracking-[-0.36px]" style={bodyStyle}>
                 <p>My clients explain it better than I ever could.</p>
                 <p>Their experiences say more about my work than any description I could write.</p>
               </div>
@@ -352,7 +364,7 @@ export default function TestimonialSection() {
             <div
               ref={tooltipRef}
               className="pointer-events-none absolute z-50 flex items-center justify-center rounded-[99px] bg-white/20 backdrop-blur-md px-[14px] py-[6px] text-[14px] font-light font-['Geist'] text-white tracking-[-0.28px] leading-[20px] whitespace-nowrap transition-opacity duration-200"
-              style={{ opacity: !isMobile && cardHovered && !holding ? 1 : 0 }}
+              style={{ opacity: isDesktop && cardHovered && !holding ? 1 : 0 }}
             >
               Hold to pause
             </div>
@@ -380,8 +392,8 @@ export default function TestimonialSection() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-center px-[20px] min-h-[200px] md:min-h-[300px] lg:h-[390px]">
-                <p className="text-white text-[16px] md:text-[18px] lg:text-[20px] font-light font-['Geist'] leading-[24px] md:leading-[26px] lg:leading-[28px] tracking-[-0.4px]">
+              <div className="flex items-center justify-center px-[20px] min-h-[200px]" style={cardHeightStyle}>
+                <p className="text-white text-[16px] font-light font-['Geist'] leading-[24px] tracking-[-0.4px]" style={cardTextStyle}>
                   {current.text}
                 </p>
               </div>

@@ -39,6 +39,7 @@ export function useBreakpoint() {
     isMobile: bp === 'mobile',
     isTablet: bp === 'tablet',
     isDesktop: bp === 'desktop',
+    isMobileView: bp !== 'desktop',
     scale: bp === 'mobile' ? 0.4 : bp === 'tablet' ? 0.7 : 1,
   }
 }

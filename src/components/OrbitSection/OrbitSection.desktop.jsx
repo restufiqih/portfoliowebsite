@@ -1,14 +1,15 @@
 import { useLayoutEffect, useRef, useEffect } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useBreakpoint } from '../hooks/useBreakpoint'
+import { useBreakpoint } from '../../hooks/useBreakpoint'
+import { fluid } from '../../utils/fluid'
 
-import orbit1 from '../assets/orbit/orbit-1.png'
-import orbit2 from '../assets/orbit/orbit-2.png'
-import orbit3 from '../assets/orbit/orbit-3.png'
-import orbit4 from '../assets/orbit/orbit-4.png'
-import orbit5 from '../assets/orbit/orbit-5.png'
-import orbit6 from '../assets/orbit/orbit-6.png'
+import orbit1 from '../../assets/orbit/orbit-1.png'
+import orbit2 from '../../assets/orbit/orbit-2.png'
+import orbit3 from '../../assets/orbit/orbit-3.png'
+import orbit4 from '../../assets/orbit/orbit-4.png'
+import orbit5 from '../../assets/orbit/orbit-5.png'
+import orbit6 from '../../assets/orbit/orbit-6.png'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -21,7 +22,7 @@ export default function OrbitSection() {
   const topTextRef = useRef(null)
   const bottomTextRef = useRef(null)
   const imgRefs = useRef([])
-  const { isMobile, scale } = useBreakpoint()
+  const { isMobile, isDesktop, scale } = useBreakpoint()
 
   useEffect(() => {
     if (isMobile) return
@@ -114,12 +115,12 @@ export default function OrbitSection() {
       className="relative flex flex-col items-center justify-center overflow-hidden"
       style={{
         background: 'linear-gradient(to bottom, #e8e4f5 0%, #f5f3fa 50%, #ffffff 100%)',
-        paddingTop: isMobile ? '120px' : `${360 * scale}px`,
-        paddingBottom: isMobile ? '100px' : `${300 * scale}px`,
+        paddingTop: isDesktop ? fluid(259, 360) : '120px',
+        paddingBottom: isDesktop ? fluid(216, 300) : '100px',
         marginTop: '-60px',
       }}
     >
-      {!isMobile && trailImages.map((src, i) => (
+      {isDesktop && trailImages.map((src, i) => (
         <div
           key={i}
           ref={(el) => { imgRefs.current[i] = el }}
@@ -137,14 +138,16 @@ export default function OrbitSection() {
       <div className="relative z-10 text-center px-5">
         <p
           ref={topTextRef}
-          className="text-[32px] sm:text-[44px] md:text-[60px] lg:text-[76px] xl:text-[90px] font-light font-['Geist'] leading-[40px] sm:leading-[52px] md:leading-[70px] lg:leading-[88px] xl:leading-[104px] tracking-[-1.2px] md:tracking-[-2.4px] xl:tracking-[-3.6px]"
+          className="text-[32px] sm:text-[44px] font-light font-['Geist'] tracking-[-1.2px] md:tracking-[-2.4px]"
+          style={isDesktop ? { fontSize: fluid(65, 90), lineHeight: fluid(75, 104), letterSpacing: 'clamp(-3.6px, calc(-2.4px + -1.2 * (100vw - 1024px) / 416), -2.4px)' } : {}}
         >
           <span className="text-black/50">Less </span>
           <span className="text-black">"where do I click?"</span>
         </p>
         <p
           ref={bottomTextRef}
-          className="text-[32px] sm:text-[44px] md:text-[60px] lg:text-[76px] xl:text-[90px] font-light font-['Geist'] leading-[40px] sm:leading-[52px] md:leading-[70px] lg:leading-[88px] xl:leading-[104px] tracking-[-1.2px] md:tracking-[-2.4px] xl:tracking-[-3.6px]"
+          className="text-[32px] sm:text-[44px] font-light font-['Geist'] tracking-[-1.2px] md:tracking-[-2.4px]"
+          style={isDesktop ? { fontSize: fluid(65, 90), lineHeight: fluid(75, 104), letterSpacing: 'clamp(-3.6px, calc(-2.4px + -1.2 * (100vw - 1024px) / 416), -2.4px)' } : {}}
         >
           <span className="text-black/50">More </span>
           <span className="text-black">"that was easy"</span>

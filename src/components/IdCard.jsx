@@ -2,21 +2,39 @@ import avatar from '../assets/idcard/avatar.png'
 import verifiedBadge from '../assets/idcard/verified-badge.svg'
 import topRated from '../assets/idcard/top-rated.svg'
 import jobSuccess from '../assets/idcard/job-success.svg'
+import { useBreakpoint } from '../hooks/useBreakpoint'
+import { fluid } from '../utils/fluid'
+
+// Mobile scale: 0.68 of desktop max (fits 375px+ screens with 24px padding)
+const MOBILE_SCALE = 0.68
 
 export default function IdCard() {
+  const { isDesktop } = useBreakpoint()
+
+  const f = (min, max) => isDesktop ? fluid(min, max) : `${Math.round(max * MOBILE_SCALE)}px`
+
   return (
     <div
-      className="relative flex flex-col gap-[30px] overflow-hidden p-[30px] rounded-[26.765px]"
+      className="relative flex flex-col overflow-hidden"
       style={{
-        width: '463px',
-        height: '300px',
+        width: f(330, 463),
+        height: f(214, 300),
+        padding: f(21, 30),
+        gap: f(21, 30),
+        borderRadius: f(19, 27),
         backgroundImage: 'linear-gradient(137.906deg, #111111 33.963%, #777777 135.36%)',
       }}
     >
       {/* Background vector "UX" */}
       <svg
         className="absolute pointer-events-none"
-        style={{ width: '488.692px', height: '303.377px', left: 'calc(50% + 108.25px)', top: '130px', transform: 'translateX(-50%)' }}
+        style={{
+          width: f(348, 489),
+          height: f(216, 303),
+          left: `calc(50% + ${f(77, 108)})`,
+          top: f(93, 130),
+          transform: 'translateX(-50%)',
+        }}
         viewBox="0 0 488.692 303.377"
         fill="none"
       >
@@ -24,43 +42,73 @@ export default function IdCard() {
       </svg>
 
       {/* Profile row */}
-      <div className="relative flex gap-[20px] items-center w-full">
+      <div
+        className="relative flex items-center w-full"
+        style={{ gap: f(14, 20) }}
+      >
         {/* Avatar + verified badge */}
-        <div className="relative shrink-0" style={{ width: '70px', height: '70px' }}>
-          <div className="absolute left-0 top-0 w-[70px] h-[70px] rounded-full overflow-hidden bg-white">
+        <div className="relative shrink-0" style={{ width: f(50, 70), height: f(50, 70) }}>
+          <div
+            className="absolute left-0 top-0 rounded-full overflow-hidden bg-white"
+            style={{ width: f(50, 70), height: f(50, 70) }}
+          >
             <img src={avatar} alt="Akhdiyat Restu Fiqih" className="w-full h-full object-cover" />
           </div>
-          <div className="absolute" style={{ left: '42px', top: '42px', width: '36px', height: '36px' }}>
+          <div
+            className="absolute"
+            style={{ left: f(30, 42), top: f(30, 42), width: f(26, 36), height: f(26, 36) }}
+          >
             <img src={verifiedBadge} alt="" className="w-full h-full" />
           </div>
         </div>
 
         {/* Name & role */}
-        <div className="flex flex-col gap-[4px] flex-1 min-w-0">
-          <p className="text-white text-[30px] font-light font-['Geist'] leading-[36px] tracking-[-0.6px]">
+        <div className="flex flex-col flex-1 min-w-0" style={{ gap: f(3, 4) }}>
+          <p
+            className="text-white font-light font-['Geist'] tracking-[-0.6px]"
+            style={{ fontSize: f(21, 30), lineHeight: f(26, 36) }}
+          >
             Akhdiyat Restu Fiqih
           </p>
-          <p className="text-white/80 text-[22px] font-light font-['Geist'] leading-[30px] tracking-[-0.44px]">
+          <p
+            className="text-white/80 font-light font-['Geist'] tracking-[-0.44px]"
+            style={{ fontSize: f(16, 22), lineHeight: f(21, 30) }}
+          >
             UI/UX Designer
           </p>
         </div>
       </div>
 
       {/* Badges row */}
-      <div className="relative flex flex-1 gap-[30px] items-start w-full min-h-0">
-        <div className="flex-1 flex flex-col gap-[14px] items-center justify-center h-full min-w-0">
-          <div className="w-[50px] h-[50px] overflow-hidden shrink-0">
+      <div
+        className="relative flex flex-1 items-start w-full min-h-0"
+        style={{ gap: f(21, 30) }}
+      >
+        <div
+          className="flex-1 flex flex-col items-center justify-center h-full min-w-0"
+          style={{ gap: f(10, 14) }}
+        >
+          <div style={{ width: f(36, 50), height: f(36, 50) }}>
             <img src={topRated} alt="" className="w-full h-full" />
           </div>
-          <p className="text-white text-[20px] font-light font-['Geist'] leading-[28px] tracking-[-0.4px] text-center whitespace-nowrap">
+          <p
+            className="text-white font-light font-['Geist'] text-center whitespace-nowrap"
+            style={{ fontSize: f(14, 20), lineHeight: f(20, 28), letterSpacing: '-0.4px' }}
+          >
             Top Rated Plus
           </p>
         </div>
-        <div className="flex-1 flex flex-col gap-[14px] items-center justify-center h-full min-w-0">
-          <div className="w-[50px] h-[50px] shrink-0">
+        <div
+          className="flex-1 flex flex-col items-center justify-center h-full min-w-0"
+          style={{ gap: f(10, 14) }}
+        >
+          <div style={{ width: f(36, 50), height: f(36, 50) }}>
             <img src={jobSuccess} alt="" className="w-full h-full" />
           </div>
-          <p className="text-white text-[20px] font-light font-['Geist'] leading-[28px] tracking-[-0.4px] text-center whitespace-nowrap">
+          <p
+            className="text-white font-light font-['Geist'] text-center whitespace-nowrap"
+            style={{ fontSize: f(14, 20), lineHeight: f(20, 28), letterSpacing: '-0.4px' }}
+          >
             100% Job Success
           </p>
         </div>

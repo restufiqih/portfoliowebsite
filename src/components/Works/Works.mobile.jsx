@@ -1,24 +1,22 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useBreakpoint } from '../hooks/useBreakpoint'
 
-import bgGradient from '../assets/works/bg-gradient.png'
-import work1 from '../assets/works/work-1.png'
-import work4 from '../assets/works/work-4.png'
-import work5 from '../assets/works/work-5.png'
-import work6 from '../assets/works/work-6.png'
-import work8 from '../assets/works/work-8.png'
+import bgGradient from '../../assets/works/bg-gradient.png'
+import work1 from '../../assets/works/work-1.png'
+import work4 from '../../assets/works/work-4.png'
+import work5 from '../../assets/works/work-5.png'
+import work6 from '../../assets/works/work-6.png'
+import work8 from '../../assets/works/work-8.png'
 
 gsap.registerPlugin(ScrollTrigger)
 
-// 5 project images — all offsets unique so no two cards ever sit at the same height
 const slides = [
-  { src: work4, offset: 0,  href: '#' },
-  { src: work5, offset: 25, href: '#' },
-  { src: work6, offset: 10, href: '#' },
-  { src: work1, offset: 35, href: '#' },
-  { src: work8, offset: 15, href: '#' },
+  { src: work4, offset: 0,   href: '#' },
+  { src: work5, offset: 17,  href: '#' },
+  { src: work6, offset: 9,   href: '#' },
+  { src: work1, offset: 17,  href: '#' },
+  { src: work8, offset: 0,   href: '#' },
 ]
 
 const carouselSlides = [...slides, ...slides]
@@ -29,8 +27,8 @@ function RollingButton({ label }) {
     <button
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="bg-black px-[20px] rounded-[99px] inline-flex justify-center items-center cursor-pointer hover:bg-black/85 transition-colors"
-      style={{ height: '50px' }}
+      className="bg-black px-[20px] rounded-[99px] inline-flex justify-center items-center cursor-pointer"
+      style={{ height: 50 }}
     >
       <div style={{ height: '22px', overflow: 'hidden' }}>
         <div style={{
@@ -54,7 +52,7 @@ function CharWord({ word, isLast }) {
         <span
           key={i}
           className="char-highlight"
-          style={{ display: 'inline-block', color: 'rgba(0,0,0,0.3)' }}
+          style={{ display: 'inline-block', color: 'rgba(0,0,0,0.5)' }}
         >
           {char}
         </span>
@@ -62,7 +60,7 @@ function CharWord({ word, isLast }) {
       {!isLast && (
         <span
           className="char-highlight"
-          style={{ display: 'inline-block', color: 'rgba(0,0,0,0.3)' }}
+          style={{ display: 'inline-block', color: 'rgba(0,0,0,0.5)' }}
         >
           {' '}
         </span>
@@ -73,7 +71,7 @@ function CharWord({ word, isLast }) {
 
 const highlightWords = ['Explore', 'the', 'thinking', 'and', 'design', 'decisions', 'behind', 'each', 'project.']
 
-export default function Works() {
+export default function WorksMobile() {
   const sectionRef = useRef(null)
   const highlightRef = useRef(null)
   const bgRef = useRef(null)
@@ -82,31 +80,28 @@ export default function Works() {
   const titleRef = useRef(null)
   const carouselRef = useRef(null)
   const ctaRef = useRef(null)
-  const { isMobile, isTablet } = useBreakpoint()
-  const cardWidth = isMobile ? 280 : isTablet ? 320 : 370
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      // Parallax: bg starts 200px below Figma position, scrolls up to Figma position
-      gsap.set(bgRef.current, { y: 300 })
+      // Background gradient parallax
+      gsap.set(bgRef.current, { y: 200 })
       gsap.to(bgRef.current, {
-        y: -200,
+        y: -100,
         ease: 'none',
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top bottom',
-          end: 'center center',
+          end: 'top 30%',
           scrub: 1.5,
         }
       })
 
-      // Horizontal marquee — loop over 5 unique card widths
+      // Horizontal marquee
       const track = trackRef.current
       const card = track.querySelector('.work-card')
       if (card) {
         const cardWidth = card.offsetWidth + 10
         const totalWidth = cardWidth * slides.length
-
         tweenRef.current = gsap.to(track, {
           x: -totalWidth,
           duration: 20,
@@ -115,23 +110,23 @@ export default function Works() {
         })
       }
 
-      // Title parallax — starts lower, scrolls into place
+      // Title parallax
       gsap.fromTo(titleRef.current,
-        { y: 120, opacity: 0 },
+        { y: 80, opacity: 0 },
         {
           y: 0, opacity: 1, ease: 'none',
           scrollTrigger: {
             trigger: sectionRef.current,
             start: 'top 80%',
-            end: 'top 20%',
+            end: 'top 30%',
             scrub: 1.2,
           }
         }
       )
 
-      // Carousel parallax — starts even lower, scrolls up slower
+      // Carousel parallax
       gsap.fromTo(carouselRef.current,
-        { y: 180, opacity: 0 },
+        { y: 100, opacity: 0 },
         {
           y: 0, opacity: 1, ease: 'none',
           scrollTrigger: {
@@ -145,7 +140,7 @@ export default function Works() {
 
       // CTA parallax
       gsap.fromTo(ctaRef.current,
-        { y: 100, opacity: 0 },
+        { y: 60, opacity: 0 },
         {
           y: 0, opacity: 1, ease: 'none',
           scrollTrigger: {
@@ -162,7 +157,7 @@ export default function Works() {
         const chars = highlightRef.current.querySelectorAll('.char-highlight')
         gsap.fromTo(
           chars,
-          { color: 'rgba(0,0,0,0.3)' },
+          { color: 'rgba(0,0,0,0.5)' },
           {
             color: 'rgba(0,0,0,1)',
             stagger: 0.02,
@@ -182,12 +177,12 @@ export default function Works() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="relative bg-white overflow-hidden">
+    <section ref={sectionRef} className="relative bg-white overflow-hidden" style={{ marginBottom: -1 }}>
 
-      {/* Parallax background — Figma: h=1413px, top=-641px from section */}
+      {/* Parallax background gradient */}
       <div
         className="absolute left-0 w-full pointer-events-none"
-        style={{ top: '-641px', height: '1413px' }}
+        style={{ top: '-200px', height: '800px' }}
       >
         <div ref={bgRef} className="w-full h-full">
           <img src={bgGradient} alt="" className="w-full h-full object-cover object-top" />
@@ -195,25 +190,31 @@ export default function Works() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center gap-8 md:gap-[60px] pb-[50px] md:pb-[80px] lg:pb-[100px] pt-[120px] sm:pt-[180px] md:pt-[240px] lg:pt-[300px]">
+      <div
+        className="relative z-10 flex flex-col items-center"
+        style={{ paddingTop: 300, paddingBottom: 80, gap: 60 }}
+      >
 
         {/* Title */}
-        <div ref={titleRef} className="px-5 md:px-[80px] w-full flex flex-col items-center">
-          <p className="text-black text-[28px] sm:text-[36px] md:text-[48px] lg:text-[60px] font-light font-['Geist'] leading-[36px] sm:leading-[44px] md:leading-[56px] lg:leading-[70px] tracking-[-1.2px] md:tracking-[-2.4px] text-center">
+        <div ref={titleRef} className="w-full flex flex-col items-center" style={{ padding: '0 24px' }}>
+          <p
+            className="text-black font-light font-['Geist'] text-center"
+            style={{ fontSize: 40, lineHeight: '46px', letterSpacing: '-0.8px' }}
+          >
             Designing products
           </p>
-          <p className="text-black text-[28px] sm:text-[36px] md:text-[48px] lg:text-[60px] font-light font-['Geist'] leading-[36px] sm:leading-[44px] md:leading-[56px] lg:leading-[70px] tracking-[-1.2px] md:tracking-[-2.4px] text-center">
+          <p
+            className="text-black font-light font-['Geist'] text-center"
+            style={{ fontSize: 40, lineHeight: '46px', letterSpacing: '-0.8px' }}
+          >
             that people love to use
           </p>
         </div>
 
-        {/* Horizontal looping carousel — hover pauses, cards are clickable */}
+        {/* Horizontal looping carousel */}
         <div
           ref={carouselRef}
           className="w-full overflow-hidden"
-          style={{ paddingBottom: '24px' }}
-          onMouseEnter={() => tweenRef.current?.pause()}
-          onMouseLeave={() => tweenRef.current?.resume()}
         >
           <div
             ref={trackRef}
@@ -224,17 +225,18 @@ export default function Works() {
               <a
                 key={i}
                 href={href}
-                className="work-card block rounded-[30px] overflow-hidden shrink-0"
+                className="work-card block overflow-hidden shrink-0"
                 style={{
-                  width: `${cardWidth}px`,
+                  width: 323,
                   aspectRatio: '500 / 400',
-                  marginTop: `${offset * (isMobile ? 0.5 : 1)}px`,
+                  borderRadius: 26,
+                  marginTop: `${offset}px`,
                 }}
               >
                 <img
                   src={src}
                   alt=""
-                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                  className="w-full h-full object-cover"
                 />
               </a>
             ))}
@@ -242,8 +244,11 @@ export default function Works() {
         </div>
 
         {/* CTA */}
-        <div ref={ctaRef} className="flex flex-col items-center gap-[20px] md:gap-[30px] px-5">
-          <p className="text-center text-[18px] md:text-[20px] lg:text-[24px] font-light font-['Geist'] leading-[26px] md:leading-[30px] lg:leading-[34px] tracking-[-0.48px] w-full max-w-[604px]">
+        <div ref={ctaRef} className="flex flex-col items-center" style={{ gap: 30, padding: '0 24px' }}>
+          <p
+            className="text-center font-light font-['Geist']"
+            style={{ fontSize: 24, lineHeight: '34px', letterSpacing: '-0.48px' }}
+          >
             <span className="text-black">Curious about the process behind these designs? </span>
             <span ref={highlightRef}>
               {highlightWords.map((w, i) => (
