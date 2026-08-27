@@ -61,20 +61,20 @@ function HeroMobileLayout({ titleRef, descRef, yearRef }) {
           >
             Top Rated Plus UI/UX Designer on Upwork
           </p>
+          <p ref={descRef} className="font-light font-['Geist']" style={{ fontSize: 16, lineHeight: '22px' }}>
+            <span className="text-white">Good design shouldn't need an explanation. </span>
+            <span style={{ color: 'rgba(255,255,255,0.7)' }}>
+              I've spent <span className="text-white">6+ years</span> making sure it doesn't.
+            </span>
+          </p>
         </div>
       </div>
 
-      {/* Below fold: description + year */}
+      {/* Below fold: year */}
       <div
         className="relative z-10"
-        style={{ padding: '0 34px 40px', display: 'flex', flexDirection: 'column', gap: 40, textAlign: 'center' }}
+        style={{ padding: '0 34px 40px', textAlign: 'center' }}
       >
-        <p ref={descRef} className="font-light font-['Geist']" style={{ fontSize: 16, lineHeight: '22px' }}>
-          <span className="text-white">Good design shouldn't need an explanation. </span>
-          <span style={{ color: 'rgba(255,255,255,0.7)' }}>
-            I've spent <span className="text-white">6+ years</span> making sure it doesn't.
-          </span>
-        </p>
         <p
           ref={yearRef}
           className="text-white font-light font-['Geist']"
@@ -163,7 +163,7 @@ export default function Hero() {
           }
       }
     >
-      <div className={isMobileView ? 'absolute z-0' : 'absolute inset-0 z-0 -left-1/3'} style={isMobileView ? { top: 0, left: 0, right: 0, height: '100svh' } : {}}>
+      <div className={isMobileView ? 'absolute z-0' : 'absolute inset-0 z-0 -left-1/3'} style={isMobileView ? { top: 0, left: 0, right: 0, height: '100svh', transform: 'translateY(0px)' } : {}}>
         <Lanyard position={[0, 0, isMobileView ? 15.5 : 15]} gravity={[0, -40, 0]} fov={isMobileView ? 21.5 : 16} />
       </div>
 
