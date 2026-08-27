@@ -343,7 +343,7 @@ export default function TestimonialSection() {
             ? 'flex items-center'
             : 'flex items-center justify-center px-[20px] min-h-[200px]'
           }
-          style={isMobileView ? { height: 400 } : cardHeightStyle}
+          style={isMobileView ? { height: 360 } : cardHeightStyle}
         >
           <p
             className="text-white font-light font-['Geist'] tracking-[-0.4px]"
