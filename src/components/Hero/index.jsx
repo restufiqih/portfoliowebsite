@@ -73,7 +73,7 @@ function HeroMobileLayout({ titleRef, descRef, yearRef }) {
       {/* Below fold: year */}
       <div
         className="relative z-10"
-        style={{ padding: '0 34px 40px', textAlign: 'center' }}
+        style={{ padding: '0 34px', textAlign: 'center' }}
       >
         <p
           ref={yearRef}

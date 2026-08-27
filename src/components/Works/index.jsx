@@ -56,15 +56,15 @@ export default function Works() {
     : { fontSize: fluid(17, 24), lineHeight: fluid(24, 34) }
 
   const contentStyle = isMobileView
-    ? { paddingTop: 300, paddingBottom: 80, gap: 60 }
+    ? { paddingTop: 190, paddingBottom: 80, gap: 60 }
     : { paddingTop: fluid(216, 300), paddingBottom: fluid(72, 100), gap: fluid(43, 60) }
 
   const bgStyle = isMobileView
-    ? { top: '-200px', height: '800px' }
+    ? { top: '-350px', height: '800px' }
     : { top: '-641px', height: '1413px' }
 
   const animConfig = isMobileView
-    ? { bgYFrom: 200, bgYTo: -100, bgEnd: 'top 30%', titleY: 80, carouselY: 100, ctaY: 60 }
+    ? { bgYFrom: 200, bgYTo: -60, bgEnd: 'top 10%', titleY: 80, carouselY: 100, ctaY: 60 }
     : { bgYFrom: 300, bgYTo: -200, bgEnd: 'center center', titleY: 120, carouselY: 180, ctaY: 100 }
 
   useLayoutEffect(() => {
