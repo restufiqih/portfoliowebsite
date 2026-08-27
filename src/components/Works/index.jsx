@@ -170,7 +170,7 @@ export default function Works() {
 
       <div className="relative z-10 flex flex-col items-center" style={contentStyle}>
 
-        <div ref={titleRef} className="w-full flex flex-col items-center" style={isMobileView ? { padding: '0 24px' } : { padding: '0 80px' }}>
+        <div ref={titleRef} className="w-full flex flex-col items-center" style={isMobileView ? { padding: 0 } : { padding: '0 80px' }}>
           <p className="text-black font-light font-['Geist'] text-center" style={titleStyle}>
             Designing products
           </p>
