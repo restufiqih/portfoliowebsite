@@ -482,7 +482,7 @@ export default function PhoneSection() {
     : { ...{ padding: fluid(72, 100), gap: fluid(36, 50) }, borderRadius: `${fluid(43, 60)} ${fluid(43, 60)} 0 0`, marginTop: `clamp(-60px, calc(-43px - 17 * (min(100vw, 1440px) - 1024px) / 416), -43px)` }
 
   const whatStyle = isMobileView
-    ? { fontSize: 38, lineHeight: '44px', letterSpacing: '-0.76px' }
+    ? { fontSize: 36, lineHeight: '42px', letterSpacing: '-0.72px' }
     : { fontSize: fluid(43, 60), lineHeight: fluid(50, 70) }
 
   const bodyStyle = isMobileView

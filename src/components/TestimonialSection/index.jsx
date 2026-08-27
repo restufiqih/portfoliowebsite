@@ -407,7 +407,7 @@ export default function TestimonialSection() {
       {isMobileView ? (
         <div className="relative z-10 flex flex-col items-center w-full px-[24px]">
           <div ref={mobileTitleRef} className="flex flex-col gap-[20px] text-center w-full" style={{ marginBottom: 50 }}>
-            <p className="text-black font-light font-['Geist']" style={{ fontSize: 38, lineHeight: '44px', letterSpacing: '-0.76px' }}>
+            <p className="text-black font-light font-['Geist']" style={{ fontSize: 36, lineHeight: '42px', letterSpacing: '-0.72px' }}>
               What clients say
             </p>
             <div className="text-black text-[16px] font-light font-['Geist'] leading-[22px]">

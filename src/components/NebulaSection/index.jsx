@@ -399,7 +399,7 @@ export default function NebulaSection() {
         <p
           className="text-white font-light font-['Geist'] text-center"
           style={isMobileView
-            ? { fontSize: 38, lineHeight: '44px', letterSpacing: '-0.76px' }
+            ? { fontSize: 36, lineHeight: '42px', letterSpacing: '-0.72px' }
             : { fontSize: fluid(50, 70), lineHeight: fluid(60, 84), letterSpacing: 'clamp(-2.8px, calc(-2.8px + 0 * (min(100vw, 1440px) - 1024px) / 416), -2.8px)' }
           }
         >

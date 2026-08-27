@@ -48,7 +48,7 @@ export default function Works() {
   const carouselSlides = [...slides, ...slides]
 
   const titleStyle = isMobileView
-    ? { fontSize: 38, lineHeight: '44px', letterSpacing: '-0.76px' }
+    ? { fontSize: 36, lineHeight: '42px', letterSpacing: '-0.72px' }
     : { fontSize: fluid(43, 60), lineHeight: fluid(50, 70) }
 
   const ctaStyle = isMobileView
