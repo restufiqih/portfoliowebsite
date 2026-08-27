@@ -32,8 +32,8 @@ export default function TrustSection() {
     : { fontSize: fluid(14, 18), lineHeight: fluid(19, 26) }
 
   const animConfig = isMobileView
-    ? { titleY: 80, cardY: 100, cardStart: 'top 60%' }
-    : { titleY: 100 * scale, cardY: 160 * scale, cardStart: 'top 70%' }
+    ? { titleY: 80, cardY: 100, cardStart: 'top 80%', cardEnd: 'top 20%' }
+    : { titleY: 100 * scale, cardY: 160 * scale, cardStart: 'top 80%', cardEnd: 'top 25%' }
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -56,7 +56,7 @@ export default function TrustSection() {
           scrollTrigger: {
             trigger: sectionRef.current,
             start: animConfig.cardStart,
-            end: 'bottom 60%',
+            end: animConfig.cardEnd,
             scrub: 0.3,
           }
         }
