@@ -390,7 +390,7 @@ export default function TestimonialSection() {
         : 'relative bg-white flex flex-col items-center overflow-hidden'
       }
       style={isMobileView
-        ? { paddingTop: 80, paddingBottom: 360, paddingLeft: 24, paddingRight: 24, marginTop: -1 }
+        ? { paddingTop: 80, paddingBottom: 360, marginTop: -1 }
         : sectionStyle
       }
     >
@@ -405,7 +405,7 @@ export default function TestimonialSection() {
       </div>
 
       {isMobileView ? (
-        <div className="relative z-10 flex flex-col items-center w-full">
+        <div className="relative z-10 flex flex-col items-center w-full px-[24px]">
           <div ref={mobileTitleRef} className="flex flex-col gap-[20px] text-center w-full" style={{ marginBottom: 50 }}>
             <p className="text-black font-light font-['Geist']" style={{ fontSize: 40, lineHeight: '46px', letterSpacing: '-0.8px' }}>
               What clients say

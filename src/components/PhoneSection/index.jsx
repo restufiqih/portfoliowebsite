@@ -476,7 +476,7 @@ export default function PhoneSection() {
   const sec1PadStyle = isDesktop ? { paddingLeft: fluid(72, 100), paddingRight: fluid(72, 100), paddingTop: fluid(72, 100), gap: fluid(72, 100) } : {}
   const sec2PadStyle = isMobileView
     ? { borderRadius: '40px 40px 0 0', padding: '80px 24px', gap: 50 }
-    : { ...{ padding: fluid(72, 100), gap: fluid(36, 50) }, borderRadius: `${fluid(43, 60)} ${fluid(43, 60)} 0 0`, marginTop: `clamp(-60px, calc(-43px - 17 * (100vw - 1024px) / 416), -43px)` }
+    : { ...{ padding: fluid(72, 100), gap: fluid(36, 50) }, borderRadius: `${fluid(43, 60)} ${fluid(43, 60)} 0 0`, marginTop: `clamp(-60px, calc(-43px - 17 * (min(100vw, 1440px) - 1024px) / 416), -43px)` }
 
   const whatStyle = isMobileView
     ? { fontSize: 40, lineHeight: '46px', letterSpacing: '-0.8px' }

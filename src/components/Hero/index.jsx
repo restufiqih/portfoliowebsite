@@ -47,13 +47,13 @@ function HeroDesktopLayout({ titleRef, descRef, yearRef }) {
 function HeroMobileLayout({ titleRef, descRef, yearRef }) {
   return (
     <>
-      <div className="flex-1" style={{ paddingTop: '74px' }} />
-
-      <div
-        className="relative z-10"
-        style={{ padding: '10px 24px 40px', display: 'flex', flexDirection: 'column', gap: 40 }}
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20, textAlign: 'center' }}>
+      {/* First viewport: card (via Lanyard) + title */}
+      <div style={{ minHeight: '100svh', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ flex: 1 }} />
+        <div
+          className="relative z-10"
+          style={{ padding: '10px 24px 40px', display: 'flex', flexDirection: 'column', gap: 20, textAlign: 'center' }}
+        >
           <p
             ref={titleRef}
             className="text-white font-light font-['Geist']"
@@ -61,17 +61,24 @@ function HeroMobileLayout({ titleRef, descRef, yearRef }) {
           >
             Top Rated Plus UI/UX Designer on Upwork
           </p>
-          <p ref={descRef} className="font-light font-['Geist']" style={{ fontSize: 16, lineHeight: '22px' }}>
-            <span className="text-white">Good design shouldn't need an explanation. </span>
-            <span style={{ color: 'rgba(255,255,255,0.7)' }}>
-              I've spent <span className="text-white">6+ years</span> making sure it doesn't.
-            </span>
-          </p>
         </div>
+      </div>
+
+      {/* Below fold: description + year */}
+      <div
+        className="relative z-10"
+        style={{ padding: '0 34px 40px', display: 'flex', flexDirection: 'column', gap: 40, textAlign: 'center' }}
+      >
+        <p ref={descRef} className="font-light font-['Geist']" style={{ fontSize: 16, lineHeight: '22px' }}>
+          <span className="text-white">Good design shouldn't need an explanation. </span>
+          <span style={{ color: 'rgba(255,255,255,0.7)' }}>
+            I've spent <span className="text-white">6+ years</span> making sure it doesn't.
+          </span>
+        </p>
         <p
           ref={yearRef}
           className="text-white font-light font-['Geist']"
-          style={{ fontSize: 16, lineHeight: '22px', textAlign: 'center' }}
+          style={{ fontSize: 16, lineHeight: '22px' }}
         >
           Since 2020
         </p>
@@ -146,7 +153,7 @@ export default function Hero() {
         : 'relative w-full h-screen bg-[#1500E1] flex items-end'
       }
       style={isMobileView
-        ? { minHeight: '100svh' }
+        ? {}
         : {
             paddingLeft: fluid(36, 50),
             paddingRight: fluid(36, 50),
@@ -156,7 +163,7 @@ export default function Hero() {
           }
       }
     >
-      <div className={isMobileView ? 'absolute z-0' : 'absolute inset-0 z-0 -left-1/3'} style={isMobileView ? { top: '-2%', left: 0, right: 0, bottom: '2%' } : {}}>
+      <div className={isMobileView ? 'absolute z-0' : 'absolute inset-0 z-0 -left-1/3'} style={isMobileView ? { top: 0, left: 0, right: 0, height: '100svh' } : {}}>
         <Lanyard position={[0, 0, isMobileView ? 15.5 : 15]} gravity={[0, -40, 0]} fov={isMobileView ? 21.5 : 16} />
       </div>
 

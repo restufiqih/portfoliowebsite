@@ -172,7 +172,7 @@ export default function OrbitSection() {
 
   const textStyle = isMobileView
     ? { fontSize: 32, lineHeight: '38px', letterSpacing: '-1.2px' }
-    : { fontSize: fluid(65, 90), lineHeight: fluid(75, 104), letterSpacing: 'clamp(-3.6px, calc(-2.4px + -1.2 * (100vw - 1024px) / 416), -2.4px)' }
+    : { fontSize: fluid(65, 90), lineHeight: fluid(75, 104), letterSpacing: 'clamp(-3.6px, calc(-2.4px + -1.2 * (min(100vw, 1440px) - 1024px) / 416), -2.4px)' }
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {

@@ -1,5 +1,5 @@
 export function fluid(min, max) {
-  return `clamp(${min}px, calc(${min}px + ${max - min} * (100vw - 1024px) / 416), ${max}px)`
+  return `clamp(${min}px, calc(${min}px + ${max - min} * (min(100vw, 1440px) - 1024px) / 416), ${max}px)`
 }
 
 export function fluidNeg(min, max) {
