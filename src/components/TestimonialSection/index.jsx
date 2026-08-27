@@ -361,7 +361,7 @@ export default function TestimonialSection() {
 
   const insightsBlock = (
     <div
-      className="flex flex-col gap-[24px] p-[24px] rounded-[30px]"
+      className={`flex flex-col rounded-[30px] ${isMobileView ? 'gap-[20px] p-[20px]' : 'gap-[24px] p-[24px]'}`}
       style={{ background: '#f2f4f7' }}
     >
       <p className="text-black text-[16px] font-light font-['Geist'] leading-[22px]">
