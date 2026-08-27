@@ -24,7 +24,7 @@ export default function TrustSection() {
       }
 
   const headingStyle = isMobileView
-    ? { fontSize: 40, lineHeight: '46px', letterSpacing: '-0.8px' }
+    ? { fontSize: 38, lineHeight: '44px', letterSpacing: '-0.76px' }
     : { fontSize: fluid(43, 60), lineHeight: fluid(50, 70) }
 
   const bodyStyle = isMobileView
