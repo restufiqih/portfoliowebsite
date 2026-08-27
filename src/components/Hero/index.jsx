@@ -52,7 +52,7 @@ function HeroMobileLayout({ titleRef, descRef, yearRef }) {
         <div style={{ flex: 1 }} />
         <div
           className="relative z-10"
-          style={{ padding: '10px 24px 40px', display: 'flex', flexDirection: 'column', gap: 20, textAlign: 'center' }}
+          style={{ padding: '10px 16px 0px', display: 'flex', flexDirection: 'column', gap: 20, textAlign: 'center' }}
         >
           <p
             ref={titleRef}
@@ -70,19 +70,7 @@ function HeroMobileLayout({ titleRef, descRef, yearRef }) {
         </div>
       </div>
 
-      {/* Below fold: year */}
-      <div
-        className="relative z-10"
-        style={{ padding: '0 34px', textAlign: 'center' }}
-      >
-        <p
-          ref={yearRef}
-          className="text-white font-light font-['Geist']"
-          style={{ fontSize: 16, lineHeight: '22px' }}
-        >
-          Since 2020
-        </p>
-      </div>
+      <span ref={yearRef} style={{ display: 'none' }} />
     </>
   )
 }
@@ -150,11 +138,12 @@ export default function Hero() {
       ref={sectionRef}
       className={isMobileView
         ? 'relative w-full flex flex-col bg-[#1500E1]'
-        : 'relative w-full h-screen bg-[#1500E1] flex items-end'
+        : 'relative w-full bg-[#1500E1] flex items-end'
       }
       style={isMobileView
         ? {}
         : {
+            height: 'calc(100vh / var(--app-zoom, 1))',
             paddingLeft: fluid(36, 50),
             paddingRight: fluid(36, 50),
             paddingBottom: fluid(36, 50),

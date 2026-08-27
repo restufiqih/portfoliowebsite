@@ -32,7 +32,7 @@ function MobileMenu({ open, onClose }) {
   return (
     <div className="fixed inset-0 z-[60] flex flex-col bg-[#1500E1]">
       {/* Nav Items — top padding accounts for navbar header height (~74px) */}
-      <div className="flex flex-col items-center justify-start px-[24px] gap-[40px]" style={{ paddingTop: 114, paddingBottom: 40 }}>
+      <div className="flex flex-col items-center justify-start px-[16px] gap-[40px]" style={{ paddingTop: 114, paddingBottom: 40 }}>
         {navLinks.map(({ label, href }, i) => (
           <a
             key={label}
@@ -126,7 +126,7 @@ function MobileNavbar({ stickyVisible, menuOpen, onMenuOpen, onMenuClose }) {
       <nav
         ref={navRef}
         className="absolute top-0 left-0 w-full z-[70]"
-        style={{ background: 'transparent', padding: '20px 24px' }}
+        style={{ background: 'transparent', padding: '20px 16px' }}
       >
         <div className="flex items-center justify-between">
           <DrawLogo size={34} color="white" />
@@ -154,7 +154,7 @@ function MobileNavbar({ stickyVisible, menuOpen, onMenuOpen, onMenuClose }) {
         className={`fixed top-0 left-0 w-full z-[70] bg-white transition-transform duration-300 ease-out ${
           stickyVisible ? 'translate-y-0' : '-translate-y-full'
         }`}
-        style={{ padding: '4px 24px' }}
+        style={{ padding: '4px 16px' }}
       >
         <div className="flex items-center justify-between">
           <DrawLogo size={30} color="#1500E1" />

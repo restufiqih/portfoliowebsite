@@ -16,7 +16,7 @@ export default function TrustSection() {
   const { scale, isMobileView, isDesktop } = useBreakpoint()
 
   const sectionStyle = isMobileView
-    ? { borderRadius: '0 0 40px 40px', padding: '80px 24px', gap: 50, marginTop: -1, zIndex: 2 }
+    ? { borderRadius: '0 0 40px 40px', padding: '80px 16px', gap: 50, marginTop: -1, zIndex: 2 }
     : {
         borderRadius: '0 0 60px 60px',
         gap: fluid(65, 90), paddingLeft: fluid(72, 100), paddingRight: fluid(72, 100),

@@ -56,7 +56,7 @@ export default function Works() {
     : { fontSize: fluid(17, 24), lineHeight: fluid(24, 34) }
 
   const contentStyle = isMobileView
-    ? { paddingTop: 190, paddingBottom: 80, gap: 60 }
+    ? { paddingTop: 200, paddingBottom: 80, gap: 60 }
     : { paddingTop: fluid(216, 300), paddingBottom: fluid(72, 100), gap: fluid(43, 60) }
 
   const bgStyle = isMobileView
@@ -64,8 +64,8 @@ export default function Works() {
     : { top: '-641px', height: '1413px' }
 
   const animConfig = isMobileView
-    ? { bgYFrom: 200, bgYTo: -60, bgEnd: 'top 10%', titleY: 80, carouselY: 100, ctaY: 60 }
-    : { bgYFrom: 300, bgYTo: -200, bgEnd: 'center center', titleY: 120, carouselY: 180, ctaY: 100 }
+    ? { bgYFrom: 200, bgYTo: -60, bgStart: 'top 120%', bgEnd: 'top 10%', titleY: 80, carouselY: 100, ctaY: 60 }
+    : { bgYFrom: 300, bgYTo: -200, bgStart: 'top bottom', bgEnd: 'center center', titleY: 120, carouselY: 180, ctaY: 100 }
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -75,7 +75,7 @@ export default function Works() {
         ease: 'none',
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top bottom',
+          start: animConfig.bgStart,
           end: animConfig.bgEnd,
           scrub: 1.5,
         }
@@ -215,7 +215,7 @@ export default function Works() {
           </div>
         </div>
 
-        <div ref={ctaRef} className="flex flex-col items-center" style={isMobileView ? { gap: 30, padding: '0 24px' } : { gap: 30, padding: '0 20px' }}>
+        <div ref={ctaRef} className="flex flex-col items-center" style={isMobileView ? { gap: 30, padding: '0 16px' } : { gap: 30, padding: '0 20px' }}>
           {isMobileView ? (
             <p className="text-center font-light font-['Geist']" style={ctaStyle}>
               <span className="text-black">Curious about the process behind these designs? </span>

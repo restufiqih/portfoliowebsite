@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import Works from './components/Works'
@@ -11,35 +11,42 @@ import NebulaSection from './components/NebulaSection'
 const BASE_WIDTH = 1440
 
 export default function App() {
+  const [appZoom, setAppZoom] = useState(1)
+
   useEffect(() => {
     const update = () => {
       const vw = window.innerWidth
-      const currentZoom = parseFloat(document.body.style.zoom) || 1
-      const realWidth = vw * currentZoom
-      if (realWidth > BASE_WIDTH) {
-        document.body.style.zoom = String(realWidth / BASE_WIDTH)
-      } else {
-        document.body.style.zoom = ''
-      }
+      const z = vw > BASE_WIDTH ? vw / BASE_WIDTH : 1
+      setAppZoom(z)
+      document.documentElement.style.setProperty('--app-zoom', String(z))
     }
     update()
     window.addEventListener('resize', update)
     return () => {
-      document.body.style.zoom = ''
+      document.documentElement.style.removeProperty('--app-zoom')
       window.removeEventListener('resize', update)
     }
   }, [])
 
+  const scaled = appZoom > 1
+
   return (
     <div className="min-h-screen bg-black">
-      <Navbar />
-      <Hero />
-      <Works />
-      <PhoneSection />
-      <TrustSection />
-      <OrbitSection />
-      <TestimonialSection />
-      <NebulaSection />
+      <div style={scaled ? {
+        maxWidth: BASE_WIDTH,
+        margin: '0 auto',
+        zoom: appZoom,
+        width: `${100 / appZoom}%`,
+      } : undefined}>
+        <Navbar />
+        <Hero />
+        <Works />
+        <PhoneSection />
+        <TrustSection />
+        <OrbitSection />
+        <TestimonialSection />
+        <NebulaSection />
+      </div>
     </div>
   )
 }

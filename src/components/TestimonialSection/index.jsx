@@ -255,8 +255,8 @@ export default function TestimonialSection() {
 
       if (isMobileView) {
         const mobileEls = [
-          { el: mobileTitleRef.current, y: 30 },
-          { el: mobileCardRef.current, y: 36 },
+          { el: mobileTitleRef.current, y: 100 },
+          { el: mobileCardRef.current, y: 160 },
         ]
         mobileEls.forEach(({ el, y }) => {
           if (!el) return
@@ -266,10 +266,10 @@ export default function TestimonialSection() {
               y: 0,
               ease: 'none',
               scrollTrigger: {
-                trigger: el,
-                start: 'top 95%',
-                end: 'top 55%',
-                scrub: 2,
+                trigger: sectionRef.current,
+                start: 'top bottom',
+                end: 'top 30%',
+                scrub: 0.3,
               },
             }
           )
@@ -405,7 +405,7 @@ export default function TestimonialSection() {
       </div>
 
       {isMobileView ? (
-        <div className="relative z-10 flex flex-col items-center w-full px-[24px]">
+        <div className="relative z-10 flex flex-col items-center w-full px-[16px]">
           <div ref={mobileTitleRef} className="flex flex-col gap-[20px] text-center w-full" style={{ marginBottom: 50 }}>
             <p className="text-black font-light font-['Geist']" style={{ fontSize: 36, lineHeight: '42px', letterSpacing: '-0.72px' }}>
               What clients say
