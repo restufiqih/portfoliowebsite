@@ -185,6 +185,8 @@ export default function Works() {
           style={{ paddingBottom: isMobileView ? 0 : '24px' }}
           onMouseEnter={() => tweenRef.current?.pause()}
           onMouseLeave={() => tweenRef.current?.resume()}
+          onTouchStart={() => isMobileView && tweenRef.current?.pause()}
+          onTouchEnd={() => isMobileView && tweenRef.current?.resume()}
         >
           <div
             ref={trackRef}
