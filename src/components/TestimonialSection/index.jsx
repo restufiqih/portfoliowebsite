@@ -294,7 +294,7 @@ export default function TestimonialSection() {
     <div
       ref={(el) => { rightColRef.current = el; cardAreaRef.current = el }}
       className={isMobileView
-        ? 'relative w-full bg-black rounded-[30px] flex flex-col gap-[40px] pt-[20px] pb-[60px] px-[20px] overflow-hidden select-none'
+        ? 'relative w-full bg-black rounded-[30px] flex flex-col gap-[40px] pt-[20px] pb-[60px] overflow-hidden select-none'
         : 'relative flex-1 bg-black rounded-[30px] flex flex-col gap-[40px] pt-[20px] pb-[20px] px-[20px] overflow-hidden select-none cursor-pointer'
       }
       onMouseDown={!isMobileView ? handleHoldStart : undefined}
@@ -322,7 +322,7 @@ export default function TestimonialSection() {
       />
 
       <div ref={contentRef} className="flex flex-col gap-[20px]">
-        <div className="flex gap-[20px] items-center px-[20px]">
+        <div className={`flex gap-[20px] items-center ${isMobileView ? '' : 'px-[20px]'}`}>
           <img
             src={current.photo}
             alt={current.name}
@@ -340,7 +340,7 @@ export default function TestimonialSection() {
 
         <div
           className={isMobileView
-            ? 'flex items-center px-[20px]'
+            ? 'flex items-center'
             : 'flex items-center justify-center px-[20px] min-h-[200px]'
           }
           style={isMobileView ? { height: 400 } : cardHeightStyle}
