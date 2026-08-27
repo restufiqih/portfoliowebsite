@@ -30,12 +30,13 @@ export default function Lanyard({ position = [0, 0, 30], gravity = [0, -40, 0], 
   }, [delay])
 
   return (
-    <div 
+    <div
       className="relative z-0 w-full flex justify-center items-center transform scale-100 origin-center"
       style={{
         height: '100svh',
         opacity: visible ? 1 : 0,
         transition: 'opacity 1s ease',
+        touchAction: 'none',
       }}
     >
       <Canvas
@@ -96,6 +97,13 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }) {
       return () => void (document.body.style.cursor = 'auto');
     }
   }, [hovered, dragged]);
+
+  useEffect(() => {
+    if (dragged) {
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = ''; };
+    }
+  }, [dragged]);
 
   useFrame((state, delta) => {
     if (!settled) {
