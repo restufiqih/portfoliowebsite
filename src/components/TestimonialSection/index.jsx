@@ -322,7 +322,7 @@ export default function TestimonialSection() {
       />
 
       <div ref={contentRef} className="flex flex-col gap-[20px]">
-        <div className={`flex gap-[20px] items-center ${isMobileView ? '' : 'px-[20px]'}`}>
+        <div className={`flex items-center ${isMobileView ? 'gap-[14px]' : 'gap-[20px] px-[20px]'}`}>
           <img
             src={current.photo}
             alt={current.name}
