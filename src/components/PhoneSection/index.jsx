@@ -471,7 +471,7 @@ export default function PhoneSection() {
   }, [isDesktop, vw])
 
   const phoneZoom = useMemo(() => {
-    if (isMobileView) return (vw * 0.60) / 309.6
+    if (isMobileView) return (vw * 0.70) / 309.6
     return Math.min((vw - 33) / 309.6, 1.2)
   }, [isMobileView, vw])
 
