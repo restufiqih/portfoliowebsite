@@ -31,8 +31,9 @@ export default function Lanyard({ position = [0, 0, 30], gravity = [0, -40, 0], 
 
   return (
     <div 
-      className="relative z-0 w-full h-screen flex justify-center items-center transform scale-100 origin-center"
+      className="relative z-0 w-full flex justify-center items-center transform scale-100 origin-center"
       style={{
+        height: '100svh',
         opacity: visible ? 1 : 0,
         transition: 'opacity 1s ease',
       }}
