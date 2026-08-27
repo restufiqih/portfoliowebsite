@@ -470,7 +470,10 @@ export default function PhoneSection() {
     return Math.min(1, Math.max(0.72, 0.72 + 0.28 * (vw - 1024) / 416))
   }, [isDesktop, vw])
 
-  const phoneZoom = useMemo(() => Math.min((vw - 33) / 309.6, 1.2), [vw])
+  const phoneZoom = useMemo(() => {
+    if (isMobileView) return (vw * 0.60) / 309.6
+    return Math.min((vw - 33) / 309.6, 1.2)
+  }, [isMobileView, vw])
 
   const headingStyle = isDesktop ? { fontSize: fluid(43, 60), lineHeight: fluid(50, 70) } : {}
   const sec1PadStyle = isDesktop ? { paddingLeft: fluid(72, 100), paddingRight: fluid(72, 100), paddingTop: fluid(72, 100), gap: fluid(72, 100) } : {}
