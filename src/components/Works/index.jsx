@@ -52,7 +52,7 @@ export default function Works() {
     : { fontSize: fluid(43, 60), lineHeight: fluid(50, 70) }
 
   const ctaStyle = isMobileView
-    ? { fontSize: 24, lineHeight: '34px', letterSpacing: '-0.48px' }
+    ? { fontSize: 20, lineHeight: '28px', letterSpacing: '-0.4px' }
     : { fontSize: fluid(17, 24), lineHeight: fluid(24, 34) }
 
   const contentStyle = isMobileView
