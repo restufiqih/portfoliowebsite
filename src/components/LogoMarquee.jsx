@@ -37,8 +37,10 @@ const allLogos = [...logos, ...logos]
 export default function LogoMarquee() {
   const trackRef = useRef(null)
   const { isMobile, isTablet } = useBreakpoint()
-  const sizeScale = isMobile ? 0.7 : isTablet ? 0.85 : 1
-  const gap = isMobile ? 30 : isTablet ? 50 : 70
+  const sizeScale = isMobile ? 0.9 : isTablet ? 0.85 : 1
+  const slotHeight = isMobile ? 90 : 100
+  const gap = isMobile ? 60 : isTablet ? 50 : 70
+  const containerHeight = isMobile ? slotHeight : slotHeight * sizeScale
 
   useLayoutEffect(() => {
     const track = trackRef.current
@@ -64,7 +66,7 @@ export default function LogoMarquee() {
     <div className="w-full overflow-hidden">
       <div ref={trackRef} className="flex items-center" style={{ width: 'max-content', gap: `${gap}px` }}>
         {allLogos.map((logo, i) => (
-          <div key={i} className="logo-slot shrink-0 flex items-center justify-center" style={{ height: `${100 * sizeScale}px` }}>
+          <div key={i} className="logo-slot shrink-0 flex items-center justify-center" style={{ height: `${containerHeight}px` }}>
             <img
               src={logo.src}
               alt=""
