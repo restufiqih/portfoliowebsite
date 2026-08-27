@@ -44,12 +44,16 @@ function HeroDesktopLayout({ titleRef, descRef, yearRef }) {
   )
 }
 
-function HeroMobileLayout({ titleRef, descRef, yearRef }) {
+function HeroMobileLayout({ titleRef, descRef, yearRef, lanyardEl }) {
   return (
     <>
       {/* First viewport: card (via Lanyard) + title */}
       <div style={{ minHeight: '100svh', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ flex: 1 }} />
+        <div style={{ flex: 1, position: 'relative', minHeight: 0 }}>
+          <div style={{ position: 'absolute', inset: 0 }}>
+            {lanyardEl}
+          </div>
+        </div>
         <div
           className="relative z-10"
           style={{ padding: '10px 24px 40px', display: 'flex', flexDirection: 'column', gap: 20, textAlign: 'center' }}
@@ -163,14 +167,28 @@ export default function Hero() {
           }
       }
     >
-      <div className={isMobileView ? 'absolute z-0' : 'absolute inset-0 z-0 -left-1/3'} style={isMobileView ? { top: 0, left: 0, right: 0, height: '100svh', transform: 'translateY(0px)' } : {}}>
-        <Lanyard position={[0, 0, isMobileView ? 15.5 : 15]} gravity={[0, -40, 0]} fov={isMobileView ? 21.5 : 16} />
-      </div>
-
-      {isMobileView
-        ? <HeroMobileLayout titleRef={titleRef} descRef={descRef} yearRef={yearRef} />
-        : <HeroDesktopLayout titleRef={titleRef} descRef={descRef} yearRef={yearRef} />
-      }
+      {isMobileView ? (
+        <HeroMobileLayout
+          titleRef={titleRef}
+          descRef={descRef}
+          yearRef={yearRef}
+          lanyardEl={
+            <Lanyard
+              position={[0, 0, 15.5]}
+              gravity={[0, -40, 0]}
+              fov={21.5}
+              height="100%"
+            />
+          }
+        />
+      ) : (
+        <>
+          <div className="absolute inset-0 z-0 -left-1/3">
+            <Lanyard position={[0, 0, 15]} gravity={[0, -40, 0]} fov={16} />
+          </div>
+          <HeroDesktopLayout titleRef={titleRef} descRef={descRef} yearRef={yearRef} />
+        </>
+      )}
     </section>
   )
 }

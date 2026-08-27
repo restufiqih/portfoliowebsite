@@ -14,7 +14,7 @@ import * as THREE from 'three';
 
 extend({ MeshLineGeometry, MeshLineMaterial });
 
-export default function Lanyard({ position = [0, 0, 30], gravity = [0, -40, 0], fov = 20, transparent = true, delay = 0 }) {
+export default function Lanyard({ position = [0, 0, 30], gravity = [0, -40, 0], fov = 20, transparent = true, delay = 0, height = '100vh' }) {
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
   const [visible, setVisible] = useState(false);
 
@@ -30,11 +30,13 @@ export default function Lanyard({ position = [0, 0, 30], gravity = [0, -40, 0], 
   }, [delay])
 
   return (
-    <div 
-      className="relative z-0 w-full h-screen flex justify-center items-center transform scale-100 origin-center"
+    <div
+      className="relative z-0 w-full flex justify-center items-center transform scale-100 origin-center"
       style={{
+        height,
         opacity: visible ? 1 : 0,
         transition: 'opacity 1s ease',
+        touchAction: 'none',
       }}
     >
       <Canvas
