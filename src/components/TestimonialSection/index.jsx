@@ -326,10 +326,10 @@ export default function TestimonialSection() {
           <img
             src={current.photo}
             alt={current.name}
-            className="w-[52px] h-[52px] rounded-full object-cover shrink-0"
+            className={`rounded-full object-cover shrink-0 ${isMobileView ? 'w-[46px] h-[46px]' : 'w-[52px] h-[52px]'}`}
           />
           <div className="flex flex-col gap-[2px]">
-            <p className="text-white text-[20px] font-light font-['Geist'] leading-[28px] tracking-[-0.4px]">
+            <p className={`text-white font-light font-['Geist'] tracking-[-0.4px] ${isMobileView ? 'text-[18px] leading-[26px]' : 'text-[20px] leading-[28px]'}`}>
               {current.name}
             </p>
             <p className="text-white/70 text-[16px] font-light font-['Geist'] leading-[22px]">
@@ -348,7 +348,7 @@ export default function TestimonialSection() {
           <p
             className="text-white font-light font-['Geist'] tracking-[-0.4px]"
             style={isMobileView
-              ? { fontSize: 20, lineHeight: '28px' }
+              ? { fontSize: 18, lineHeight: '26px' }
               : { fontSize: 16, lineHeight: '24px', ...cardTextStyle }
             }
           >
