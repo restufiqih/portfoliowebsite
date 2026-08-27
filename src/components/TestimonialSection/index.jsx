@@ -348,7 +348,7 @@ export default function TestimonialSection() {
           <p
             className="text-white font-light font-['Geist'] tracking-[-0.4px]"
             style={isMobileView
-              ? { fontSize: 18, lineHeight: '26px' }
+              ? { fontSize: 20, lineHeight: '28px' }
               : { fontSize: 16, lineHeight: '24px', ...cardTextStyle }
             }
           >
