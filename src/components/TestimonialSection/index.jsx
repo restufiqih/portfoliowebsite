@@ -255,8 +255,8 @@ export default function TestimonialSection() {
 
       if (isMobileView) {
         const mobileEls = [
-          { el: mobileTitleRef.current, y: 60 },
-          { el: mobileCardRef.current, y: 70 },
+          { el: mobileTitleRef.current, y: 30 },
+          { el: mobileCardRef.current, y: 36 },
         ]
         mobileEls.forEach(({ el, y }) => {
           if (!el) return
@@ -268,8 +268,8 @@ export default function TestimonialSection() {
               scrollTrigger: {
                 trigger: el,
                 start: 'top 95%',
-                end: 'top 60%',
-                scrub: 1,
+                end: 'top 55%',
+                scrub: 2,
               },
             }
           )
