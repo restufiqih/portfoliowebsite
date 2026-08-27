@@ -37,27 +37,30 @@ export default function TrustSection() {
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.set(titleRef.current, { y: animConfig.titleY })
-      gsap.set(cardRef.current, { y: animConfig.cardY })
-
-      gsap.to(titleRef.current, {
-        y: 0, ease: 'none',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 85%',
-          end: 'top 35%',
-          scrub: 0.3,
+      gsap.fromTo(titleRef.current,
+        { y: animConfig.titleY },
+        {
+          y: 0, ease: 'none',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top bottom',
+            end: 'top 35%',
+            scrub: 0.3,
+          }
         }
-      })
-      gsap.to(cardRef.current, {
-        y: 0, ease: 'none',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: animConfig.cardStart,
-          end: 'bottom 60%',
-          scrub: 0.3,
+      )
+      gsap.fromTo(cardRef.current,
+        { y: animConfig.cardY },
+        {
+          y: 0, ease: 'none',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: animConfig.cardStart,
+            end: 'bottom 60%',
+            scrub: 0.3,
+          }
         }
-      })
+      )
     }, sectionRef)
     return () => ctx.revert()
   }, [isMobileView, scale])
