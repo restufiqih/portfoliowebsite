@@ -52,7 +52,7 @@ function HeroMobileLayout({ titleRef, descRef, yearRef }) {
         <div style={{ flex: 1 }} />
         <div
           className="relative z-10"
-          style={{ padding: '10px 16px 0px', display: 'flex', flexDirection: 'column', gap: 20, textAlign: 'center' }}
+          style={{ padding: '10px 16px 24px', display: 'flex', flexDirection: 'column', gap: 20, textAlign: 'center' }}
         >
           <p
             ref={titleRef}
