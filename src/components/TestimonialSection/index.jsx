@@ -294,7 +294,7 @@ export default function TestimonialSection() {
     <div
       ref={(el) => { rightColRef.current = el; cardAreaRef.current = el }}
       className={isMobileView
-        ? 'relative w-full bg-black rounded-[30px] flex flex-col gap-[40px] pt-[20px] pb-[60px] overflow-hidden select-none'
+        ? 'relative w-full bg-black rounded-[30px] flex flex-col gap-[40px] pt-[20px] pb-[60px] px-[20px] overflow-hidden select-none'
         : 'relative flex-1 bg-black rounded-[30px] flex flex-col gap-[40px] pt-[20px] pb-[20px] px-[20px] overflow-hidden select-none cursor-pointer'
       }
       onMouseDown={!isMobileView ? handleHoldStart : undefined}
