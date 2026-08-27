@@ -22,60 +22,27 @@ const CloseIcon = () => (
 )
 
 function MobileMenu({ open, onClose }) {
-  const overlayRef = useRef(null)
-  const contentRef = useRef(null)
-
   useEffect(() => {
-    if (!overlayRef.current) return
-    if (open) {
-      document.body.style.overflow = 'hidden'
-      gsap.to(overlayRef.current, { opacity: 1, duration: 0.3, ease: 'power2.out' })
-      gsap.fromTo(contentRef.current, { x: '100%' }, { x: '0%', duration: 0.4, ease: 'power3.out' })
-    } else {
-      document.body.style.overflow = ''
-      gsap.to(overlayRef.current, { opacity: 0, duration: 0.25, ease: 'power2.in' })
-      gsap.to(contentRef.current, { x: '100%', duration: 0.3, ease: 'power3.in' })
-    }
+    document.body.style.overflow = open ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
   }, [open])
 
+  if (!open) return null
+
   return (
-    <div ref={overlayRef} className="fixed inset-0 z-[60] pointer-events-none" style={{ opacity: 0 }}>
-      <div
-        className={`absolute inset-0 bg-black/60 ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}
-        onClick={onClose}
-      />
-      <div
-        ref={contentRef}
-        className={`absolute right-0 top-0 h-full w-[280px] bg-[#0a0a0a] flex flex-col ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}
-        style={{ transform: 'translateX(100%)' }}
-      >
-        <div className="flex justify-end p-5">
-          <button onClick={onClose} className="text-white w-[44px] h-[44px] flex items-center justify-center cursor-pointer">
-            <CloseIcon />
-          </button>
-        </div>
-        <div className="flex items-center gap-[10px] px-6 pb-6">
-          <span className="relative flex h-2.5 w-2.5 items-center justify-center shrink-0">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
-          </span>
-          <span className="text-white text-[14px] font-light font-['Geist'] leading-[20px] whitespace-nowrap">
-            Available for Project
-          </span>
-        </div>
-        <div className="flex flex-col px-6 gap-2">
-          {navLinks.map(({ label, href }) => (
-            <a
-              key={label}
-              href={href}
-              onClick={(e) => { handleNavClick(e, href); onClose() }}
-              className="text-white text-[18px] font-light font-['Geist'] leading-[26px] py-3 border-b border-white/10 cursor-pointer"
-            >
-              {label}
-            </a>
-          ))}
-        </div>
+    <div className="fixed inset-0 z-[60] flex flex-col bg-[#1500E1]">
+      {/* Nav Items — top padding accounts for navbar header height (~74px) */}
+      <div className="flex flex-col items-center justify-start px-[24px] gap-[40px]" style={{ paddingTop: 114, paddingBottom: 40 }}>
+        {navLinks.map(({ label, href }, i) => (
+          <a
+            key={label}
+            href={href}
+            onClick={(e) => { handleNavClick(e, href); onClose() }}
+            className="text-white text-[20px] font-light font-['Geist'] leading-[28px] tracking-[-0.4px] text-center w-full cursor-pointer"
+          >
+            {label}
+          </a>
+        ))}
       </div>
     </div>
   )
@@ -158,7 +125,7 @@ function MobileNavbar({ stickyVisible, menuOpen, onMenuOpen, onMenuClose }) {
     <>
       <nav
         ref={navRef}
-        className="absolute top-0 left-0 w-full z-50"
+        className="absolute top-0 left-0 w-full z-[70]"
         style={{ background: 'transparent', padding: '20px 24px' }}
       >
         <div className="flex items-center justify-between">
@@ -174,17 +141,17 @@ function MobileNavbar({ stickyVisible, menuOpen, onMenuOpen, onMenuClose }) {
               </span>
             </div>
             <button
-              className="flex items-center justify-center h-[44px] cursor-pointer"
-              onClick={onMenuOpen}
+              className="text-white flex items-center justify-center h-[44px] cursor-pointer"
+              onClick={menuOpen ? onMenuClose : onMenuOpen}
             >
-              <HamburgerIcon color="white" />
+              {menuOpen ? <CloseIcon /> : <HamburgerIcon color="white" />}
             </button>
           </div>
         </div>
       </nav>
 
       <nav
-        className={`fixed top-0 left-0 w-full z-50 bg-white transition-transform duration-300 ease-out ${
+        className={`fixed top-0 left-0 w-full z-[70] bg-white transition-transform duration-300 ease-out ${
           stickyVisible ? 'translate-y-0' : '-translate-y-full'
         }`}
         style={{ padding: '4px 24px' }}
@@ -192,10 +159,10 @@ function MobileNavbar({ stickyVisible, menuOpen, onMenuOpen, onMenuClose }) {
         <div className="flex items-center justify-between">
           <DrawLogo size={30} color="#1500E1" />
           <button
-            className="flex items-center justify-center h-[44px] cursor-pointer"
-            onClick={onMenuOpen}
+            className="text-black flex items-center justify-center h-[44px] cursor-pointer"
+            onClick={menuOpen ? onMenuClose : onMenuOpen}
           >
-            <HamburgerIcon color="black" />
+            {menuOpen ? <CloseIcon /> : <HamburgerIcon color="black" />}
           </button>
         </div>
       </nav>
