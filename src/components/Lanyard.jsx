@@ -33,13 +33,12 @@ export default function Lanyard({ position = [0, 0, 30], gravity = [0, -40, 0], 
     <div
       className="relative z-0 w-full flex justify-center items-center transform scale-100 origin-center"
       style={{
-        height: 'calc(100svh / var(--app-zoom, 1))',
+        height: '100svh',
         opacity: visible ? 1 : 0,
         transition: 'opacity 1s ease',
         touchAction: 'none',
       }}
     >
-      <div style={{ width: '100%', height: '100%', maxWidth: 1440, margin: '0 auto' }}>
       <Canvas
         camera={{ position: position, fov: fov }}
         dpr={[1, isMobile ? 1.5 : 2]}
@@ -59,7 +58,6 @@ export default function Lanyard({ position = [0, 0, 30], gravity = [0, -40, 0], 
           <Lightformer intensity={10} color="white" position={[-10, 0, 14]} rotation={[0, Math.PI / 2, Math.PI / 3]} scale={[100, 10, 1]} />
         </Environment>
       </Canvas>
-      </div>
     </div>
   );
 }

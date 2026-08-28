@@ -138,12 +138,11 @@ export default function Hero() {
       ref={sectionRef}
       className={isMobileView
         ? 'relative w-full flex flex-col bg-[#1500E1]'
-        : 'relative w-full bg-[#1500E1] flex items-end'
+        : 'relative w-full h-screen bg-[#1500E1] flex items-end'
       }
       style={isMobileView
         ? {}
         : {
-            height: 'calc(100vh / var(--app-zoom, 1))',
             paddingLeft: fluid(36, 50),
             paddingRight: fluid(36, 50),
             paddingBottom: fluid(36, 50),

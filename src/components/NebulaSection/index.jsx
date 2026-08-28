@@ -393,14 +393,14 @@ export default function NebulaSection() {
         className="relative z-10 w-full flex flex-col items-center justify-center"
         style={isMobileView
           ? { gap: 60, paddingTop: 110, paddingBottom: 110, minHeight: '100vh' }
-          : { minHeight: 'calc(100vh / var(--app-zoom, 1))', gap: fluid(58, 80), paddingTop: fluid(216, 300), paddingBottom: fluid(58, 80), paddingLeft: 20, paddingRight: 20 }
+          : { minHeight: '100vh', gap: fluid(58, 80), paddingTop: fluid(216, 300), paddingBottom: fluid(58, 80), paddingLeft: 20, paddingRight: 20 }
         }
       >
         <p
           className="text-white font-light font-['Geist'] text-center"
           style={isMobileView
             ? { fontSize: 36, lineHeight: '42px', letterSpacing: '-0.72px' }
-            : { fontSize: fluid(50, 70), lineHeight: fluid(60, 84), letterSpacing: 'clamp(-2.8px, calc(-2.8px + 0 * (min(100vw, 1440px) - 1024px) / 416), -2.8px)' }
+            : { fontSize: fluid(50, 70), lineHeight: fluid(60, 84), letterSpacing: 'clamp(-2.8px, calc(-2.8px + 0 * (100vw - 1024px) / 416), -2.8px)' }
           }
         >
           {isMobileView ? (
