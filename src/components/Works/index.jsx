@@ -45,7 +45,7 @@ export default function Works() {
   const { isMobileView, isDesktop } = useBreakpoint()
 
   const slides = isMobileView ? mobileSlides : desktopSlides
-  const carouselSlides = [...slides, ...slides]
+  const carouselSlides = Array.from({ length: 5 }, () => slides).flat()
 
   const titleStyle = isMobileView
     ? { fontSize: 36, lineHeight: '42px', letterSpacing: '-0.72px' }
@@ -95,9 +95,9 @@ export default function Works() {
       }
 
       gsap.fromTo(titleRef.current,
-        { y: animConfig.titleY, ...(isMobileView ? {} : { opacity: 0 }) },
+        { y: animConfig.titleY },
         {
-          y: 0, ...(isMobileView ? {} : { opacity: 1 }), ease: 'none',
+          y: 0, ease: 'none',
           scrollTrigger: {
             trigger: sectionRef.current,
             start: 'top 80%',
@@ -108,9 +108,9 @@ export default function Works() {
       )
 
       gsap.fromTo(carouselRef.current,
-        { y: animConfig.carouselY, ...(isMobileView ? {} : { opacity: 0 }) },
+        { y: animConfig.carouselY },
         {
-          y: 0, ...(isMobileView ? {} : { opacity: 1 }), ease: 'none',
+          y: 0, ease: 'none',
           scrollTrigger: {
             trigger: sectionRef.current,
             start: 'top 60%',
@@ -121,9 +121,9 @@ export default function Works() {
       )
 
       gsap.fromTo(ctaRef.current,
-        { y: animConfig.ctaY, ...(isMobileView ? {} : { opacity: 0 }) },
+        { y: animConfig.ctaY },
         {
-          y: 0, ...(isMobileView ? {} : { opacity: 1 }), ease: 'none',
+          y: 0, ease: 'none',
           scrollTrigger: {
             trigger: carouselRef.current,
             start: 'top 60%',

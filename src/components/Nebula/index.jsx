@@ -20,8 +20,8 @@ gsap.registerPlugin(ScrollTrigger)
 
 const cardImages = [card5, card6, card9, card1, card2, card3, card4, card7, card8]
 
-const TOTAL_SETS = 5
-const TOTAL_CARDS = cardImages.length * TOTAL_SETS
+const TOTAL_SETS_MOBILE = 5
+const TOTAL_SETS_DESKTOP = 7
 
 function getArcConstants(bp, vw) {
   if (bp !== 'desktop') return { CARD_W: 180, CARD_H: 135, CARD_SPACING: 200, ARC_HALF_W: 500, ARC_DEPTH: 120 }
@@ -169,6 +169,8 @@ export default function Nebula() {
     return () => window.removeEventListener('resize', onResize)
   }, [])
   const arc = useMemo(() => getArcConstants(breakpoint, vw), [breakpoint, vw])
+  const TOTAL_SETS = breakpoint === 'desktop' ? TOTAL_SETS_DESKTOP : TOTAL_SETS_MOBILE
+  const TOTAL_CARDS = cardImages.length * TOTAL_SETS
   const STRIP_W = cardImages.length * arc.CARD_SPACING
 
   const checkInSection = useCallback(() => {
@@ -216,7 +218,7 @@ export default function Nebula() {
       let x = baseX - offset
       const totalW = STRIP_W * TOTAL_SETS
       x = ((x % totalW) + totalW) % totalW
-      x -= STRIP_W * 2.5
+      x -= STRIP_W * (TOTAL_SETS / 2)
 
       const norm = x / arc.ARC_HALF_W
       const y = -arc.ARC_DEPTH * norm * norm
@@ -231,7 +233,7 @@ export default function Nebula() {
       const zIndex = Math.round(x + arc.ARC_HALF_W)
       gsap.set(el, { x, y, opacity, scale: s, zIndex })
     })
-  }, [arc, STRIP_W, breakpoint])
+  }, [arc, STRIP_W, breakpoint, TOTAL_SETS])
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
