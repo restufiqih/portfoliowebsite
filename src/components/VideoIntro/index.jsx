@@ -679,7 +679,7 @@ export default function VideoIntro() {
           </p>
         </div>
 
-        <div ref={cardsRef} className={isMobileView ? 'flex flex-col w-full' : 'flex flex-col md:flex-row items-stretch w-full'} style={isMobileView ? { gap: 24 } : { gap: fluid(17, 24) }}>
+        <div ref={cardsRef} className={isMobileView ? 'flex flex-col w-full' : 'flex flex-col md:flex-row items-stretch w-full justify-center'} style={isMobileView ? { gap: 24 } : { gap: fluid(17, 24) }}>
           {services.map((svc) => (
             <ServiceCard key={svc.title} {...svc} isDesktop={isDesktop} s={isMobileView ? 1 : phoneScale} />
           ))}
