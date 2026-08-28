@@ -29,7 +29,7 @@ function getArcConstants(bp, vw) {
   const lerp = (min, max) => min + (max - min) * t
   return {
     CARD_W: lerp(240, 333), CARD_H: lerp(180, 250),
-    CARD_SPACING: lerp(260, 360), ARC_HALF_W: lerp(650, 900), ARC_DEPTH: lerp(158, 220),
+    CARD_SPACING: lerp(260, 360), ARC_HALF_W: lerp(750, 1050), ARC_DEPTH: lerp(158, 220),
   }
 }
 
@@ -221,15 +221,17 @@ export default function Nebula() {
       const norm = x / arc.ARC_HALF_W
       const y = -arc.ARC_DEPTH * norm * norm
 
-      const fadeStart = 1.15
+      const isDesktopArc = breakpoint === 'desktop'
+      const fadeStart = isDesktopArc ? 1.4 : 1.15
+      const fadeRange = isDesktopArc ? 0.5 : 0.35
       const absDist = Math.abs(x) / arc.ARC_HALF_W
-      const opacity = absDist > fadeStart ? Math.max(0, 1 - (absDist - fadeStart) / 0.35) : 1
-      const s = absDist > 1 ? Math.max(0.85, 1 - (absDist - 1) * 0.3) : 1
+      const opacity = absDist > fadeStart ? Math.max(0, 1 - (absDist - fadeStart) / fadeRange) : 1
+      const s = absDist > 1 ? Math.max(isDesktopArc ? 0.8 : 0.85, 1 - (absDist - 1) * (isDesktopArc ? 0.2 : 0.3)) : 1
 
       const zIndex = Math.round(x + arc.ARC_HALF_W)
       gsap.set(el, { x, y, opacity, scale: s, zIndex })
     })
-  }, [arc, STRIP_W])
+  }, [arc, STRIP_W, breakpoint])
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -252,13 +254,13 @@ export default function Nebula() {
       )
 
       gsap.fromTo(logoRef.current,
-        { y: 100 },
+        { y: isMobileView ? 50 : 100 },
         {
           y: 0, ease: 'none',
           scrollTrigger: {
             trigger: sectionRef.current,
-            start: 'top 85%',
-            end: 'bottom 35%',
+            start: isMobileView ? 'top 80%' : 'top 85%',
+            end: isMobileView ? 'top 20%' : 'bottom 35%',
             scrub: 1,
           },
         }
@@ -393,7 +395,7 @@ export default function Nebula() {
         className="relative z-10 w-full flex flex-col items-center justify-center"
         style={isMobileView
           ? { gap: 60, paddingTop: 110, paddingBottom: 110, minHeight: '100vh' }
-          : { height: 'calc(100vh / var(--app-zoom, 1))', gap: fluid(58, 80), paddingTop: fluid(216, 300), paddingBottom: fluid(58, 80), paddingLeft: 20, paddingRight: 20 }
+          : { minHeight: '100vh', gap: fluid(58, 80), paddingTop: fluid(216, 300), paddingBottom: fluid(58, 80), paddingLeft: 20, paddingRight: 20 }
         }
       >
         <p

@@ -96,8 +96,8 @@ function DesktopTrailImages({ sectionRef, imgRefs }) {
 }
 
 const orbitSrcs = [orbit1, orbit2, orbit3, orbit4, orbit5, orbit6]
-const IMG_W = 185
-const IMG_H = 139
+const IMG_W = 210
+const IMG_H = 158
 const ORBIT_RADIUS = 295
 const ORBIT_DURATION = 22
 
