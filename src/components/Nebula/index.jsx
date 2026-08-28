@@ -20,7 +20,7 @@ gsap.registerPlugin(ScrollTrigger)
 
 const cardImages = [card5, card6, card9, card1, card2, card3, card4, card7, card8]
 
-const TOTAL_SETS = 3
+const TOTAL_SETS = 5
 const TOTAL_CARDS = cardImages.length * TOTAL_SETS
 
 function getArcConstants(bp, vw) {
@@ -216,7 +216,7 @@ export default function Nebula() {
       let x = baseX - offset
       const totalW = STRIP_W * TOTAL_SETS
       x = ((x % totalW) + totalW) % totalW
-      x -= STRIP_W * 1.5
+      x -= STRIP_W * 2.5
 
       const norm = x / arc.ARC_HALF_W
       const y = -arc.ARC_DEPTH * norm * norm
