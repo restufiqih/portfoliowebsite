@@ -355,13 +355,14 @@ function BrandingMarquee({ s = 1 }) {
   )
 }
 
-function ServiceCard({ title, desc, bg, carousel, isDesktop, s = 1 }) {
+function ServiceCard({ title, desc, bg, carousel, isDesktop, isMobileView, s = 1, tabletMaxWidth }) {
   return (
     <div
-      className="flex-1 min-w-0 rounded-[30px] overflow-hidden flex flex-col gap-[30px] justify-center pt-[30px] pb-[50px]"
+      className={`flex-1 min-w-0 rounded-[30px] overflow-hidden flex flex-col gap-[30px] justify-center pt-[30px] pb-[50px]${isMobileView ? ' w-full' : ''}`}
       style={{
         backgroundImage: `url(${bg})`, backgroundSize: 'cover', backgroundPosition: 'center',
         ...(isDesktop ? { maxWidth: 400, borderRadius: fluid(22, 30), gap: fluid(22, 30), paddingTop: fluid(22, 30), paddingBottom: fluid(36, 50) } : {}),
+        ...(tabletMaxWidth ? { maxWidth: tabletMaxWidth } : {}),
       }}
     >
       {carousel === 'branding' ? <BrandingMarquee s={s} /> : <SlideCarousel type={carousel} s={s} />}
@@ -410,7 +411,7 @@ function DesktopSection1({ section1Ref, leftTextRef, phoneRef, rightTextRef, pho
   )
 }
 
-function MobileSection1({ section1Ref, phoneRef, textRef, phoneZoom, iframeRef, muted, toggleMute, replay, sidePad = 16 }) {
+function MobileSection1({ section1Ref, phoneRef, textRef, phoneZoom, iframeRef, muted, toggleMute, replay, sidePad = 16, isTablet = false }) {
   return (
     <section
       ref={section1Ref}
@@ -439,7 +440,7 @@ function MobileSection1({ section1Ref, phoneRef, textRef, phoneZoom, iframeRef, 
           className="text-black font-light font-['Geist'] text-center"
           style={{ fontSize: 30, lineHeight: '36px', letterSpacing: '-0.6px', padding: `0 ${sidePad}px` }}
         >
-          Every project is unique. That's how I approach them.
+          Every project is unique.{isTablet ? <br /> : ' '}That's how I approach them.
         </p>
       </div>
     </section>
@@ -471,9 +472,10 @@ export default function VideoIntro() {
   }, [isDesktop, vw])
 
   const phoneZoom = useMemo(() => {
+    if (isTablet) return (vw * 0.35) / 309.6
     if (isMobileView) return (vw * 0.70) / 309.6
     return Math.min((vw - 33) / 309.6, 1.2)
-  }, [isMobileView, vw])
+  }, [isMobileView, isTablet, vw])
 
   const headingStyle = isDesktop ? { fontSize: fluid(43, 60), lineHeight: fluid(50, 70) } : {}
   const sec1PadStyle = isDesktop ? { paddingLeft: fluid(72, 100), paddingRight: fluid(72, 100), paddingTop: fluid(72, 100), gap: fluid(72, 100) } : {}
@@ -524,7 +526,8 @@ export default function VideoIntro() {
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       gsap.to(section1Ref.current, {
-        yPercent: isMobileView ? 10 : 25,
+        yPercent: isTablet ? 30 : isMobileView ? 20 : 40,
+        scale: 0.95,
         ease: 'none',
         scrollTrigger: {
           trigger: section1Ref.current,
@@ -536,7 +539,7 @@ export default function VideoIntro() {
 
       if (isMobileView) {
         gsap.fromTo(phoneRef.current,
-          { y: 100 },
+          { y: isTablet ? 130 : 100 },
           {
             y: 0, ease: 'none',
             scrollTrigger: { trigger: section1Ref.current, start: 'top 80%', end: 'top 20%', scrub: 1.2 }
@@ -544,7 +547,7 @@ export default function VideoIntro() {
         )
 
         gsap.fromTo(textRef.current,
-          { y: 60, opacity: 0 },
+          { y: isTablet ? 80 : 60, opacity: 0 },
           {
             y: 0, opacity: 1, ease: 'none',
             scrollTrigger: { trigger: section1Ref.current, start: 'top 60%', end: 'top 10%', scrub: 1.2 }
@@ -594,7 +597,7 @@ export default function VideoIntro() {
       }
 
       gsap.fromTo(titleRef.current,
-        { y: isMobileView ? 15 : 100 },
+        { y: isTablet ? 50 : isMobileView ? 15 : 100 },
         { y: 0, ease: 'none',
           scrollTrigger: { trigger: titleRef.current, start: 'top 95%', end: 'top 50%', scrub: 1.2 } }
       )
@@ -604,7 +607,7 @@ export default function VideoIntro() {
         if (isMobileView) {
           cards.forEach((card, i) => {
             gsap.fromTo(card,
-              { y: 40 + i * 30 },
+              { y: isTablet ? (50 + i * 40) : (40 + i * 30) },
               {
                 y: 0, ease: 'none',
                 scrollTrigger: { trigger: cardsRef.current, start: 'top 90%', end: 'top 40%', scrub: 1.2 }
@@ -631,7 +634,7 @@ export default function VideoIntro() {
       }
     }, sectionRef)
     return () => ctx.revert()
-  }, [isMobileView, scale])
+  }, [isMobileView, isTablet, scale])
 
   return (
     <div ref={sectionRef}>
@@ -647,6 +650,7 @@ export default function VideoIntro() {
             toggleMute={toggleMute}
             replay={replay}
             sidePad={mobileSidePad}
+            isTablet={isTablet}
           />
         : <DesktopSection1
             section1Ref={section1Ref}
@@ -671,7 +675,7 @@ export default function VideoIntro() {
         }
         style={sec2PadStyle}
       >
-        <div ref={titleRef} className="flex flex-col items-center w-full" style={isMobileView ? { gap: 20 } : { maxWidth: fluid(389, 540), gap: fluid(22, 30) }}>
+        <div ref={titleRef} className="flex flex-col items-center w-full" style={isTablet ? { gap: 20, maxWidth: 500 } : isMobileView ? { gap: 20 } : { maxWidth: fluid(389, 540), gap: fluid(22, 30) }}>
           <div className="text-black font-light font-['Geist'] text-center" style={whatStyle}>
             <p>What I'm</p>
             <p>actually good at</p>
@@ -681,9 +685,9 @@ export default function VideoIntro() {
           </p>
         </div>
 
-        <div ref={cardsRef} className={isMobileView ? 'flex flex-col w-full' : 'flex flex-col md:flex-row items-stretch w-full justify-center'} style={isMobileView ? { gap: 24 } : { gap: fluid(17, 24) }}>
+        <div ref={cardsRef} className={isMobileView ? 'flex flex-col w-full items-center' : 'flex flex-col md:flex-row items-stretch w-full justify-center'} style={isMobileView ? { gap: 24 } : { gap: fluid(17, 24) }}>
           {services.map((svc) => (
-            <ServiceCard key={svc.title} {...svc} isDesktop={isDesktop} s={isMobileView ? 1 : phoneScale} />
+            <ServiceCard key={svc.title} {...svc} isDesktop={isDesktop} isMobileView={isMobileView} s={isMobileView ? 1 : phoneScale} tabletMaxWidth={isTablet ? 500 : undefined} />
           ))}
         </div>
       </section>

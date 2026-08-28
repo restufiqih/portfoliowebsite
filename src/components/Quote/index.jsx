@@ -101,7 +101,7 @@ const IMG_H = 158
 const ORBIT_RADIUS = 295
 const ORBIT_DURATION = 22
 
-function MobileFloatingImages({ sectionRef, imgRefs }) {
+function MobileFloatingImages({ sectionRef, imgRefs, orbitRadius = ORBIT_RADIUS, imgW = IMG_W, imgH = IMG_H }) {
   const orbitRef = useRef(null)
 
   useLayoutEffect(() => {
@@ -142,13 +142,13 @@ function MobileFloatingImages({ sectionRef, imgRefs }) {
     >
       {orbitSrcs.map((src, i) => {
         const angle = (i / orbitSrcs.length) * 2 * Math.PI
-        const x = Math.cos(angle) * ORBIT_RADIUS
-        const y = Math.sin(angle) * ORBIT_RADIUS
+        const x = Math.cos(angle) * orbitRadius
+        const y = Math.sin(angle) * orbitRadius
         return (
           <div
             key={i}
             className="absolute"
-            style={{ left: x - IMG_W / 2, top: y - IMG_H / 2, width: IMG_W, height: IMG_H }}
+            style={{ left: x - imgW / 2, top: y - imgH / 2, width: imgW, height: imgH }}
           >
             <div
               ref={(el) => { imgRefs.current[i] = el }}
@@ -170,11 +170,15 @@ export default function Quote() {
   const imgRefs = useRef([])
   const { isMobileView, isTablet, isDesktop, scale } = useBreakpoint()
 
-  const textAnimConfig = isMobileView
+  const textAnimConfig = isTablet
+    ? { topFrom: -45, topTo: 15, bottomFrom: 45, bottomTo: -15 }
+    : isMobileView
     ? { topFrom: -30, topTo: 10, bottomFrom: 30, bottomTo: -10 }
     : { topFrom: -60 * scale, topTo: 20 * scale, bottomFrom: 60 * scale, bottomTo: -20 * scale }
 
-  const textStyle = isMobileView
+  const textStyle = isTablet
+    ? { fontSize: 36, lineHeight: '42px', letterSpacing: '-1.2px' }
+    : isMobileView
     ? { fontSize: 32, lineHeight: '38px', letterSpacing: '-1.2px' }
     : { fontSize: fluid(65, 90), lineHeight: fluid(75, 104), letterSpacing: 'clamp(-3.6px, calc(-2.4px + -1.2 * (100vw - 1024px) / 416), -2.4px)' }
 
@@ -201,7 +205,7 @@ export default function Quote() {
 
     }, sectionRef)
     return () => ctx.revert()
-  }, [isMobileView, scale])
+  }, [isMobileView, isTablet, scale])
 
   return (
     <section
@@ -226,7 +230,7 @@ export default function Quote() {
     >
       {isMobileView ? (
         <div className="relative flex-1 flex items-center justify-center w-full min-h-0">
-          <MobileFloatingImages sectionRef={sectionRef} imgRefs={imgRefs} />
+          <MobileFloatingImages sectionRef={sectionRef} imgRefs={imgRefs} {...(isTablet ? { orbitRadius: 380, imgW: 260, imgH: 195 } : {})} />
           <div className="relative z-10 text-center" style={{ paddingLeft: isTablet ? 40 : 20, paddingRight: isTablet ? 40 : 20 }}>
             <p
               ref={topTextRef}

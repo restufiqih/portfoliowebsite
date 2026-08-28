@@ -44,7 +44,7 @@ function HeroDesktopLayout({ titleRef, descRef, yearRef }) {
   )
 }
 
-function HeroMobileLayout({ titleRef, descRef, yearRef, sidePad = 16 }) {
+function HeroMobileLayout({ titleRef, descRef, yearRef, sidePad = 16, textMaxWidth, showYear = false }) {
   return (
     <>
       {/* First viewport: card (via Lanyard) + title */}
@@ -52,25 +52,32 @@ function HeroMobileLayout({ titleRef, descRef, yearRef, sidePad = 16 }) {
         <div style={{ flex: 1 }} />
         <div
           className="relative z-10"
-          style={{ padding: `10px ${sidePad}px 30px`, display: 'flex', flexDirection: 'column', gap: 20, textAlign: 'center' }}
+          style={{ padding: `10px ${sidePad}px ${showYear ? 60 : 30}px`, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, textAlign: 'center' }}
         >
           <p
             ref={titleRef}
             className="text-white font-light font-['Geist']"
-            style={{ fontSize: 40, lineHeight: '46px', letterSpacing: '-0.8px' }}
+            style={{ fontSize: 40, lineHeight: '46px', letterSpacing: '-0.8px', ...(textMaxWidth ? { maxWidth: textMaxWidth } : {}) }}
           >
             Top Rated Plus UI/UX Designer on Upwork
           </p>
-          <p ref={descRef} className="font-light font-['Geist']" style={{ fontSize: 16, lineHeight: '22px' }}>
-            <span className="text-white">Good design shouldn't need an explanation. </span>
+          <p ref={descRef} className="font-light font-['Geist']" style={{ fontSize: 16, lineHeight: '22px', ...(textMaxWidth ? { maxWidth: textMaxWidth } : {}) }}>
+            <span className="text-white">Good design shouldn't need an explanation.</span>
+            {showYear && <br />}
+            {!showYear && ' '}
             <span style={{ color: 'rgba(255,255,255,0.7)' }}>
               I've spent <span className="text-white">6+ years</span> making sure it doesn't.
             </span>
           </p>
+          {showYear && (
+            <p ref={yearRef} className="text-white font-light font-['Geist'] leading-[22px]" style={{ fontSize: 16, marginTop: 20 }}>
+              Since 2020
+            </p>
+          )}
         </div>
       </div>
 
-      <span ref={yearRef} style={{ display: 'none' }} />
+      {!showYear && <span ref={yearRef} style={{ display: 'none' }} />}
     </>
   )
 }
@@ -152,11 +159,11 @@ export default function Hero() {
       }
     >
       <div className={isMobileView ? 'absolute z-0' : 'absolute inset-0 z-0 -left-1/3'} style={isMobileView ? { top: 0, left: 0, right: 0, height: '100svh', transform: 'translateY(-40px)' } : {}}>
-        <Lanyard position={[0, 0, isMobileView ? 15.5 : 15]} gravity={[0, -40, 0]} fov={isMobileView ? 21.5 : 16} />
+        <Lanyard position={[0, 0, isMobileView ? 15.5 : 15]} gravity={[0, -40, 0]} fov={isTablet ? 18 : isMobileView ? 21.5 : 16} />
       </div>
 
       {isMobileView
-        ? <HeroMobileLayout titleRef={titleRef} descRef={descRef} yearRef={yearRef} sidePad={isTablet ? 40 : 16} />
+        ? <HeroMobileLayout titleRef={titleRef} descRef={descRef} yearRef={yearRef} sidePad={isTablet ? 40 : 16} textMaxWidth={isTablet ? 500 : undefined} showYear={isTablet} />
         : <HeroDesktopLayout titleRef={titleRef} descRef={descRef} yearRef={yearRef} />
       }
     </section>

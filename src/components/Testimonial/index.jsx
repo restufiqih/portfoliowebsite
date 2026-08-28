@@ -255,8 +255,8 @@ export default function Testimonial() {
 
       if (isMobileView) {
         const mobileEls = [
-          { el: mobileTitleRef.current, y: 100 },
-          { el: mobileCardRef.current, y: 160 },
+          { el: mobileTitleRef.current, y: isTablet ? 130 : 100 },
+          { el: mobileCardRef.current, y: isTablet ? 200 : 160 },
         ]
         mobileEls.forEach(({ el, y }) => {
           if (!el) return
@@ -286,7 +286,7 @@ export default function Testimonial() {
       }
     }, sectionRef)
     return () => ctx.revert()
-  }, [isMobileView])
+  }, [isMobileView, isTablet])
 
   const current = testimonials[activeIndex]
 
@@ -322,7 +322,7 @@ export default function Testimonial() {
       />
 
       <div ref={contentRef} className="flex flex-col gap-[20px]">
-        <div className={`flex items-center ${isMobileView ? 'gap-[14px]' : 'gap-[20px] px-[20px]'}`}>
+        <div className={`flex items-center ${isMobileView ? (isTablet ? 'gap-[14px] px-[20px]' : 'gap-[14px]') : 'gap-[20px] px-[20px]'}`}>
           <img
             src={current.photo}
             alt={current.name}
@@ -340,7 +340,7 @@ export default function Testimonial() {
 
         <div
           className={isMobileView
-            ? 'flex items-center'
+            ? (isTablet ? 'flex items-center px-[20px]' : 'flex items-center')
             : 'flex items-center justify-center px-[20px] min-h-[200px]'
           }
           style={isMobileView ? { height: 360 } : cardHeightStyle}
@@ -361,7 +361,7 @@ export default function Testimonial() {
 
   const insightsBlock = (
     <div
-      className={`flex flex-col rounded-[30px] ${isMobileView ? 'gap-[20px] p-[20px]' : 'gap-[24px] p-[24px]'}`}
+      className={`flex flex-col rounded-[30px] ${isMobileView ? (isTablet ? 'gap-[20px] p-[24px]' : 'gap-[20px] p-[20px]') : 'gap-[24px] p-[24px]'}`}
       style={{ background: '#f2f4f7' }}
     >
       <p className="text-black text-[16px] font-light font-['Geist'] leading-[22px]">
@@ -406,7 +406,7 @@ export default function Testimonial() {
 
       {isMobileView ? (
         <div className="relative z-10 flex flex-col items-center w-full" style={{ paddingLeft: isTablet ? 40 : 16, paddingRight: isTablet ? 40 : 16 }}>
-          <div ref={mobileTitleRef} className="flex flex-col gap-[20px] text-center w-full" style={{ marginBottom: 50 }}>
+          <div ref={mobileTitleRef} className="flex flex-col gap-[20px] text-center w-full" style={{ marginBottom: 50, ...(isTablet ? { maxWidth: 500 } : {}) }}>
             <p className="text-black font-light font-['Geist']" style={{ fontSize: 36, lineHeight: '42px', letterSpacing: '-0.72px' }}>
               What clients say
             </p>
@@ -416,7 +416,7 @@ export default function Testimonial() {
             </div>
           </div>
 
-          <div ref={mobileCardRef} className="flex flex-col gap-[20px] w-full" style={{ marginBottom: 30 }}>
+          <div ref={mobileCardRef} className="flex flex-col gap-[20px] w-full" style={{ marginBottom: 30, ...(isTablet ? { maxWidth: 500 } : {}) }}>
             {testimonialCard}
             {insightsBlock}
           </div>

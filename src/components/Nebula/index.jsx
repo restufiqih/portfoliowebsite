@@ -24,7 +24,8 @@ const TOTAL_SETS_MOBILE = 5
 const TOTAL_SETS_DESKTOP = 7
 
 function getArcConstants(bp, vw) {
-  if (bp !== 'desktop') return { CARD_W: 180, CARD_H: 135, CARD_SPACING: 200, ARC_HALF_W: 500, ARC_DEPTH: 120 }
+  if (bp === 'tablet') return { CARD_W: 240, CARD_H: 180, CARD_SPACING: 260, ARC_HALF_W: 600, ARC_DEPTH: 150 }
+  if (bp === 'mobile') return { CARD_W: 180, CARD_H: 135, CARD_SPACING: 200, ARC_HALF_W: 500, ARC_DEPTH: 120 }
   const t = Math.min(1, Math.max(0, (vw - 1024) / 416))
   const lerp = (min, max) => min + (max - min) * t
   return {
@@ -256,13 +257,13 @@ export default function Nebula() {
       )
 
       gsap.fromTo(logoRef.current,
-        { y: isMobileView ? 50 : 100 },
+        { y: isTablet ? 75 : isMobileView ? 50 : 100 },
         {
           y: 0, ease: 'none',
           scrollTrigger: {
             trigger: sectionRef.current,
-            start: isMobileView ? 'top 80%' : 'top 85%',
-            end: isMobileView ? 'top 20%' : 'bottom 35%',
+            start: isTablet ? 'top 85%' : isMobileView ? 'top 80%' : 'top 85%',
+            end: isTablet ? 'top 15%' : isMobileView ? 'top 20%' : 'bottom 35%',
             scrub: 1,
           },
         }
@@ -336,7 +337,7 @@ export default function Nebula() {
         ))}
       </p>
 
-      <div style={{ height: isMobileView ? 80 : 40 }} />
+      <div style={{ height: isTablet ? 120 : isMobileView ? 80 : 40 }} />
 
       <div ref={logoRef} className="relative w-full" style={isDesktop ? { height: fluid(389, 540) } : { height: 440 }}>
         <a
@@ -407,20 +408,32 @@ export default function Nebula() {
             : { fontSize: fluid(50, 70), lineHeight: fluid(60, 84), letterSpacing: 'clamp(-2.8px, calc(-2.8px + 0 * (100vw - 1024px) / 416), -2.8px)' }
           }
         >
-          {isMobileView ? (
-            <>Let's talk about your next project.</>
-          ) : (
-            <>Let's talk about<br />your next project.</>
-          )}
+          <>Let's talk about<br />your next project.</>
+
         </p>
 
-        <div className="flex flex-wrap gap-[10px] items-center justify-center">
-          {ctaLinks.map(({ label, href }) => (
-            <CtaRollingButton key={label} label={label} href={href} mobile={isMobileView} />
-          ))}
-        </div>
+        {isTablet ? (
+          <div className="flex flex-col gap-[10px] items-center">
+            <div className="flex flex-wrap gap-[10px] items-center justify-center">
+              {ctaLinks.filter(l => !l.href.startsWith('mailto:')).map(({ label, href }) => (
+                <CtaRollingButton key={label} label={label} href={href} mobile />
+              ))}
+            </div>
+            {ctaLinks.filter(l => l.href.startsWith('mailto:')).map(({ label, href }) => (
+              <CtaRollingButton key={label} label={label} href={href} mobile />
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-wrap gap-[10px] items-center justify-center">
+            {ctaLinks.map(({ label, href }) => (
+              <CtaRollingButton key={label} label={label} href={href} mobile={isMobileView} />
+            ))}
+          </div>
+        )}
 
-        <div className={isMobileView
+        <div className={isTablet
+          ? "flex flex-row gap-[30px] items-center"
+          : isMobileView
           ? "flex flex-col gap-[20px] items-center"
           : "flex flex-col sm:flex-row gap-2 sm:gap-[30px] items-center"
         }>

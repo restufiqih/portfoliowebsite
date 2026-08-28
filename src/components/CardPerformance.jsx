@@ -56,7 +56,7 @@ export default function CardPerformance() {
   const wobbleTimer = useRef(null)
   const containerRef = useRef(null)
   const tooltipRef = useRef(null)
-  const { isMobileView, isDesktop } = useBreakpoint()
+  const { isMobile, isDesktop } = useBreakpoint()
   const [vw, setVw] = useState(typeof window !== 'undefined' ? window.innerWidth : 375)
 
   useEffect(() => {
@@ -90,7 +90,7 @@ export default function CardPerformance() {
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      if (isMobileView) {
+      if (isMobile) {
         const mobileIdCard = idCardMobileRef.current
         if (!mobileIdCard) return
         gsap.set(mobileIdCard, { rotation: -4 })
@@ -128,7 +128,7 @@ export default function CardPerformance() {
       if (wobbleTimer.current) clearTimeout(wobbleTimer.current)
       ctx.revert()
     }
-  }, [isMobileView])
+  }, [isMobile])
 
   return (
     <a
@@ -136,15 +136,15 @@ export default function CardPerformance() {
       target="_blank"
       rel="noopener noreferrer"
       ref={containerRef}
-      className="relative flex flex-col lg:flex-row isolate items-center overflow-visible cursor-pointer w-full"
+      className={`relative flex ${isMobile ? 'flex-col' : 'flex-row'} isolate items-center overflow-visible cursor-pointer w-full`}
       style={{
         backgroundImage: `url(${greenBg})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        maxWidth: isDesktop ? fluid(677, 950) : '950px',
-        padding: isDesktop ? fluid(50, 70) : 20,
-        gap: isDesktop ? fluid(14, 20) : 40,
-        borderRadius: isDesktop ? fluid(21, 30) : '30px',
+        maxWidth: isDesktop ? fluid(677, 950) : isMobile ? '950px' : 677,
+        padding: isDesktop ? fluid(50, 70) : isMobile ? 20 : 50,
+        gap: isDesktop ? fluid(14, 20) : isMobile ? 40 : 14,
+        borderRadius: isDesktop ? fluid(21, 30) : isMobile ? '30px' : 21,
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -152,26 +152,26 @@ export default function CardPerformance() {
     >
       <div
         ref={tooltipRef}
-        className="pointer-events-none absolute z-50 flex items-center justify-center rounded-[99px] bg-white/20 backdrop-blur-md px-[14px] py-[6px] text-[14px] font-light font-['Geist'] text-white tracking-[-0.28px] leading-[20px] whitespace-nowrap transition-opacity duration-200 hidden lg:flex"
+        className={`pointer-events-none absolute z-50 items-center justify-center rounded-[99px] bg-white/20 backdrop-blur-md px-[14px] py-[6px] text-[14px] font-light font-['Geist'] text-white tracking-[-0.28px] leading-[20px] whitespace-nowrap transition-opacity duration-200 ${isMobile ? 'hidden' : 'flex'}`}
         style={{ opacity: hovered ? 1 : 0 }}
       >
         See Upwork Profile
       </div>
       {/* Upwork Logo */}
-      <div className="absolute z-[3] hidden lg:flex flex-col items-start" style={{
-        top: isDesktop ? fluidNeg(24, 34) : '-34px',
+      <div className={`absolute z-[3] ${isMobile ? 'hidden' : 'flex'} flex-col items-start`} style={{
+        top: isDesktop ? fluidNeg(24, 34) : -24,
         right: 0,
-        paddingRight: isDesktop ? fluid(23, 32) : '32px',
+        paddingRight: isDesktop ? fluid(23, 32) : 23,
       }}>
         <img src={upworkLogo} alt="Upwork" style={{
-          width: isDesktop ? fluid(63, 88) : '88px',
-          height: isDesktop ? fluid(17, 24) : '24px',
+          width: isDesktop ? fluid(63, 88) : 63,
+          height: isDesktop ? fluid(17, 24) : 17,
         }} />
       </div>
 
       {/* Left — ID Card */}
       <div className="flex flex-1 items-center self-stretch">
-        {isMobileView ? (
+        {isMobile ? (
           <div className="flex justify-center items-center w-full" style={{ height: mobileCardHeight }}>
             <div
               ref={idCardMobileRef}
@@ -188,16 +188,16 @@ export default function CardPerformance() {
               ref={idCardRef}
               className="absolute transition-all duration-300 ease-out"
               style={hovered ? {
-                left: isDesktop ? fluidNeg(74, 104) : '-104.31px',
-                top: isDesktop ? fluidNeg(81, 114) : '-113.54px',
-                width: isDesktop ? fluid(330, 463) : '463px',
-                height: isDesktop ? fluid(214, 300) : '300px',
+                left: isDesktop ? fluidNeg(74, 104) : -74,
+                top: isDesktop ? fluidNeg(81, 114) : -81,
+                width: isDesktop ? fluid(330, 463) : 330,
+                height: isDesktop ? fluid(214, 300) : 214,
                 transform: 'rotate(0deg)',
               } : {
-                left: isDesktop ? fluidNeg(88, 124) : '-124.13px',
-                top: isDesktop ? fluidNeg(83, 117) : '-117.16px',
-                width: isDesktop ? fluid(330, 463) : '463px',
-                height: isDesktop ? fluid(214, 300) : '300px',
+                left: isDesktop ? fluidNeg(88, 124) : -88,
+                top: isDesktop ? fluidNeg(83, 117) : -83,
+                width: isDesktop ? fluid(330, 463) : 330,
+                height: isDesktop ? fluid(214, 300) : 214,
                 transform: 'rotate(-4.5deg)',
               }}
             >
@@ -208,7 +208,7 @@ export default function CardPerformance() {
       </div>
 
       {/* Right — Stats */}
-      <div className="flex flex-1 items-start min-w-0 relative z-[1] w-full lg:w-auto" style={{ gap: isDesktop ? fluid(14, 20) : 20 }}>
+      <div className={`flex flex-1 items-start min-w-0 relative z-[1] ${isMobile ? 'w-full' : 'w-auto'}`} style={{ gap: isDesktop ? fluid(14, 20) : 20 }}>
         <StatCard value="55+" label="Projects" isDesktop={isDesktop} />
         <StatCard value="5/5" label="Ratings" isDesktop={isDesktop} />
       </div>

@@ -21,7 +21,7 @@ const CloseIcon = () => (
   </svg>
 )
 
-function MobileMenu({ open, onClose }) {
+function MobileMenu({ open, onClose, isTablet }) {
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
@@ -32,7 +32,7 @@ function MobileMenu({ open, onClose }) {
   return (
     <div className="fixed inset-0 z-[60] flex flex-col bg-[#1500E1]">
       {/* Nav Items — top padding accounts for navbar header height (~74px) */}
-      <div className="flex flex-col items-center justify-start px-[16px] gap-[40px]" style={{ paddingTop: 114, paddingBottom: 40 }}>
+      <div className="flex flex-col items-center justify-start gap-[40px]" style={{ paddingLeft: isTablet ? 40 : 16, paddingRight: isTablet ? 40 : 16, paddingTop: 114, paddingBottom: 40 }}>
         {navLinks.map(({ label, href }, i) => (
           <a
             key={label}
@@ -113,7 +113,7 @@ function DesktopNavbar({ stickyVisible }) {
   )
 }
 
-function MobileNavbar({ stickyVisible, menuOpen, onMenuOpen, onMenuClose }) {
+function MobileNavbar({ stickyVisible, menuOpen, onMenuOpen, onMenuClose, isTablet }) {
   const navRef = useRef(null)
 
   useLayoutEffect(() => {
@@ -126,7 +126,7 @@ function MobileNavbar({ stickyVisible, menuOpen, onMenuOpen, onMenuClose }) {
       <nav
         ref={navRef}
         className="absolute top-0 left-0 w-full z-[70]"
-        style={{ background: 'transparent', padding: '20px 16px' }}
+        style={{ background: 'transparent', padding: `20px ${isTablet ? 40 : 16}px` }}
       >
         <div className="flex items-center justify-between">
           <DrawLogo size={34} color="white" />
@@ -154,7 +154,7 @@ function MobileNavbar({ stickyVisible, menuOpen, onMenuOpen, onMenuClose }) {
         className={`fixed top-0 left-0 w-full z-[70] bg-white transition-transform duration-300 ease-out ${
           stickyVisible ? 'translate-y-0' : '-translate-y-full'
         }`}
-        style={{ padding: '4px 16px' }}
+        style={{ padding: `4px ${isTablet ? 40 : 16}px` }}
       >
         <div className="flex items-center justify-between">
           <DrawLogo size={30} color="#1500E1" />
@@ -167,7 +167,7 @@ function MobileNavbar({ stickyVisible, menuOpen, onMenuOpen, onMenuClose }) {
         </div>
       </nav>
 
-      <MobileMenu open={menuOpen} onClose={onMenuClose} />
+      <MobileMenu open={menuOpen} onClose={onMenuClose} isTablet={isTablet} />
     </>
   )
 }
@@ -175,7 +175,7 @@ function MobileNavbar({ stickyVisible, menuOpen, onMenuOpen, onMenuClose }) {
 export default function Navbar() {
   const [stickyVisible, setStickyVisible] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const { isMobileView } = useBreakpoint()
+  const { isMobileView, isTablet } = useBreakpoint()
   const lastScrollY = useRef(0)
 
   useEffect(() => {
@@ -194,6 +194,7 @@ export default function Navbar() {
       menuOpen={menuOpen}
       onMenuOpen={() => setMenuOpen(true)}
       onMenuClose={() => setMenuOpen(false)}
+      isTablet={isTablet}
     />
   ) : (
     <DesktopNavbar stickyVisible={stickyVisible} />
