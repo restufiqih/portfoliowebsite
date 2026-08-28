@@ -9,7 +9,7 @@ import upworkLogo from '../../assets/card_performance/upwork-logo.svg'
 
 gsap.registerPlugin(ScrollTrigger)
 
-export default function TrustSection() {
+export default function Upwork() {
   const sectionRef = useRef(null)
   const titleRef = useRef(null)
   const cardRef = useRef(null)

@@ -86,7 +86,7 @@ function ProgressBar({ total, activeIndex, progress, onClickBar }) {
   )
 }
 
-export default function TestimonialSection() {
+export default function Testimonial() {
   const [activeIndex, setActiveIndex] = useState(0)
   const [barIndex, setBarIndex] = useState(0)
   const [progress, setProgress] = useState(0)

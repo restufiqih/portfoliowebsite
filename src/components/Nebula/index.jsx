@@ -149,7 +149,7 @@ function IndonesiaTime() {
   return <span>{time} (GMT+7)</span>
 }
 
-export default function NebulaSection() {
+export default function Nebula() {
   const sectionRef = useRef(null)
   const textRef = useRef(null)
   const logoRef = useRef(null)

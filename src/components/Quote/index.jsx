@@ -163,7 +163,7 @@ function MobileFloatingImages({ sectionRef, imgRefs }) {
   )
 }
 
-export default function OrbitSection() {
+export default function Quote() {
   const sectionRef = useRef(null)
   const topTextRef = useRef(null)
   const bottomTextRef = useRef(null)

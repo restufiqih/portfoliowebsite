@@ -361,7 +361,7 @@ function ServiceCard({ title, desc, bg, carousel, isDesktop, s = 1 }) {
       className="flex-1 min-w-0 rounded-[30px] overflow-hidden flex flex-col gap-[30px] justify-center pt-[30px] pb-[50px]"
       style={{
         backgroundImage: `url(${bg})`, backgroundSize: 'cover', backgroundPosition: 'center',
-        ...(isDesktop ? { borderRadius: fluid(22, 30), gap: fluid(22, 30), paddingTop: fluid(22, 30), paddingBottom: fluid(36, 50) } : {}),
+        ...(isDesktop ? { maxWidth: 400, borderRadius: fluid(22, 30), gap: fluid(22, 30), paddingTop: fluid(22, 30), paddingBottom: fluid(36, 50) } : {}),
       }}
     >
       {carousel === 'branding' ? <BrandingMarquee s={s} /> : <SlideCarousel type={carousel} s={s} />}
@@ -446,7 +446,7 @@ function MobileSection1({ section1Ref, phoneRef, textRef, phoneZoom, iframeRef, 
   )
 }
 
-export default function PhoneSection() {
+export default function VideoIntro() {
   const sectionRef = useRef(null)
   const leftTextRef = useRef(null)
   const rightTextRef = useRef(null)
