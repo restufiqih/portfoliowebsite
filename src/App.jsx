@@ -10,7 +10,7 @@ import Nebula from './components/Nebula'
 function FullBleed({ children, className, style }) {
   return (
     <div className={className} style={style}>
-      <div style={{ maxWidth: 1440, margin: '0 auto' }}>
+      <div className="w-full min-[1920px]:max-w-[1440px] min-[1920px]:mx-auto">
         {children}
       </div>
     </div>
