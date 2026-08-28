@@ -393,7 +393,7 @@ export default function NebulaSection() {
         className="relative z-10 w-full flex flex-col items-center justify-center"
         style={isMobileView
           ? { gap: 60, paddingTop: 110, paddingBottom: 110, minHeight: '100vh' }
-          : { minHeight: '100vh', gap: fluid(58, 80), paddingTop: fluid(216, 300), paddingBottom: fluid(58, 80), paddingLeft: 20, paddingRight: 20 }
+          : { height: 'calc(100vh / var(--app-zoom, 1))', gap: fluid(58, 80), paddingTop: fluid(216, 300), paddingBottom: fluid(58, 80), paddingLeft: 20, paddingRight: 20 }
         }
       >
         <p

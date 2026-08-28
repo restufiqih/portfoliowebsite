@@ -390,7 +390,7 @@ function DesktopSection1({ section1Ref, leftTextRef, phoneRef, rightTextRef, pho
       <div className="flex flex-col lg:flex-row gap-8 items-center px-5 pt-12" style={{ minHeight: fluid(483, 670), ...sec1PadStyle }}>
         <div ref={leftTextRef} className="flex-1 flex flex-col justify-center min-w-0 order-1 lg:order-none">
           <p className="text-black text-[28px] sm:text-[36px] font-light font-['Geist'] tracking-[-1.2px] md:tracking-[-2.4px]" style={headingStyle}>
-            Every project is unique,
+            Every project<br />is unique,
           </p>
         </div>
 
