@@ -42,7 +42,7 @@ export default function Works() {
   const titleRef = useRef(null)
   const carouselRef = useRef(null)
   const ctaRef = useRef(null)
-  const { isMobileView, isDesktop } = useBreakpoint()
+  const { isMobileView, isTablet, isDesktop } = useBreakpoint()
 
   const slides = isMobileView ? mobileSlides : desktopSlides
   const carouselSlides = Array.from({ length: 5 }, () => slides).flat()
@@ -215,7 +215,7 @@ export default function Works() {
           </div>
         </div>
 
-        <div ref={ctaRef} className="flex flex-col items-center" style={isMobileView ? { gap: 30, padding: '0 16px' } : { gap: 30, padding: '0 20px' }}>
+        <div ref={ctaRef} className="flex flex-col items-center" style={isMobileView ? { gap: 30, padding: `0 ${isTablet ? 40 : 16}px` } : { gap: 30, padding: '0 20px' }}>
           {isMobileView ? (
             <p className="text-center font-light font-['Geist']" style={ctaStyle}>
               <span className="text-black">Curious about the process behind these designs? </span>

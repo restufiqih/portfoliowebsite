@@ -161,7 +161,7 @@ export default function Nebula() {
   const tooltipRef = useRef(null)
   const mouseClient = useRef({ x: 0, y: 0 })
   const isInSection = useRef(false)
-  const { breakpoint, isMobile, isMobileView, isDesktop } = useBreakpoint()
+  const { breakpoint, isMobile, isTablet, isMobileView, isDesktop } = useBreakpoint()
   const [vw, setVw] = useState(typeof window !== 'undefined' ? window.innerWidth : 1440)
   useEffect(() => {
     const onResize = () => setVw(window.innerWidth)
@@ -174,7 +174,7 @@ export default function Nebula() {
   const STRIP_W = cardImages.length * arc.CARD_SPACING
 
   const checkInSection = useCallback(() => {
-    if (isMobile || !sectionRef.current || !tooltipRef.current || !ctaRef.current) return
+    if (isMobileView || !sectionRef.current || !tooltipRef.current || !ctaRef.current) return
     const rect = sectionRef.current.getBoundingClientRect()
     const ctaRect = ctaRef.current.getBoundingClientRect()
     const { x, y } = mouseClient.current
@@ -304,7 +304,7 @@ export default function Nebula() {
         : 'relative overflow-hidden flex flex-col items-center pt-[0]'
       }
       style={isMobileView
-        ? { background: '#511ece', paddingTop: 0, paddingLeft: 16, paddingRight: 16 }
+        ? { background: '#511ece', paddingTop: 0, paddingLeft: isTablet ? 40 : 16, paddingRight: isTablet ? 40 : 16 }
         : { background: '#511ece' }
       }
       onMouseMove={handleMouseMove}
@@ -389,7 +389,7 @@ export default function Nebula() {
         ))}
       </div>
 
-      {isMobileView && <div style={{ height: 100 }} />}
+      {isMobileView ? <div style={{ height: 100 }} /> : <div style={{ height: 200 }} />}
 
       {/* CTA / Contact */}
       <div
@@ -397,7 +397,7 @@ export default function Nebula() {
         className="relative z-10 w-full flex flex-col items-center justify-center"
         style={isMobileView
           ? { gap: 60, paddingTop: 110, paddingBottom: 110, minHeight: '100vh' }
-          : { minHeight: '100vh', gap: fluid(58, 80), paddingTop: fluid(216, 300), paddingBottom: fluid(58, 80), paddingLeft: 20, paddingRight: 20 }
+          : { height: '100vh', gap: 80, paddingTop: 110, paddingBottom: 110, paddingLeft: 20, paddingRight: 20 }
         }
       >
         <p

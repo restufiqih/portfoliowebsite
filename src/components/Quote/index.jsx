@@ -168,7 +168,7 @@ export default function Quote() {
   const topTextRef = useRef(null)
   const bottomTextRef = useRef(null)
   const imgRefs = useRef([])
-  const { isMobileView, isDesktop, scale } = useBreakpoint()
+  const { isMobileView, isTablet, isDesktop, scale } = useBreakpoint()
 
   const textAnimConfig = isMobileView
     ? { topFrom: -30, topTo: 10, bottomFrom: 30, bottomTo: -10 }
@@ -227,7 +227,7 @@ export default function Quote() {
       {isMobileView ? (
         <div className="relative flex-1 flex items-center justify-center w-full min-h-0">
           <MobileFloatingImages sectionRef={sectionRef} imgRefs={imgRefs} />
-          <div className="relative z-10 text-center px-5">
+          <div className="relative z-10 text-center" style={{ paddingLeft: isTablet ? 40 : 20, paddingRight: isTablet ? 40 : 20 }}>
             <p
               ref={topTextRef}
               className="font-light font-['Geist']"

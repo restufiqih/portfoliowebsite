@@ -410,7 +410,7 @@ function DesktopSection1({ section1Ref, leftTextRef, phoneRef, rightTextRef, pho
   )
 }
 
-function MobileSection1({ section1Ref, phoneRef, textRef, phoneZoom, iframeRef, muted, toggleMute, replay }) {
+function MobileSection1({ section1Ref, phoneRef, textRef, phoneZoom, iframeRef, muted, toggleMute, replay, sidePad = 16 }) {
   return (
     <section
       ref={section1Ref}
@@ -437,7 +437,7 @@ function MobileSection1({ section1Ref, phoneRef, textRef, phoneZoom, iframeRef, 
         <p
           ref={textRef}
           className="text-black font-light font-['Geist'] text-center"
-          style={{ fontSize: 30, lineHeight: '36px', letterSpacing: '-0.6px', padding: '0 16px' }}
+          style={{ fontSize: 30, lineHeight: '36px', letterSpacing: '-0.6px', padding: `0 ${sidePad}px` }}
         >
           Every project is unique. That's how I approach them.
         </p>
@@ -457,7 +457,7 @@ export default function VideoIntro() {
   const cardsRef = useRef(null)
   const iframeRef = useRef(null)
   const [muted, setMuted] = useState(true)
-  const { scale, isMobileView, isDesktop } = useBreakpoint()
+  const { scale, isMobileView, isTablet, isDesktop } = useBreakpoint()
   const [vw, setVw] = useState(typeof window !== 'undefined' ? window.innerWidth : 1440)
   useEffect(() => {
     const onResize = () => setVw(window.innerWidth)
@@ -477,8 +477,9 @@ export default function VideoIntro() {
 
   const headingStyle = isDesktop ? { fontSize: fluid(43, 60), lineHeight: fluid(50, 70) } : {}
   const sec1PadStyle = isDesktop ? { paddingLeft: fluid(72, 100), paddingRight: fluid(72, 100), paddingTop: fluid(72, 100), gap: fluid(72, 100) } : {}
+  const mobileSidePad = isTablet ? 40 : 16
   const sec2PadStyle = isMobileView
-    ? { borderRadius: '40px 40px 0 0', padding: '80px 16px', gap: 50 }
+    ? { borderRadius: '40px 40px 0 0', padding: `80px ${mobileSidePad}px`, gap: 50 }
     : { ...{ padding: fluid(72, 100), gap: fluid(36, 50) }, borderRadius: `${fluid(43, 60)} ${fluid(43, 60)} 0 0`, marginTop: `clamp(-60px, calc(-43px - 17 * (100vw - 1024px) / 416), -43px)` }
 
   const whatStyle = isMobileView
@@ -645,6 +646,7 @@ export default function VideoIntro() {
             muted={muted}
             toggleMute={toggleMute}
             replay={replay}
+            sidePad={mobileSidePad}
           />
         : <DesktopSection1
             section1Ref={section1Ref}

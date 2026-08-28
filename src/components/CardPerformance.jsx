@@ -56,7 +56,7 @@ export default function CardPerformance() {
   const wobbleTimer = useRef(null)
   const containerRef = useRef(null)
   const tooltipRef = useRef(null)
-  const { isMobile, isDesktop } = useBreakpoint()
+  const { isMobileView, isDesktop } = useBreakpoint()
   const [vw, setVw] = useState(typeof window !== 'undefined' ? window.innerWidth : 375)
 
   useEffect(() => {
@@ -90,7 +90,7 @@ export default function CardPerformance() {
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      if (isMobile) {
+      if (isMobileView) {
         const mobileIdCard = idCardMobileRef.current
         if (!mobileIdCard) return
         gsap.set(mobileIdCard, { rotation: -4 })
@@ -128,7 +128,7 @@ export default function CardPerformance() {
       if (wobbleTimer.current) clearTimeout(wobbleTimer.current)
       ctx.revert()
     }
-  }, [isMobile])
+  }, [isMobileView])
 
   return (
     <a
@@ -136,7 +136,7 @@ export default function CardPerformance() {
       target="_blank"
       rel="noopener noreferrer"
       ref={containerRef}
-      className="relative flex flex-col md:flex-row isolate items-center overflow-visible cursor-pointer w-full"
+      className="relative flex flex-col lg:flex-row isolate items-center overflow-visible cursor-pointer w-full"
       style={{
         backgroundImage: `url(${greenBg})`,
         backgroundSize: 'cover',
@@ -152,13 +152,13 @@ export default function CardPerformance() {
     >
       <div
         ref={tooltipRef}
-        className="pointer-events-none absolute z-50 flex items-center justify-center rounded-[99px] bg-white/20 backdrop-blur-md px-[14px] py-[6px] text-[14px] font-light font-['Geist'] text-white tracking-[-0.28px] leading-[20px] whitespace-nowrap transition-opacity duration-200 hidden md:flex"
+        className="pointer-events-none absolute z-50 flex items-center justify-center rounded-[99px] bg-white/20 backdrop-blur-md px-[14px] py-[6px] text-[14px] font-light font-['Geist'] text-white tracking-[-0.28px] leading-[20px] whitespace-nowrap transition-opacity duration-200 hidden lg:flex"
         style={{ opacity: hovered ? 1 : 0 }}
       >
         See Upwork Profile
       </div>
       {/* Upwork Logo */}
-      <div className="absolute z-[3] hidden md:flex flex-col items-start" style={{
+      <div className="absolute z-[3] hidden lg:flex flex-col items-start" style={{
         top: isDesktop ? fluidNeg(24, 34) : '-34px',
         right: 0,
         paddingRight: isDesktop ? fluid(23, 32) : '32px',
@@ -171,7 +171,7 @@ export default function CardPerformance() {
 
       {/* Left — ID Card */}
       <div className="flex flex-1 items-center self-stretch">
-        {isMobile ? (
+        {isMobileView ? (
           <div className="flex justify-center items-center w-full" style={{ height: mobileCardHeight }}>
             <div
               ref={idCardMobileRef}
@@ -208,7 +208,7 @@ export default function CardPerformance() {
       </div>
 
       {/* Right — Stats */}
-      <div className="flex flex-1 items-start min-w-0 relative z-[1] w-full md:w-auto" style={{ gap: isDesktop ? fluid(14, 20) : 20 }}>
+      <div className="flex flex-1 items-start min-w-0 relative z-[1] w-full lg:w-auto" style={{ gap: isDesktop ? fluid(14, 20) : 20 }}>
         <StatCard value="55+" label="Projects" isDesktop={isDesktop} />
         <StatCard value="5/5" label="Ratings" isDesktop={isDesktop} />
       </div>

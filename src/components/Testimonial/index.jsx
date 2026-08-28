@@ -98,7 +98,7 @@ export default function Testimonial() {
   const mobileTitleRef = useRef(null)
   const mobileCardRef = useRef(null)
   const mobileBtnRef = useRef(null)
-  const { isMobileView, isDesktop } = useBreakpoint()
+  const { isMobileView, isTablet, isDesktop } = useBreakpoint()
 
   const sectionStyle = isDesktop ? {
     gap: fluid(58, 80), paddingTop: fluid(130, 180), paddingBottom: fluid(288, 400),
@@ -405,7 +405,7 @@ export default function Testimonial() {
       </div>
 
       {isMobileView ? (
-        <div className="relative z-10 flex flex-col items-center w-full px-[16px]">
+        <div className="relative z-10 flex flex-col items-center w-full" style={{ paddingLeft: isTablet ? 40 : 16, paddingRight: isTablet ? 40 : 16 }}>
           <div ref={mobileTitleRef} className="flex flex-col gap-[20px] text-center w-full" style={{ marginBottom: 50 }}>
             <p className="text-black font-light font-['Geist']" style={{ fontSize: 36, lineHeight: '42px', letterSpacing: '-0.72px' }}>
               What clients say

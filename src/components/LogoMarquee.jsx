@@ -36,11 +36,11 @@ const allLogos = [...logos, ...logos]
 
 export default function LogoMarquee() {
   const trackRef = useRef(null)
-  const { isMobile, isTablet } = useBreakpoint()
-  const sizeScale = isMobile ? 0.9 : isTablet ? 0.85 : 1
-  const slotHeight = isMobile ? 90 : 100
-  const gap = isMobile ? 60 : isTablet ? 50 : 70
-  const containerHeight = isMobile ? slotHeight : slotHeight * sizeScale
+  const { isMobileView } = useBreakpoint()
+  const sizeScale = isMobileView ? 0.9 : 1
+  const slotHeight = isMobileView ? 90 : 100
+  const gap = isMobileView ? 60 : 70
+  const containerHeight = isMobileView ? slotHeight : slotHeight * sizeScale
 
   useLayoutEffect(() => {
     const track = trackRef.current

@@ -44,7 +44,7 @@ function HeroDesktopLayout({ titleRef, descRef, yearRef }) {
   )
 }
 
-function HeroMobileLayout({ titleRef, descRef, yearRef }) {
+function HeroMobileLayout({ titleRef, descRef, yearRef, sidePad = 16 }) {
   return (
     <>
       {/* First viewport: card (via Lanyard) + title */}
@@ -52,7 +52,7 @@ function HeroMobileLayout({ titleRef, descRef, yearRef }) {
         <div style={{ flex: 1 }} />
         <div
           className="relative z-10"
-          style={{ padding: '10px 16px 24px', display: 'flex', flexDirection: 'column', gap: 20, textAlign: 'center' }}
+          style={{ padding: `10px ${sidePad}px 30px`, display: 'flex', flexDirection: 'column', gap: 20, textAlign: 'center' }}
         >
           <p
             ref={titleRef}
@@ -80,7 +80,7 @@ export default function Hero() {
   const titleRef = useRef(null)
   const descRef = useRef(null)
   const yearRef = useRef(null)
-  const { isMobileView, scale } = useBreakpoint()
+  const { isMobileView, isTablet, scale } = useBreakpoint()
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -156,7 +156,7 @@ export default function Hero() {
       </div>
 
       {isMobileView
-        ? <HeroMobileLayout titleRef={titleRef} descRef={descRef} yearRef={yearRef} />
+        ? <HeroMobileLayout titleRef={titleRef} descRef={descRef} yearRef={yearRef} sidePad={isTablet ? 40 : 16} />
         : <HeroDesktopLayout titleRef={titleRef} descRef={descRef} yearRef={yearRef} />
       }
     </section>
