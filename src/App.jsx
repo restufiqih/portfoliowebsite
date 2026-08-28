@@ -11,7 +11,7 @@ function FullBleed({ children, className, style, noConstrain }) {
   return (
     <div className={className} style={style}>
       {noConstrain ? children : (
-        <div style={{ maxWidth: 1440, margin: '0 auto' }}>
+        <div style={{ maxWidth: 1920, margin: '0 auto' }}>
           {children}
         </div>
       )}
