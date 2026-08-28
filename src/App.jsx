@@ -7,27 +7,29 @@ import Quote from './components/Quote'
 import Testimonial from './components/Testimonial'
 import Nebula from './components/Nebula'
 
-function FullBleed({ children, className, style }) {
+function FullBleed({ children, className, style, noConstrain }) {
   return (
     <div className={className} style={style}>
-      <div className="w-full min-[2560px]:max-w-[1440px] min-[2560px]:mx-auto">
-        {children}
-      </div>
+      {noConstrain ? children : (
+        <div style={{ maxWidth: 1440, margin: '0 auto' }}>
+          {children}
+        </div>
+      )}
     </div>
   )
 }
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-black" style={{ overflowX: 'hidden' }}>
       <FullBleed className="bg-[#1500E1]">
         <Navbar />
         <Hero />
       </FullBleed>
-      <FullBleed className="bg-white">
+      <FullBleed className="bg-white" noConstrain>
         <Works />
       </FullBleed>
-      <FullBleed className="bg-white">
+      <FullBleed className="bg-white" noConstrain>
         <VideoIntro />
       </FullBleed>
       <FullBleed className="bg-white">
@@ -36,10 +38,10 @@ export default function App() {
       <FullBleed style={{ background: 'linear-gradient(to bottom, #e8e4f5 0%, #f5f3fa 50%, #ffffff 100%)' }}>
         <Quote />
       </FullBleed>
-      <FullBleed className="bg-white">
+      <FullBleed className="bg-white" noConstrain>
         <Testimonial />
       </FullBleed>
-      <FullBleed style={{ background: '#511ece' }}>
+      <FullBleed style={{ background: '#511ece' }} noConstrain>
         <Nebula />
       </FullBleed>
     </div>
