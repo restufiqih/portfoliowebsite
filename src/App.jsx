@@ -32,7 +32,7 @@ export default function App() {
       <FullBleed className="bg-white" noConstrain>
         <VideoIntro />
       </FullBleed>
-      <FullBleed className="bg-white">
+      <FullBleed className="bg-white" noConstrain>
         <Upwork />
       </FullBleed>
       <FullBleed style={{ background: 'linear-gradient(to bottom, #e8e4f5 0%, #f5f3fa 50%, #ffffff 100%)' }}>
