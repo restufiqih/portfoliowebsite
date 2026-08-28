@@ -24,12 +24,12 @@ export default function Upwork() {
       }
 
   const headingStyle = isMobile || isTablet
-    ? { fontSize: 36, lineHeight: '42px', letterSpacing: '-0.72px' }
-    : { fontSize: fluid(43, 60), lineHeight: fluid(50, 70) }
+    ? { fontSize: 36, lineHeight: '42px', letterSpacing: 0 }
+    : { fontSize: fluid(43, 60), lineHeight: fluid(50, 70), letterSpacing: -3 }
 
   const bodyStyle = isMobile || isTablet
-    ? { fontSize: 16, lineHeight: '22px' }
-    : { fontSize: fluid(14, 18), lineHeight: fluid(19, 26) }
+    ? { fontSize: 16, lineHeight: '22px', letterSpacing: 0 }
+    : { fontSize: fluid(14, 18), lineHeight: fluid(19, 26), letterSpacing: 0 }
 
   const animConfig = isMobile
     ? { titleY: 80, cardY: 100, cardStart: 'top 80%', cardEnd: 'top 20%' }
@@ -75,7 +75,7 @@ export default function Upwork() {
       }
       style={sectionStyle}
     >
-      <div ref={titleRef} className="flex flex-col items-center w-full" style={{ gap: 30, maxWidth: isTablet ? 500 : 684 }}>
+      <div ref={titleRef} className="flex flex-col items-center w-full" style={{ gap: 30, maxWidth: isTablet ? 500 : fluid(490, 684) }}>
         <div className="flex flex-col items-center text-center w-full" style={{ gap: 20 }}>
           <p className="text-black font-light font-['Geist'] text-center" style={headingStyle}>
             Every great partnership starts with trust

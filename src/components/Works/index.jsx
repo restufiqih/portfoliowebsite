@@ -48,12 +48,12 @@ export default function Works() {
   const carouselSlides = Array.from({ length: 5 }, () => slides).flat()
 
   const titleStyle = isMobileView
-    ? { fontSize: 36, lineHeight: '42px', letterSpacing: '-0.72px' }
-    : { fontSize: fluid(43, 60), lineHeight: fluid(50, 70) }
+    ? { fontSize: 36, lineHeight: '42px', letterSpacing: 0 }
+    : { fontSize: fluid(43, 60), lineHeight: fluid(50, 70), letterSpacing: -3 }
 
   const ctaStyle = isMobileView
-    ? { fontSize: 20, lineHeight: '28px', letterSpacing: '-0.4px' }
-    : { fontSize: fluid(17, 24), lineHeight: fluid(24, 34) }
+    ? { fontSize: 20, lineHeight: '28px', letterSpacing: 0 }
+    : { fontSize: fluid(17, 24), lineHeight: fluid(24, 34), letterSpacing: 0 }
 
   const contentStyle = isMobileView
     ? { paddingTop: 200, paddingBottom: 80, gap: 60 }

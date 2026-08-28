@@ -49,7 +49,7 @@ const ctaLinks = [
 function CtaRollingButton({ label, href, mobile }) {
   const [hovered, setHovered] = useState(false)
   const textClass = mobile
-    ? "text-white text-[18px] font-light font-['Geist'] leading-[26px] tracking-[-0.36px] whitespace-nowrap block"
+    ? "text-white text-[18px] font-light font-['Geist'] leading-[26px] tracking-[0px] whitespace-nowrap block"
     : "text-white text-[16px] font-light font-['Geist'] leading-[22px] whitespace-nowrap block"
   const lineH = mobile ? 26 : 22
   return (
@@ -314,7 +314,7 @@ export default function Nebula() {
       {!isMobileView && (
         <div
           ref={tooltipRef}
-          className="pointer-events-none absolute z-50 flex items-center justify-center rounded-[99px] bg-white/20 backdrop-blur-md px-[14px] py-[6px] text-[14px] font-light font-['Geist'] text-white tracking-[-0.28px] leading-[20px] whitespace-nowrap"
+          className="pointer-events-none absolute z-50 flex items-center justify-center rounded-[99px] bg-white/20 backdrop-blur-md px-[14px] py-[6px] text-[14px] font-light font-['Geist'] text-white tracking-[0px] leading-[20px] whitespace-nowrap"
           style={{ opacity: 0 }}
         >
           Click logo to learn more
@@ -324,8 +324,8 @@ export default function Nebula() {
       <p
         ref={textRef}
         className={isMobileView
-          ? "text-center max-w-[520px] text-[24px] font-light font-['Geist'] leading-[34px] tracking-[-0.48px]"
-          : "text-center max-w-[520px] px-4 text-[24px] font-light font-['Geist'] leading-[34px] tracking-[-0.48px]"
+          ? "text-center max-w-[520px] text-[24px] font-light font-['Geist'] leading-[34px] tracking-[0px]"
+          : "text-center max-w-[520px] px-4 text-[24px] font-light font-['Geist'] leading-[34px] tracking-[0px]"
         }
       >
         {line1.map((w, i) => (
@@ -404,8 +404,8 @@ export default function Nebula() {
         <p
           className="text-white font-light font-['Geist'] text-center"
           style={isMobileView
-            ? { fontSize: 36, lineHeight: '42px', letterSpacing: '-0.72px' }
-            : { fontSize: fluid(50, 70), lineHeight: fluid(60, 84), letterSpacing: 'clamp(-2.8px, calc(-2.8px + 0 * (100vw - 1024px) / 416), -2.8px)' }
+            ? { fontSize: 36, lineHeight: '42px', letterSpacing: 0 }
+            : { fontSize: fluid(50, 70), lineHeight: fluid(60, 84), letterSpacing: -4 }
           }
         >
           <>Let's talk about<br />your next project.</>
@@ -443,15 +443,15 @@ export default function Nebula() {
               <span className="relative inline-flex rounded-full bg-white" style={{ width: 7, height: 7 }} />
             </span>
             <span className={isMobileView
-              ? "text-white text-[18px] font-light font-['Geist'] leading-[26px] tracking-[-0.36px]"
-              : "text-white text-[16px] font-light font-['Geist'] leading-[26px] tracking-[-0.36px]"
+              ? "text-white text-[18px] font-light font-['Geist'] leading-[26px] tracking-[0px]"
+              : "text-white text-[16px] font-light font-['Geist'] leading-[26px] tracking-[0px]"
             }>
               Based in Indonesia
             </span>
           </div>
           <span className={isMobileView
-            ? "text-white text-[18px] font-light font-['Geist'] leading-[26px] tracking-[-0.36px]"
-            : "text-white text-[16px] font-light font-['Geist'] leading-[26px] tracking-[-0.36px]"
+            ? "text-white text-[18px] font-light font-['Geist'] leading-[26px] tracking-[0px]"
+            : "text-white text-[16px] font-light font-['Geist'] leading-[26px] tracking-[0px]"
           }>
             <IndonesiaTime />
           </span>
@@ -460,7 +460,7 @@ export default function Nebula() {
         <div className="flex flex-col gap-[20px] items-center">
           <FooterLogo />
           {isMobileView && (
-            <span className="text-white text-[18px] font-light font-['Geist'] leading-[26px] tracking-[-0.36px]">
+            <span className="text-white text-[18px] font-light font-['Geist'] leading-[26px] tracking-[0px]">
               Akhdiyat Restu Fiqih
             </span>
           )}

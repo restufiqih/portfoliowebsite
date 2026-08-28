@@ -103,9 +103,9 @@ export default function Testimonial() {
   const sectionStyle = isDesktop ? {
     gap: fluid(58, 80), paddingTop: fluid(130, 180), paddingBottom: fluid(288, 400),
   } : {}
-  const titleStyle = isDesktop ? { fontSize: fluid(43, 60), lineHeight: fluid(50, 70) } : {}
-  const bodyStyle = isDesktop ? { fontSize: fluid(14, 18), lineHeight: fluid(19, 26) } : {}
-  const cardTextStyle = isDesktop ? { fontSize: fluid(14, 20), lineHeight: fluid(20, 28) } : {}
+  const titleStyle = isDesktop ? { fontSize: fluid(43, 60), lineHeight: fluid(50, 70), letterSpacing: -3 } : {}
+  const bodyStyle = isDesktop ? { fontSize: fluid(14, 18), lineHeight: fluid(19, 26), letterSpacing: 0 } : {}
+  const cardTextStyle = isDesktop ? { fontSize: fluid(14, 20), lineHeight: fluid(20, 28), letterSpacing: 0 } : {}
   const cardHeightStyle = isDesktop ? { minHeight: fluid(281, 390) } : {}
   const contentPadStyle = isDesktop ? { paddingLeft: fluid(72, 100), paddingRight: fluid(72, 100) } : {}
 
@@ -308,7 +308,7 @@ export default function Testimonial() {
       {!isMobileView && (
         <div
           ref={tooltipRef}
-          className="pointer-events-none absolute z-50 flex items-center justify-center rounded-[99px] bg-white/20 backdrop-blur-md px-[14px] py-[6px] text-[14px] font-light font-['Geist'] text-white tracking-[-0.28px] leading-[20px] whitespace-nowrap transition-opacity duration-200"
+          className="pointer-events-none absolute z-50 flex items-center justify-center rounded-[99px] bg-white/20 backdrop-blur-md px-[14px] py-[6px] text-[14px] font-light font-['Geist'] text-white tracking-[0px] leading-[20px] whitespace-nowrap transition-opacity duration-200"
           style={{ opacity: isDesktop && cardHovered && !holding ? 1 : 0 }}
         >
           Hold to pause
@@ -329,7 +329,7 @@ export default function Testimonial() {
             className={`rounded-full object-cover shrink-0 ${isMobileView ? 'w-[46px] h-[46px]' : 'w-[52px] h-[52px]'}`}
           />
           <div className="flex flex-col gap-[2px]">
-            <p className={`text-white font-light font-['Geist'] tracking-[-0.4px] ${isMobileView ? 'text-[18px] leading-[26px]' : 'text-[20px] leading-[28px]'}`}>
+            <p className={`text-white font-light font-['Geist'] ${isMobileView ? 'text-[18px] leading-[26px]' : 'text-[20px] leading-[28px]'}`}>
               {current.name}
             </p>
             <p className="text-white/70 text-[16px] font-light font-['Geist'] leading-[22px]">
@@ -346,7 +346,7 @@ export default function Testimonial() {
           style={isMobileView ? { height: 360 } : cardHeightStyle}
         >
           <p
-            className="text-white font-light font-['Geist'] tracking-[-0.4px]"
+            className="text-white font-light font-['Geist']"
             style={isMobileView
               ? { fontSize: 18, lineHeight: '26px' }
               : { fontSize: 16, lineHeight: '24px', ...cardTextStyle }
@@ -407,7 +407,7 @@ export default function Testimonial() {
       {isMobileView ? (
         <div className="relative z-10 flex flex-col items-center w-full" style={{ paddingLeft: isTablet ? 40 : 16, paddingRight: isTablet ? 40 : 16 }}>
           <div ref={mobileTitleRef} className="flex flex-col gap-[20px] text-center w-full" style={{ marginBottom: 50, ...(isTablet ? { maxWidth: 500 } : {}) }}>
-            <p className="text-black font-light font-['Geist']" style={{ fontSize: 36, lineHeight: '42px', letterSpacing: '-0.72px' }}>
+            <p className="text-black font-light font-['Geist']" style={{ fontSize: 36, lineHeight: '42px', letterSpacing: 0 }}>
               What clients say
             </p>
             <div className="text-black text-[16px] font-light font-['Geist'] leading-[22px]">
@@ -434,10 +434,10 @@ export default function Testimonial() {
 
             <div ref={leftColRef} className="flex-1 flex flex-col gap-[20px] md:gap-[30px] justify-center">
               <div className="flex flex-col gap-[16px] md:gap-[20px]">
-                <p className="text-black text-[28px] sm:text-[36px] font-light font-['Geist'] tracking-[-1.2px] md:tracking-[-2.4px]" style={titleStyle}>
+                <p className="text-black text-[28px] sm:text-[36px] font-light font-['Geist']" style={titleStyle}>
                   What clients say
                 </p>
-                <div className="text-black text-[16px] font-light font-['Geist'] leading-[24px] tracking-[-0.36px]" style={bodyStyle}>
+                <div className="text-black text-[16px] font-light font-['Geist'] leading-[24px]" style={bodyStyle}>
                   <p>My clients explain it better than I ever could.</p>
                   <p>Their experiences say more about my work than any description I could write.</p>
                 </div>

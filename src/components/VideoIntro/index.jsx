@@ -527,7 +527,6 @@ export default function VideoIntro() {
     const ctx = gsap.context(() => {
       gsap.to(section1Ref.current, {
         yPercent: isTablet ? 30 : isMobileView ? 20 : 40,
-        scale: 0.95,
         ease: 'none',
         scrollTrigger: {
           trigger: section1Ref.current,

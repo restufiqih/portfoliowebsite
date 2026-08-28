@@ -177,10 +177,10 @@ export default function Quote() {
     : { topFrom: -60 * scale, topTo: 20 * scale, bottomFrom: 60 * scale, bottomTo: -20 * scale }
 
   const textStyle = isTablet
-    ? { fontSize: 36, lineHeight: '42px', letterSpacing: '-1.2px' }
+    ? { fontSize: 36, lineHeight: '42px', letterSpacing: 0 }
     : isMobileView
-    ? { fontSize: 32, lineHeight: '38px', letterSpacing: '-1.2px' }
-    : { fontSize: fluid(65, 90), lineHeight: fluid(75, 104), letterSpacing: 'clamp(-3.6px, calc(-2.4px + -1.2 * (100vw - 1024px) / 416), -2.4px)' }
+    ? { fontSize: 32, lineHeight: '38px', letterSpacing: 0 }
+    : { fontSize: fluid(65, 90), lineHeight: fluid(75, 104), letterSpacing: -4 }
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {

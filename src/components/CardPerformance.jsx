@@ -29,7 +29,7 @@ function StatCard({ value, label, isDesktop }) {
         WebkitMaskComposite: 'xor',
       }} />
       <div className="flex flex-col gap-[6px] text-center w-full">
-        <p className="text-white font-light font-['Geist'] tracking-[-0.6px]"
+        <p className="text-white font-light font-['Geist'] tracking-[0px]"
           style={{
             fontSize: isDesktop ? fluid(22, 30) : 30,
             lineHeight: isDesktop ? fluid(26, 36) : '36px',
@@ -152,7 +152,7 @@ export default function CardPerformance() {
     >
       <div
         ref={tooltipRef}
-        className={`pointer-events-none absolute z-50 items-center justify-center rounded-[99px] bg-white/20 backdrop-blur-md px-[14px] py-[6px] text-[14px] font-light font-['Geist'] text-white tracking-[-0.28px] leading-[20px] whitespace-nowrap transition-opacity duration-200 ${isMobile ? 'hidden' : 'flex'}`}
+        className={`pointer-events-none absolute z-50 items-center justify-center rounded-[99px] bg-white/20 backdrop-blur-md px-[14px] py-[6px] text-[14px] font-light font-['Geist'] text-white tracking-[0px] leading-[20px] whitespace-nowrap transition-opacity duration-200 ${isMobile ? 'hidden' : 'flex'}`}
         style={{ opacity: hovered ? 1 : 0 }}
       >
         See Upwork Profile

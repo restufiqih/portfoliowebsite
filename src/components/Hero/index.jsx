@@ -8,8 +8,8 @@ import { fluid } from '../../utils/fluid'
 gsap.registerPlugin(ScrollTrigger)
 
 function HeroDesktopLayout({ titleRef, descRef, yearRef }) {
-  const titleStyle = { fontSize: fluid(50, 70), lineHeight: fluid(60, 84) }
-  const descStyle = { fontSize: fluid(16, 22), lineHeight: fluid(22, 30) }
+  const titleStyle = { fontSize: fluid(50, 70), lineHeight: fluid(60, 84), letterSpacing: -4 }
+  const descStyle = { fontSize: fluid(16, 22), lineHeight: fluid(22, 30), letterSpacing: 0 }
 
   return (
     <>
@@ -27,7 +27,7 @@ function HeroDesktopLayout({ titleRef, descRef, yearRef }) {
 
       <div className="relative z-10 h-full flex flex-col items-end justify-center shrink-0 pointer-events-none" style={{ gap: fluid(28, 40), paddingTop: fluid(29, 41) }}>
         <div className="flex-1 flex flex-col items-end justify-center">
-          <div ref={descRef} className="text-right font-light font-['Geist'] tracking-[-0.44px]" style={descStyle}>
+          <div ref={descRef} className="text-right font-light font-['Geist']" style={descStyle}>
             <p className="text-white whitespace-nowrap">
               Good design shouldn't need an explanation.
             </p>
@@ -57,7 +57,7 @@ function HeroMobileLayout({ titleRef, descRef, yearRef, sidePad = 16, textMaxWid
           <p
             ref={titleRef}
             className="text-white font-light font-['Geist']"
-            style={{ fontSize: 40, lineHeight: '46px', letterSpacing: '-0.8px', ...(textMaxWidth ? { maxWidth: textMaxWidth } : {}) }}
+            style={{ fontSize: 40, lineHeight: '46px', letterSpacing: 0, ...(textMaxWidth ? { maxWidth: textMaxWidth } : {}) }}
           >
             Top Rated Plus UI/UX Designer on Upwork
           </p>
