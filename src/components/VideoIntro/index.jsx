@@ -358,9 +358,10 @@ function BrandingMarquee({ s = 1 }) {
 function ServiceCard({ title, desc, bg, carousel, isDesktop, isMobileView, s = 1, tabletMaxWidth }) {
   return (
     <div
-      className={`flex-1 min-w-0 rounded-[30px] overflow-hidden flex flex-col gap-[30px] justify-center pt-[30px] pb-[50px]${isMobileView ? ' w-full' : ''}`}
+      className={`flex-1 min-w-0 rounded-[30px] overflow-hidden flex flex-col gap-[30px] justify-center${isMobileView ? ' w-full' : ''}`}
       style={{
         backgroundImage: `url(${bg})`, backgroundSize: 'cover', backgroundPosition: 'center',
+        paddingTop: 30, paddingBottom: 50,
         ...(isDesktop ? { maxWidth: 400, borderRadius: fluid(22, 30), gap: fluid(22, 30), paddingTop: fluid(22, 30), paddingBottom: fluid(36, 50) } : {}),
         ...(tabletMaxWidth ? { maxWidth: tabletMaxWidth } : {}),
       }}
