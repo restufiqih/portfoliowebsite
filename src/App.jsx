@@ -1,3 +1,4 @@
+import { useState, useCallback } from 'react'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import Works from './components/Works'
@@ -6,6 +7,7 @@ import Upwork from './components/Upwork'
 import Quote from './components/Quote'
 import Testimonial from './components/Testimonial'
 import Nebula from './components/Nebula'
+import LoadingScreen from './components/LoadingScreen'
 
 function FullBleed({ children, className, style, noConstrain }) {
   return (
@@ -20,11 +22,17 @@ function FullBleed({ children, className, style, noConstrain }) {
 }
 
 export default function App() {
+  const [loading, setLoading] = useState(true)
+  const [lanyardReady, setLanyardReady] = useState(false)
+  const handleFinish = useCallback(() => setLoading(false), [])
+  const handleLanyardReady = useCallback(() => setLanyardReady(true), [])
+
   return (
     <div className="min-h-screen bg-black" style={{ overflowX: 'hidden' }}>
+      {loading && <LoadingScreen onFinish={handleFinish} lanyardReady={lanyardReady} />}
       <FullBleed className="bg-[#1500E1]">
         <Navbar />
-        <Hero />
+        <Hero onReady={handleLanyardReady} />
       </FullBleed>
       <FullBleed className="bg-white" noConstrain>
         <Works />

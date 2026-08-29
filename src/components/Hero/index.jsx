@@ -82,7 +82,7 @@ function HeroMobileLayout({ titleRef, descRef, yearRef, sidePad = 16, textMaxWid
   )
 }
 
-export default function Hero() {
+export default function Hero({ onReady }) {
   const sectionRef = useRef(null)
   const titleRef = useRef(null)
   const descRef = useRef(null)
@@ -159,7 +159,7 @@ export default function Hero() {
       }
     >
       <div className={isMobileView ? 'absolute z-0' : 'absolute inset-0 z-0 -left-1/3'} style={isMobileView ? { top: 0, left: 0, right: 0, height: '100svh', transform: 'translateY(-40px)' } : {}}>
-        <Lanyard position={[0, 0, isMobileView ? 15.5 : 15]} gravity={[0, -40, 0]} fov={isTablet ? 18 : isMobileView ? 21.5 : 16} />
+        <Lanyard position={[0, 0, isMobileView ? 15.5 : 15]} gravity={[0, -40, 0]} fov={isTablet ? 18 : isMobileView ? 21.5 : 16} onReady={onReady} />
       </div>
 
       {isMobileView
