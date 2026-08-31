@@ -93,7 +93,7 @@ function DesktopNavbar({ stickyVisible }) {
             <NavLink label="Work" href="#works" />
             <NavLink label="Services" href="#services" />
             <NavLink label="KPI's" href="#kpis" />
-            <NavLink label="About" href="#/about" />
+            <NavLink label="About" href="/about" />
             <NavLink label="Contact Me" href="#contact" />
           </div>
         </div>
@@ -119,7 +119,7 @@ function DesktopNavbar({ stickyVisible }) {
             <NavLink label="Work" href="#works" dark />
             <NavLink label="Services" href="#services" dark />
             <NavLink label="KPI's" href="#kpis" dark />
-            <NavLink label="About" href="#/about" dark />
+            <NavLink label="About" href="/about" dark />
             <NavLink label="Contact Me" href="#contact" dark />
           </div>
         </div>

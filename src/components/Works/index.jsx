@@ -544,6 +544,7 @@ export default function Works() {
 
   return (
     <section
+      id="works"
       ref={sectionRef}
       className="relative bg-white overflow-clip"
       style={isMobile ? { marginBottom: -1 } : {}}

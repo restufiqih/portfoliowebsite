@@ -10,6 +10,7 @@ import Testimonial from './components/Testimonial'
 import Nebula from './components/Nebula'
 import About from './components/About'
 import LoadingScreen from './components/LoadingScreen'
+import { currentPath, ROUTE_CHANGE } from './utils/route'
 
 function FullBleed({ children, className, style, noConstrain }) {
   return (
@@ -23,18 +24,18 @@ function FullBleed({ children, className, style, noConstrain }) {
   )
 }
 
-// Hash routing rather than a router dependency: the navbar already speaks in
-// hrefs, so a route is just an href that starts with '#/'.
-function useHashRoute() {
-  const [hash, setHash] = useState(() =>
-    typeof window === 'undefined' ? '' : window.location.hash
-  )
+function usePathRoute() {
+  const [path, setPath] = useState(currentPath)
   useEffect(() => {
-    const onChange = () => setHash(window.location.hash)
-    window.addEventListener('hashchange', onChange)
-    return () => window.removeEventListener('hashchange', onChange)
+    const onChange = () => setPath(currentPath())
+    window.addEventListener('popstate', onChange)
+    window.addEventListener(ROUTE_CHANGE, onChange)
+    return () => {
+      window.removeEventListener('popstate', onChange)
+      window.removeEventListener(ROUTE_CHANGE, onChange)
+    }
   }, [])
-  return hash
+  return path
 }
 
 function Home({ onLanyardReady }) {
@@ -67,8 +68,9 @@ function Home({ onLanyardReady }) {
 }
 
 export default function App() {
-  const hash = useHashRoute()
-  const isAbout = hash.startsWith('#/about')
+  const path = usePathRoute()
+  // Trailing slash tolerated, so /about and /about/ are the same page.
+  const isAbout = path.replace(/\/+$/, '') === '/about'
 
   // The loading screen waits on the hero's 3D lanyard, which only the landing
   // page mounts — so it is a landing-page concern only.

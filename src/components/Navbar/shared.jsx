@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef } from 'react'
 import { gsap } from 'gsap'
+import { navigate } from '../../utils/route'
 
 const LOGO_PATH = 'M14.7154 42.3748C1.54019 32.2843 0.588755 13.3454 11.4143 5.4378C21.2922 -1.7776 32.6681 3.39301 33.9261 12.5464C35.1841 21.6999 31.5484 28.0369 23.6533 29.0979C15.7581 30.1589 16.2638 21.2466 23.6533 21.2466C29.8555 21.2466 36.832 26.8025 41.1261 30.0591'
 
@@ -26,11 +27,14 @@ export function DrawLogo({ size = 44, color = 'white', className }) {
 
   return (
     <a
-      href="#"
+      href="/"
       onClick={(e) => {
         e.preventDefault()
-        if (window.location.hash.startsWith('#/')) window.location.hash = ''
-        window.scrollTo({ top: 0, behavior: window.location.hash ? 'auto' : 'smooth' })
+        const wasAway = window.location.pathname !== '/'
+        navigate('/')
+        // Gliding only makes sense when we were already on this page; coming
+        // back from another one starts at the top anyway.
+        window.scrollTo({ top: 0, behavior: wasAway ? 'auto' : 'smooth' })
       }}
       onMouseEnter={handleMouseEnter}
       className={`block shrink-0 ${className || ''}`}
@@ -46,8 +50,8 @@ export const navLinks = [
   { label: 'Work', href: '#works' },
   { label: 'Services', href: '#services' },
   { label: "KPI's", href: '#kpis' },
-  // A route rather than an anchor: hrefs starting with '#/' switch pages.
-  { label: 'About', href: '#/about' },
+  // A route rather than an anchor: hrefs starting with '/' switch pages.
+  { label: 'About', href: '/about' },
   { label: 'Contact Me', href: '#contact' },
 ]
 
@@ -55,8 +59,8 @@ export function handleNavClick(e, href) {
   e.preventDefault()
 
   // Route links move between pages and always land at the top.
-  if (href.startsWith('#/')) {
-    if (window.location.hash !== href) window.location.hash = href
+  if (href.startsWith('/')) {
+    navigate(href)
     window.scrollTo({ top: 0, behavior: 'auto' })
     return
   }
@@ -76,7 +80,7 @@ export function handleNavClick(e, href) {
   // scroll once the section has actually mounted. The scroll is deferred two
   // more frames past that: switching routes resets the scroll position, and
   // starting before that lands would just be undone.
-  window.location.hash = ''
+  navigate('/')
   const id = href.replace('#', '')
   let tries = 0
   // Timers rather than animation frames: a backgrounded tab stops painting and
