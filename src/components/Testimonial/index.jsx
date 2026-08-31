@@ -5,7 +5,7 @@ import LogoMarquee from '../LogoMarquee'
 import RollingButton from '../RollingButton'
 import testimonialBg from '../../assets/testimonial-bg.png'
 import { useBreakpoint } from '../../hooks/useBreakpoint'
-import { fluid } from '../../utils/fluid'
+import { fluid, scaleTablet } from '../../utils/fluid'
 
 import client1Photo from '../../assets/clients/client1.png'
 import client2Photo from '../../assets/clients/client2.png'
@@ -99,6 +99,9 @@ export default function Testimonial() {
   const mobileCardRef = useRef(null)
   const mobileBtnRef = useRef(null)
   const { isMobileView, isTablet, isDesktop } = useBreakpoint()
+  // Tablet holds its 768 figures and grows them with the viewport from there.
+  const s = (n) => (isTablet ? scaleTablet(n) : n)
+  const sl = (n) => (isTablet ? scaleTablet(n) : `${n}px`)
 
   const sectionStyle = isDesktop ? {
     gap: fluid(58, 80), paddingTop: fluid(130, 180), paddingBottom: fluid(288, 400),
@@ -321,18 +324,28 @@ export default function Testimonial() {
         onClickBar={jumpTo}
       />
 
-      <div ref={contentRef} className="flex flex-col gap-[20px]">
-        <div className={`flex items-center ${isMobileView ? (isTablet ? 'gap-[14px] px-[20px]' : 'gap-[14px]') : 'gap-[20px] px-[20px]'}`}>
+      <div ref={contentRef} className="flex flex-col" style={{ gap: s(20) }}>
+        <div
+          className="flex items-center"
+          style={{
+            gap: isMobileView ? s(14) : 20,
+            ...(isTablet ? { paddingLeft: s(20), paddingRight: s(20) } : !isMobileView ? { paddingLeft: 20, paddingRight: 20 } : {}),
+          }}
+        >
           <img
             src={current.photo}
             alt={current.name}
-            className={`rounded-full object-cover shrink-0 ${isMobileView ? 'w-[46px] h-[46px]' : 'w-[52px] h-[52px]'}`}
+            className="rounded-full object-cover shrink-0"
+            style={{ width: isMobileView ? s(46) : 52, height: isMobileView ? s(46) : 52 }}
           />
-          <div className="flex flex-col gap-[2px]">
-            <p className={`text-white font-light font-['Geist'] ${isMobileView ? 'text-[18px] leading-[26px]' : 'text-[20px] leading-[28px]'}`}>
+          <div className="flex flex-col" style={{ gap: s(2) }}>
+            <p
+              className="text-white font-light font-['Geist']"
+              style={{ fontSize: isMobileView ? s(18) : 20, lineHeight: isMobileView ? sl(26) : '28px' }}
+            >
               {current.name}
             </p>
-            <p className="text-white/70 text-[16px] font-light font-['Geist'] leading-[22px]">
+            <p className="text-white/70 font-light font-['Geist']" style={{ fontSize: s(16), lineHeight: sl(22) }}>
               {current.company}
             </p>
           </div>
@@ -340,15 +353,17 @@ export default function Testimonial() {
 
         <div
           className={isMobileView
-            ? (isTablet ? 'flex items-center px-[20px]' : 'flex items-center')
+            ? 'flex items-center'
             : 'flex items-center justify-center px-[20px] min-h-[200px]'
           }
-          style={isMobileView ? { height: 360 } : cardHeightStyle}
+          style={isMobileView
+            ? { height: s(360), ...(isTablet ? { paddingLeft: s(20), paddingRight: s(20) } : {}) }
+            : cardHeightStyle}
         >
           <p
             className="text-white font-light font-['Geist']"
             style={isMobileView
-              ? { fontSize: 18, lineHeight: '26px' }
+              ? { fontSize: s(18), lineHeight: sl(26) }
               : { fontSize: 16, lineHeight: '24px', ...cardTextStyle }
             }
           >
@@ -361,19 +376,30 @@ export default function Testimonial() {
 
   const insightsBlock = (
     <div
-      className={`flex flex-col rounded-[30px] ${isMobileView ? (isTablet ? 'gap-[20px] p-[24px]' : 'gap-[20px] p-[20px]') : 'gap-[24px] p-[24px]'}`}
-      style={{ background: '#f2f4f7' }}
+      className="flex flex-col"
+      style={{
+        background: '#f2f4f7',
+        borderRadius: s(30),
+        gap: isMobileView ? s(20) : 24,
+        padding: isMobileView ? (isTablet ? s(24) : 20) : 24,
+      }}
     >
-      <p className="text-black text-[16px] font-light font-['Geist'] leading-[22px]">
+      <p className="text-black font-light font-['Geist']" style={{ fontSize: s(16), lineHeight: sl(22) }}>
         Insights from completed jobs
       </p>
-      <div className="flex flex-wrap gap-[10px]">
+      <div className="flex flex-wrap" style={{ gap: s(10) }}>
         {insights.map((tag) => (
           <div
             key={tag}
-            className="bg-white h-[38px] flex items-center justify-center px-[14px] rounded-[30px]"
+            className="bg-white flex items-center justify-center"
+            style={{
+              borderRadius: s(30),
+              height: isMobileView ? s(34) : 38,
+              paddingLeft: isMobileView ? s(12) : 14,
+              paddingRight: isMobileView ? s(12) : 14,
+            }}
           >
-            <p className="text-black text-[16px] font-light font-['Geist'] leading-[22px] whitespace-nowrap">
+            <p className={`text-black font-light font-['Geist'] whitespace-nowrap ${isMobileView ? 'text-[14px] leading-[20px] tracking-[-0.02em]' : 'text-[16px] leading-[22px]'}`}>
               {tag}
             </p>
           </div>
@@ -390,7 +416,7 @@ export default function Testimonial() {
         : 'relative bg-white flex flex-col items-center overflow-hidden'
       }
       style={isMobileView
-        ? { paddingTop: 80, paddingBottom: 360, marginTop: -1 }
+        ? { paddingTop: s(80), paddingBottom: s(360), marginTop: -1 }
         : sectionStyle
       }
     >
@@ -405,18 +431,18 @@ export default function Testimonial() {
       </div>
 
       {isMobileView ? (
-        <div className="relative z-10 flex flex-col items-center w-full" style={{ paddingLeft: isTablet ? 40 : 16, paddingRight: isTablet ? 40 : 16 }}>
-          <div ref={mobileTitleRef} className="flex flex-col gap-[20px] text-center w-full" style={{ marginBottom: 50, ...(isTablet ? { maxWidth: 500 } : {}) }}>
-            <p className="text-black font-light font-['Geist']" style={{ fontSize: 36, lineHeight: '42px', letterSpacing: 0 }}>
+        <div className="relative z-10 flex flex-col items-center w-full" style={{ paddingLeft: isTablet ? s(40) : 16, paddingRight: isTablet ? s(40) : 16 }}>
+          <div ref={mobileTitleRef} className="flex flex-col text-center w-full" style={{ gap: s(20), marginBottom: s(50), ...(isTablet ? { maxWidth: s(500) } : {}) }}>
+            <p className="text-black font-light font-['Geist']" style={{ fontSize: s(36), lineHeight: sl(42), letterSpacing: 0 }}>
               What clients say
             </p>
-            <div className="text-black text-[16px] font-light font-['Geist'] leading-[22px]">
+            <div className="text-black font-light font-['Geist']" style={{ fontSize: s(16), lineHeight: sl(22) }}>
               <p>My clients explain it better than I ever could.</p>
               <p>Their experiences say more about my work than any description I could write.</p>
             </div>
           </div>
 
-          <div ref={mobileCardRef} className="flex flex-col gap-[20px] w-full" style={{ marginBottom: 30, ...(isTablet ? { maxWidth: 500 } : {}) }}>
+          <div ref={mobileCardRef} className="flex flex-col w-full" style={{ gap: s(20), marginBottom: s(30), ...(isTablet ? { maxWidth: s(500) } : {}) }}>
             {testimonialCard}
             {insightsBlock}
           </div>

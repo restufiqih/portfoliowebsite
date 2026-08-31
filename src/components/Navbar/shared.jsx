@@ -27,7 +27,11 @@ export function DrawLogo({ size = 44, color = 'white', className }) {
   return (
     <a
       href="#"
-      onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+      onClick={(e) => {
+        e.preventDefault()
+        if (window.location.hash.startsWith('#/')) window.location.hash = ''
+        window.scrollTo({ top: 0, behavior: window.location.hash ? 'auto' : 'smooth' })
+      }}
       onMouseEnter={handleMouseEnter}
       className={`block shrink-0 ${className || ''}`}
     >
@@ -42,18 +46,53 @@ export const navLinks = [
   { label: 'Work', href: '#works' },
   { label: 'Services', href: '#services' },
   { label: "KPI's", href: '#kpis' },
-  { label: 'About', href: '#about' },
+  // A route rather than an anchor: hrefs starting with '#/' switch pages.
+  { label: 'About', href: '#/about' },
   { label: 'Contact Me', href: '#contact' },
 ]
 
 export function handleNavClick(e, href) {
   e.preventDefault()
+
+  // Route links move between pages and always land at the top.
+  if (href.startsWith('#/')) {
+    if (window.location.hash !== href) window.location.hash = href
+    window.scrollTo({ top: 0, behavior: 'auto' })
+    return
+  }
+
   if (href === '#contact') {
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
     return
   }
+
   const el = document.getElementById(href.replace('#', ''))
-  if (el) el.scrollIntoView({ behavior: 'smooth' })
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth' })
+    return
+  }
+
+  // Section is on the landing page and we are not on it — go home first, then
+  // scroll once the section has actually mounted. The scroll is deferred two
+  // more frames past that: switching routes resets the scroll position, and
+  // starting before that lands would just be undone.
+  window.location.hash = ''
+  const id = href.replace('#', '')
+  let tries = 0
+  // Timers rather than animation frames: a backgrounded tab stops painting and
+  // would leave the pending scroll queued forever.
+  const settle = () => {
+    const target = document.getElementById(id)
+    if (!target) {
+      if (tries++ < 60) setTimeout(settle, 16)
+      return
+    }
+    // Jump rather than glide: the route change has already snapped the
+    // viewport to the top, and easing several thousand pixels from there
+    // reads as a stall, not as motion.
+    setTimeout(() => target.scrollIntoView({ behavior: 'auto' }), 32)
+  }
+  setTimeout(settle, 16)
 }
 
 export const NavLink = ({ label, href = '#', dark = false }) => (

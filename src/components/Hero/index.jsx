@@ -3,7 +3,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Lanyard from '../Lanyard'
 import { useBreakpoint } from '../../hooks/useBreakpoint'
-import { fluid } from '../../utils/fluid'
+import { fluid, scaleTablet } from '../../utils/fluid'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -44,7 +44,11 @@ function HeroDesktopLayout({ titleRef, descRef, yearRef }) {
   )
 }
 
-function HeroMobileLayout({ titleRef, descRef, yearRef, sidePad = 16, textMaxWidth, showYear = false }) {
+function HeroMobileLayout({ titleRef, descRef, yearRef, sidePad = 16, textMaxWidth, showYear = false, isTablet = false }) {
+  // Tablet holds its 768 figures and grows them with the viewport from there.
+  const s = (n) => (isTablet ? scaleTablet(n) : n)
+  const sl = (n) => (isTablet ? scaleTablet(n) : `${n}px`)
+
   return (
     <>
       {/* First viewport: card (via Lanyard) + title */}
@@ -52,16 +56,16 @@ function HeroMobileLayout({ titleRef, descRef, yearRef, sidePad = 16, textMaxWid
         <div style={{ flex: 1 }} />
         <div
           className="relative z-10"
-          style={{ padding: `10px ${sidePad}px ${showYear ? 60 : 30}px`, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, textAlign: 'center' }}
+          style={{ paddingTop: s(10), paddingLeft: sidePad, paddingRight: sidePad, paddingBottom: s(showYear ? 60 : 30), display: 'flex', flexDirection: 'column', alignItems: 'center', gap: s(20), textAlign: 'center' }}
         >
           <p
             ref={titleRef}
             className="text-white font-light font-['Geist']"
-            style={{ fontSize: 40, lineHeight: '46px', letterSpacing: 0, ...(textMaxWidth ? { maxWidth: textMaxWidth } : {}) }}
+            style={{ fontSize: s(40), lineHeight: sl(46), letterSpacing: 0, ...(textMaxWidth ? { maxWidth: textMaxWidth } : {}) }}
           >
             Top Rated Plus UI/UX Designer on Upwork
           </p>
-          <p ref={descRef} className="font-light font-['Geist']" style={{ fontSize: 16, lineHeight: '22px', ...(textMaxWidth ? { maxWidth: textMaxWidth } : {}) }}>
+          <p ref={descRef} className="font-light font-['Geist']" style={{ fontSize: s(16), lineHeight: sl(22), ...(textMaxWidth ? { maxWidth: textMaxWidth } : {}) }}>
             <span className="text-white">Good design shouldn't need an explanation.</span>
             {showYear && <br />}
             {!showYear && ' '}
@@ -70,7 +74,7 @@ function HeroMobileLayout({ titleRef, descRef, yearRef, sidePad = 16, textMaxWid
             </span>
           </p>
           {showYear && (
-            <p ref={yearRef} className="text-white font-light font-['Geist'] leading-[22px]" style={{ fontSize: 16, marginTop: 20 }}>
+            <p ref={yearRef} className="text-white font-light font-['Geist']" style={{ fontSize: s(16), lineHeight: sl(22), marginTop: s(20) }}>
               Since 2020
             </p>
           )}
@@ -163,7 +167,7 @@ export default function Hero({ onReady }) {
       </div>
 
       {isMobileView
-        ? <HeroMobileLayout titleRef={titleRef} descRef={descRef} yearRef={yearRef} sidePad={isTablet ? 40 : 16} textMaxWidth={isTablet ? 500 : undefined} showYear={isTablet} />
+        ? <HeroMobileLayout titleRef={titleRef} descRef={descRef} yearRef={yearRef} sidePad={isTablet ? scaleTablet(40) : 16} textMaxWidth={isTablet ? scaleTablet(500) : undefined} showYear={isTablet} isTablet={isTablet} />
         : <HeroDesktopLayout titleRef={titleRef} descRef={descRef} yearRef={yearRef} />
       }
     </section>

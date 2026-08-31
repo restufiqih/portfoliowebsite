@@ -1,11 +1,10 @@
 import { useLayoutEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import CardPerformance from '../CardPerformance'
+import UpworkCard from '../UpworkCard'
 import RollingButton from '../RollingButton'
 import { useBreakpoint } from '../../hooks/useBreakpoint'
-import { fluid } from '../../utils/fluid'
-import upworkLogo from '../../assets/card_performance/upwork-logo.svg'
+import { fluid, scaleTablet } from '../../utils/fluid'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -15,20 +14,34 @@ export default function Upwork() {
   const cardRef = useRef(null)
   const { isMobile, isTablet, scale } = useBreakpoint()
 
+  // Tablet holds its 768 figures and grows them with the viewport from there.
+  const s = (n) => (isTablet ? scaleTablet(n) : n)
+  const sl = (n) => (isTablet ? scaleTablet(n) : `${n}px`)
+
   const sectionStyle = isMobile
     ? { borderRadius: '0 0 40px 40px', padding: '80px 16px', gap: 50, marginTop: -1, zIndex: 2 }
     : {
-        borderRadius: '0 0 60px 60px',
-        gap: fluid(65, 90), paddingLeft: fluid(72, 100), paddingRight: fluid(72, 100),
-        paddingTop: fluid(72, 100), paddingBottom: fluid(115, 160),
+        borderRadius: isTablet ? `0 0 ${scaleTablet(60)} ${scaleTablet(60)}` : '0 0 60px 60px',
+        gap: isTablet ? s(65) : fluid(65, 90),
+        paddingLeft: isTablet ? s(72) : fluid(72, 100),
+        paddingRight: isTablet ? s(72) : fluid(72, 100),
+        paddingTop: isTablet ? s(72) : fluid(72, 100),
+        paddingBottom: isTablet ? s(115) : fluid(115, 160),
+        // Same 1px overlap the mobile branch already carries. Section heights
+        // land on fractional pixels here (fluid clamps), and on a 2x display an
+        // exact seam between two separately composited white blocks can leave a
+        // hairline. Overlapping absorbs it. No zIndex here — the class already
+        // sets z-10, and overriding it to 2 let the Quote section's cursor
+        // trail paint over this block.
+        marginTop: -1,
       }
 
   const headingStyle = isMobile || isTablet
-    ? { fontSize: 36, lineHeight: '42px', letterSpacing: 0 }
+    ? { fontSize: s(36), lineHeight: sl(42), letterSpacing: 0 }
     : { fontSize: fluid(43, 60), lineHeight: fluid(50, 70), letterSpacing: -3 }
 
   const bodyStyle = isMobile || isTablet
-    ? { fontSize: 16, lineHeight: '22px', letterSpacing: 0 }
+    ? { fontSize: s(16), lineHeight: sl(22), letterSpacing: 0 }
     : { fontSize: fluid(14, 18), lineHeight: fluid(19, 26), letterSpacing: 0 }
 
   const animConfig = isMobile
@@ -75,11 +88,18 @@ export default function Upwork() {
       }
       style={sectionStyle}
     >
-      <div ref={titleRef} className="flex flex-col items-center w-full" style={{ gap: 30, maxWidth: isTablet ? 500 : fluid(490, 684) }}>
-        <div className="flex flex-col items-center text-center w-full" style={{ gap: 20 }}>
-          <p className="text-black font-light font-['Geist'] text-center" style={headingStyle}>
-            Every great partnership starts with trust
-          </p>
+      <div ref={titleRef} className="flex flex-col items-center w-full" style={{ gap: s(30), maxWidth: isTablet ? s(500) : fluid(490, 684) }}>
+        <div className="flex flex-col items-center text-center w-full" style={{ gap: s(20) }}>
+          <div className="text-black font-light font-['Geist'] text-center" style={headingStyle}>
+            {isMobile ? (
+              <p>Every great partnership starts with trust</p>
+            ) : (
+              <>
+                <p>Every great partnership</p>
+                <p>starts with trust</p>
+              </>
+            )}
+          </div>
           <p className="text-black font-light font-['Geist'] text-center" style={bodyStyle}>
             Every project starts with trust. Over the years, I've partnered with founders and product teams to turn ideas into meaningful digital experiences.
           </p>
@@ -87,10 +107,7 @@ export default function Upwork() {
         <RollingButton label="See Upwork Profile" href="https://www.upwork.com/freelancers/akhdiyatrestufiqih" />
       </div>
 
-      <div ref={cardRef} className={isMobile ? 'flex flex-col items-center w-full' : 'w-full flex justify-center'} style={isMobile ? { gap: 20 } : {}}>
-        <CardPerformance />
-        {isMobile && <img src={upworkLogo} alt="Upwork" style={{ width: 88, height: 24 }} />}
-      </div>
+      <UpworkCard innerRef={cardRef} />
     </section>
   )
 }

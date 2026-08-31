@@ -5,16 +5,16 @@ import IdCard from './IdCard'
 import greenBg from '../assets/card_performance/Card Performance.png'
 import upworkLogo from '../assets/card_performance/upwork-logo.svg'
 import { useBreakpoint } from '../hooks/useBreakpoint'
-import { fluid, fluidNeg } from '../utils/fluid'
+import { fluid, fluidNeg, scaleTablet, scaleTabletNeg } from '../utils/fluid'
 
 gsap.registerPlugin(ScrollTrigger)
 
-function StatCard({ value, label, isDesktop }) {
+function StatCard({ value, label, isDesktop, isMobile }) {
   return (
     <div
       className="flex-1 min-w-0 flex flex-col rounded-[20px] relative"
       style={{
-        padding: isDesktop ? fluid(22, 30) : 30,
+        padding: isDesktop ? fluid(22, 30) : isMobile ? 30 : scaleTablet(28),
         background: 'linear-gradient(to bottom, rgba(255,255,255,0.18), rgba(255,255,255,0.07))',
         backdropFilter: 'blur(5px)',
         WebkitBackdropFilter: 'blur(5px)',
@@ -31,15 +31,15 @@ function StatCard({ value, label, isDesktop }) {
       <div className="flex flex-col gap-[6px] text-center w-full">
         <p className="text-white font-light font-['Geist'] tracking-[0px]"
           style={{
-            fontSize: isDesktop ? fluid(22, 30) : 30,
-            lineHeight: isDesktop ? fluid(26, 36) : '36px',
+            fontSize: isDesktop ? fluid(22, 30) : isMobile ? 30 : scaleTablet(28),
+            lineHeight: isDesktop ? fluid(26, 36) : isMobile ? '36px' : scaleTablet(33),
           }}>
           {value}
         </p>
         <p className="text-white/80 font-light font-['Geist']"
           style={{
-            fontSize: isDesktop ? fluid(12, 16) : 16,
-            lineHeight: isDesktop ? fluid(16, 22) : '22px',
+            fontSize: isDesktop ? fluid(12, 16) : isMobile ? 16 : scaleTablet(15),
+            lineHeight: isDesktop ? fluid(16, 22) : isMobile ? '22px' : scaleTablet(20),
           }}>
           {label}
         </p>
@@ -50,7 +50,6 @@ function StatCard({ value, label, isDesktop }) {
 
 export default function CardPerformance() {
   const [hovered, setHovered] = useState(false)
-  const cardWrapperRef = useRef(null)
   const idCardRef = useRef(null)
   const idCardMobileRef = useRef(null)
   const wobbleTimer = useRef(null)
@@ -141,10 +140,10 @@ export default function CardPerformance() {
         backgroundImage: `url(${greenBg})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        maxWidth: isDesktop ? fluid(677, 950) : isMobile ? '950px' : 677,
-        padding: isDesktop ? fluid(50, 70) : isMobile ? 20 : 50,
-        gap: isDesktop ? fluid(14, 20) : isMobile ? 40 : 14,
-        borderRadius: isDesktop ? fluid(21, 30) : isMobile ? '30px' : 21,
+        maxWidth: isDesktop ? fluid(677, 950) : isMobile ? '950px' : scaleTablet(624),
+        padding: isDesktop ? fluid(50, 70) : isMobile ? 20 : scaleTablet(28),
+        gap: isDesktop ? fluid(14, 20) : isMobile ? 40 : scaleTablet(13),
+        borderRadius: isDesktop ? fluid(21, 30) : isMobile ? '30px' : scaleTablet(19),
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -159,13 +158,13 @@ export default function CardPerformance() {
       </div>
       {/* Upwork Logo */}
       <div className={`absolute z-[3] ${isMobile ? 'hidden' : 'flex'} flex-col items-start`} style={{
-        top: isDesktop ? fluidNeg(24, 34) : -24,
+        top: isDesktop ? fluidNeg(24, 34) : scaleTabletNeg(22),
         right: 0,
-        paddingRight: isDesktop ? fluid(23, 32) : 23,
+        paddingRight: isDesktop ? fluid(23, 32) : scaleTablet(21),
       }}>
         <img src={upworkLogo} alt="Upwork" style={{
-          width: isDesktop ? fluid(63, 88) : 63,
-          height: isDesktop ? fluid(17, 24) : 17,
+          width: isDesktop ? fluid(63, 88) : scaleTablet(58),
+          height: isDesktop ? fluid(17, 24) : scaleTablet(16),
         }} />
       </div>
 
@@ -188,16 +187,20 @@ export default function CardPerformance() {
               ref={idCardRef}
               className="absolute transition-all duration-300 ease-out"
               style={hovered ? {
-                left: isDesktop ? fluidNeg(74, 104) : -74,
-                top: isDesktop ? fluidNeg(81, 114) : -81,
-                width: isDesktop ? fluid(330, 463) : 330,
-                height: isDesktop ? fluid(214, 300) : 214,
+                left: isDesktop ? fluidNeg(74, 104) : scaleTabletNeg(35),
+                top: isDesktop ? fluidNeg(81, 114) : scaleTabletNeg(61),
+                width: isDesktop ? fluid(330, 463) : scaleTablet(304),
+                height: isDesktop ? fluid(214, 300) : scaleTablet(197),
                 transform: 'rotate(0deg)',
               } : {
-                left: isDesktop ? fluidNeg(88, 124) : -88,
-                top: isDesktop ? fluidNeg(83, 117) : -83,
-                width: isDesktop ? fluid(330, 463) : 330,
-                height: isDesktop ? fluid(214, 300) : 214,
+                // Tablet seats the id card differently from desktop: 36 further
+                // right, which leaves 30 to the stat card, and 15 lower so its
+                // bottom-left corner clears the green card's bottom edge the way
+                // desktop's does.
+                left: isDesktop ? fluidNeg(88, 124) : scaleTabletNeg(48),
+                top: isDesktop ? fluidNeg(83, 117) : scaleTabletNeg(63),
+                width: isDesktop ? fluid(330, 463) : scaleTablet(304),
+                height: isDesktop ? fluid(214, 300) : scaleTablet(197),
                 transform: 'rotate(-4.5deg)',
               }}
             >
@@ -209,8 +212,8 @@ export default function CardPerformance() {
 
       {/* Right — Stats */}
       <div className={`flex flex-1 items-start min-w-0 relative z-[1] ${isMobile ? 'w-full' : 'w-auto'}`} style={{ gap: isDesktop ? fluid(14, 20) : 20 }}>
-        <StatCard value="55+" label="Projects" isDesktop={isDesktop} />
-        <StatCard value="5/5" label="Ratings" isDesktop={isDesktop} />
+        <StatCard value="55+" label="Projects" isDesktop={isDesktop} isMobile={isMobile} />
+        <StatCard value="5/5" label="Ratings" isDesktop={isDesktop} isMobile={isMobile} />
       </div>
     </a>
   )

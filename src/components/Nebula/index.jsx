@@ -2,8 +2,9 @@ import { useLayoutEffect, useRef, useCallback, useState, useEffect, useMemo } fr
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import CharWord from '../CharWord'
+import ContactFooter from '../ContactFooter'
 import { useBreakpoint } from '../../hooks/useBreakpoint'
-import { fluid } from '../../utils/fluid'
+import { fluid, scaleTablet } from '../../utils/fluid'
 import card1 from '../../assets/nebula/card-1.png'
 import card2 from '../../assets/nebula/card-2.png'
 import card3 from '../../assets/nebula/card-3.png'
@@ -37,118 +38,8 @@ function getArcConstants(bp, vw) {
 const line1 = ["I'm", 'also', 'building', 'Nebula', 'Studio.']
 const line2 = ['A', 'design', 'studio', 'helping', 'brands', 'create', 'digital', 'experiences', 'their', 'users', 'actually', 'love.']
 
-const FOOTER_LOGO_PATH = 'M20.0665 57.784C2.10027 44.0243 0.802857 18.1984 15.5649 7.41537C29.0348 -2.42381 44.5474 4.62702 46.2629 17.109C47.9783 29.5909 43.0206 38.2324 32.2545 39.6792C21.4883 41.126 22.1779 28.9728 32.2545 28.9728C40.712 28.9728 50.2255 36.549 56.081 40.9898'
 
-const ctaLinks = [
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/restufiqih/' },
-  { label: 'Dribbble', href: 'https://dribbble.com/restufq' },
-  { label: 'Upwork', href: 'https://www.upwork.com/freelancers/akhdiyatrestufiqih' },
-  { label: 'akhdiyatrestufiqih321@gmail.com', href: 'mailto:akhdiyatrestufiqih321@gmail.com' },
-]
 
-function CtaRollingButton({ label, href, mobile }) {
-  const [hovered, setHovered] = useState(false)
-  const textClass = mobile
-    ? "text-white text-[18px] font-light font-['Geist'] leading-[26px] tracking-[0px] whitespace-nowrap block"
-    : "text-white text-[16px] font-light font-['Geist'] leading-[22px] whitespace-nowrap block"
-  const lineH = mobile ? 26 : 22
-  return (
-    <a
-      href={href}
-      target={href.startsWith('mailto:') ? undefined : '_blank'}
-      rel={href.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className="bg-white/20 px-[20px] rounded-[99px] inline-flex justify-center items-center cursor-pointer"
-      style={{ height: '50px' }}
-    >
-      <div style={{ height: lineH, overflow: 'hidden' }}>
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          transform: hovered ? `translateY(-${lineH}px)` : 'translateY(0px)',
-          transition: 'transform 0.3s ease-in-out',
-        }}>
-          <span className={textClass}>{label}</span>
-          <span className={textClass}>{label}</span>
-        </div>
-      </div>
-    </a>
-  )
-}
-
-function FooterLogo() {
-  const pathRef = useRef(null)
-  const lengthRef = useRef(0)
-  const tweenRef = useRef(null)
-
-  useLayoutEffect(() => {
-    const path = pathRef.current
-    if (!path) return
-    lengthRef.current = path.getTotalLength()
-    gsap.set(path, { strokeDasharray: lengthRef.current, strokeDashoffset: 0 })
-
-    const animate = () => {
-      const tl = gsap.timeline({
-        onComplete: () => {
-          tweenRef.current = gsap.delayedCall(4, animate)
-        },
-      })
-      tl.to(path, {
-        strokeDashoffset: lengthRef.current,
-        duration: 0.8,
-        ease: 'power2.in',
-      })
-      tl.to(path, {
-        strokeDashoffset: 0,
-        duration: 0.8,
-        ease: 'power2.out',
-      })
-      tweenRef.current = tl
-    }
-
-    tweenRef.current = gsap.delayedCall(3, animate)
-
-    return () => {
-      if (tweenRef.current) tweenRef.current.kill()
-    }
-  }, [])
-
-  return (
-    <a
-      href="#"
-      onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-      className="block"
-    >
-      <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path ref={pathRef} d={FOOTER_LOGO_PATH} stroke="white" strokeWidth="5.45455" />
-      </svg>
-    </a>
-  )
-}
-
-function IndonesiaTime() {
-  const [time, setTime] = useState('')
-
-  useEffect(() => {
-    const update = () => {
-      const now = new Date()
-      const formatted = now.toLocaleTimeString('en-US', {
-        timeZone: 'Asia/Jakarta',
-        hour: 'numeric',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: true,
-      })
-      setTime(formatted)
-    }
-    update()
-    const id = setInterval(update, 1000)
-    return () => clearInterval(id)
-  }, [])
-
-  return <span>{time} (GMT+7)</span>
-}
 
 export default function Nebula() {
   const sectionRef = useRef(null)
@@ -162,7 +53,9 @@ export default function Nebula() {
   const tooltipRef = useRef(null)
   const mouseClient = useRef({ x: 0, y: 0 })
   const isInSection = useRef(false)
-  const { breakpoint, isMobile, isTablet, isMobileView, isDesktop } = useBreakpoint()
+  const { breakpoint, isTablet, isMobileView, isDesktop } = useBreakpoint()
+  // Tablet holds its 768 figures and grows them with the viewport from there.
+  const s = (n) => (isTablet ? scaleTablet(n) : n)
   const [vw, setVw] = useState(typeof window !== 'undefined' ? window.innerWidth : 1440)
   useEffect(() => {
     const onResize = () => setVw(window.innerWidth)
@@ -298,14 +191,13 @@ export default function Nebula() {
 
   return (
     <section
-      id="about"
       ref={sectionRef}
       className={isMobileView
         ? 'relative overflow-hidden flex flex-col items-center'
         : 'relative overflow-hidden flex flex-col items-center pt-[0]'
       }
       style={isMobileView
-        ? { background: '#511ece', paddingTop: 0, paddingLeft: isTablet ? 40 : 16, paddingRight: isTablet ? 40 : 16 }
+        ? { background: '#511ece', paddingTop: 0, paddingLeft: isTablet ? s(40) : 16, paddingRight: isTablet ? s(40) : 16 }
         : { background: '#511ece' }
       }
       onMouseMove={handleMouseMove}
@@ -324,9 +216,10 @@ export default function Nebula() {
       <p
         ref={textRef}
         className={isMobileView
-          ? "text-center max-w-[520px] text-[24px] font-light font-['Geist'] leading-[34px] tracking-[0px]"
-          : "text-center max-w-[520px] px-4 text-[24px] font-light font-['Geist'] leading-[34px] tracking-[0px]"
+          ? "text-center font-light font-['Geist'] tracking-[0px]"
+          : "text-center px-4 font-light font-['Geist'] tracking-[0px]"
         }
+        style={{ maxWidth: s(520), fontSize: s(24), lineHeight: isTablet ? scaleTablet(34) : '34px' }}
       >
         {line1.map((w, i) => (
           <CharWord key={`l1-${i}`} word={w} isLast={false} charClassName="char" initialColor="rgba(255,255,255,0.25)" />
@@ -337,9 +230,9 @@ export default function Nebula() {
         ))}
       </p>
 
-      <div style={{ height: isTablet ? 120 : isMobileView ? 80 : 40 }} />
+      <div style={{ height: isTablet ? s(120) : isMobileView ? 80 : 40 }} />
 
-      <div ref={logoRef} className="relative w-full" style={isDesktop ? { height: fluid(389, 540) } : { height: 440 }}>
+      <div ref={logoRef} className="relative w-full" style={isDesktop ? { height: fluid(389, 540) } : { height: s(440) }}>
         <a
           href="https://dribbble.com/nebulaonspace"
           target="_blank"
@@ -392,80 +285,8 @@ export default function Nebula() {
 
       {isMobileView ? <div style={{ height: 100 }} /> : <div style={{ height: 200 }} />}
 
-      {/* CTA / Contact */}
-      <div
-        ref={ctaRef}
-        className="relative z-10 w-full flex flex-col items-center justify-center"
-        style={isMobileView
-          ? { gap: 60, paddingTop: 110, paddingBottom: 110, minHeight: '100vh' }
-          : { height: '100vh', gap: 80, paddingTop: 110, paddingBottom: 110, paddingLeft: 20, paddingRight: 20 }
-        }
-      >
-        <p
-          className="text-white font-light font-['Geist'] text-center"
-          style={isMobileView
-            ? { fontSize: 36, lineHeight: '42px', letterSpacing: 0 }
-            : { fontSize: fluid(50, 70), lineHeight: fluid(60, 84), letterSpacing: -4 }
-          }
-        >
-          <>Let's talk about<br />your next project.</>
-
-        </p>
-
-        {isTablet ? (
-          <div className="flex flex-col gap-[10px] items-center">
-            <div className="flex flex-wrap gap-[10px] items-center justify-center">
-              {ctaLinks.filter(l => !l.href.startsWith('mailto:')).map(({ label, href }) => (
-                <CtaRollingButton key={label} label={label} href={href} mobile />
-              ))}
-            </div>
-            {ctaLinks.filter(l => l.href.startsWith('mailto:')).map(({ label, href }) => (
-              <CtaRollingButton key={label} label={label} href={href} mobile />
-            ))}
-          </div>
-        ) : (
-          <div className="flex flex-wrap gap-[10px] items-center justify-center">
-            {ctaLinks.map(({ label, href }) => (
-              <CtaRollingButton key={label} label={label} href={href} mobile={isMobileView} />
-            ))}
-          </div>
-        )}
-
-        <div className={isTablet
-          ? "flex flex-row gap-[30px] items-center"
-          : isMobileView
-          ? "flex flex-col gap-[20px] items-center"
-          : "flex flex-col sm:flex-row gap-2 sm:gap-[30px] items-center"
-        }>
-          <div className="flex gap-[10px] items-center">
-            <span className="relative flex shrink-0" style={{ width: 7, height: 7 }}>
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
-              <span className="relative inline-flex rounded-full bg-white" style={{ width: 7, height: 7 }} />
-            </span>
-            <span className={isMobileView
-              ? "text-white text-[18px] font-light font-['Geist'] leading-[26px] tracking-[0px]"
-              : "text-white text-[16px] font-light font-['Geist'] leading-[26px] tracking-[0px]"
-            }>
-              Based in Indonesia
-            </span>
-          </div>
-          <span className={isMobileView
-            ? "text-white text-[18px] font-light font-['Geist'] leading-[26px] tracking-[0px]"
-            : "text-white text-[16px] font-light font-['Geist'] leading-[26px] tracking-[0px]"
-          }>
-            <IndonesiaTime />
-          </span>
-        </div>
-
-        <div className="flex flex-col gap-[20px] items-center">
-          <FooterLogo />
-          {isMobileView && (
-            <span className="text-white text-[18px] font-light font-['Geist'] leading-[26px] tracking-[0px]">
-              Akhdiyat Restu Fiqih
-            </span>
-          )}
-        </div>
-      </div>
+      {/* CTA / Contact — shared with the About page */}
+      <ContactFooter innerRef={ctaRef} />
     </section>
   )
 }

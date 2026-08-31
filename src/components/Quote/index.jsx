@@ -2,7 +2,8 @@ import { useLayoutEffect, useRef, useEffect } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useBreakpoint } from '../../hooks/useBreakpoint'
-import { fluid } from '../../utils/fluid'
+import { fluid, scaleTablet } from '../../utils/fluid'
+import { useTabletScale } from '../../hooks/useTabletScale'
 
 import orbit1 from '../../assets/orbit/orbit-1.png'
 import orbit2 from '../../assets/orbit/orbit-2.png'
@@ -168,7 +169,12 @@ export default function Quote() {
   const topTextRef = useRef(null)
   const bottomTextRef = useRef(null)
   const imgRefs = useRef([])
-  const { isMobileView, isTablet, isDesktop, scale } = useBreakpoint()
+  const { isMobileView, isTablet, scale } = useBreakpoint()
+  // Tablet holds its 768 figures and grows them with the viewport from there.
+  const k = useTabletScale()
+  const s = (n) => (isTablet ? scaleTablet(n) : n)
+  const sl = (n) => (isTablet ? scaleTablet(n) : `${n}px`)
+  const kn = (n) => (isTablet ? Math.round(n * k) : n)
 
   const textAnimConfig = isTablet
     ? { topFrom: -45, topTo: 15, bottomFrom: 45, bottomTo: -15 }
@@ -177,7 +183,7 @@ export default function Quote() {
     : { topFrom: -60 * scale, topTo: 20 * scale, bottomFrom: 60 * scale, bottomTo: -20 * scale }
 
   const textStyle = isTablet
-    ? { fontSize: 36, lineHeight: '42px', letterSpacing: 0 }
+    ? { fontSize: s(36), lineHeight: sl(42), letterSpacing: 0 }
     : isMobileView
     ? { fontSize: 32, lineHeight: '38px', letterSpacing: 0 }
     : { fontSize: fluid(65, 90), lineHeight: fluid(75, 104), letterSpacing: -4 }
@@ -215,9 +221,9 @@ export default function Quote() {
         ? {
             background: 'linear-gradient(to bottom, #e8e4f5 0%, #f5f3fa 50%, #ffffff 100%)',
             minHeight: 'calc(100vh + 60px)',
-            paddingTop: 180,
-            paddingBottom: 100,
-            marginTop: -60,
+            paddingTop: s(180),
+            paddingBottom: s(100),
+            marginTop: isTablet ? `calc(-1 * ${scaleTablet(60)})` : -60,
             zIndex: 1,
           }
         : {
@@ -225,13 +231,18 @@ export default function Quote() {
             paddingTop: fluid(259, 360),
             paddingBottom: fluid(216, 300),
             marginTop: '-60px',
+            // Needed for the cursor trail to stay put. Without a z-index this
+            // section is not a stacking context, so the trail images' own
+            // z-indexes escape into the root and can outrank the section
+            // above — which is how they ended up drawn over it.
+            zIndex: 1,
           }
       }
     >
       {isMobileView ? (
         <div className="relative flex-1 flex items-center justify-center w-full min-h-0">
-          <MobileFloatingImages sectionRef={sectionRef} imgRefs={imgRefs} {...(isTablet ? { orbitRadius: 380, imgW: 260, imgH: 195 } : {})} />
-          <div className="relative z-10 text-center" style={{ paddingLeft: isTablet ? 40 : 20, paddingRight: isTablet ? 40 : 20 }}>
+          <MobileFloatingImages sectionRef={sectionRef} imgRefs={imgRefs} {...(isTablet ? { orbitRadius: kn(380), imgW: kn(260), imgH: kn(195) } : {})} />
+          <div className="relative z-10 text-center" style={{ paddingLeft: isTablet ? s(40) : 20, paddingRight: isTablet ? s(40) : 20 }}>
             <p
               ref={topTextRef}
               className="font-light font-['Geist']"
