@@ -4,9 +4,9 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { fluid, scaleTablet, scaleTabletNeg } from '../../utils/fluid'
 import { useBreakpoint } from '../../hooks/useBreakpoint'
 
-import understandImg from '../../assets/howitworks/understand.png'
-import designImg from '../../assets/howitworks/design.png'
-import scaleImg from '../../assets/howitworks/scale.png'
+import discoverImg from '../../assets/howitworks/discover.png'
+import designValidateImg from '../../assets/howitworks/design-validate.png'
+import deliverEvolveImg from '../../assets/howitworks/deliver-evolve.png'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -46,22 +46,22 @@ const SCRUB = 1
 
 const steps = [
   {
-    title: 'Understand',
-    body: "Before designing anything, I take time to understand your product, your users, and your goals. I ask the right questions early so we don't waste time solving the wrong problem.",
-    tags: ['Research', 'Brainstorming', 'Problem Mapping', 'Requirement Analysis'],
-    src: understandImg,
+    title: 'Discover',
+    body: "I start by listening to your users, your business, and the problem space. Through research and synthesis, I make sure we're solving the right problem before jumping into solutions.",
+    tags: ['User Research', 'Persona & Journey Mapping', 'Competitive Analysis', 'Problem Definition'],
+    src: discoverImg,
   },
   {
-    title: 'Design',
-    body: 'From early concepts to polished interfaces, every stage is intentional. I structure the experience first, then refine every detail until it feels right.',
-    tags: ['Concepting', 'Wireframing', 'Prototyping', 'Interaction Design'],
-    src: designImg,
+    title: 'Design & Validate',
+    body: 'I explore ideas, structure the experience, and test it with real users. This phase is iterative. I design, test, learn, and refine until the solution truly works for people.',
+    tags: ['Wireframing', 'Prototyping', 'Usability Testing', 'Iteration'],
+    src: designValidateImg,
   },
   {
-    title: 'Scale',
-    body: 'I build design systems so your product stays consistent as it grows. Components, patterns, and documentation that your team can actually use.',
-    tags: ['Component Library', 'Design Tokens', 'Style Guidelines', 'Pattern Documentation'],
-    src: scaleImg,
+    title: 'Deliver & Evolve',
+    body: "I hand off polished, production-ready designs backed by a system that scales. But delivery isn't the finish line. I stay involved to measure impact and keep improving.",
+    tags: ['UI Design', 'Design System', 'Developer Handoff', 'Post-launch Review'],
+    src: deliverEvolveImg,
   },
 ]
 
