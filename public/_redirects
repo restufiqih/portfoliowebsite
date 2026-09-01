@@ -1,4 +1,0 @@
-# Path routing is client-side, so a hard load of /about must still be served
-# index.html rather than looked up as a file. Read by Netlify and Cloudflare
-# Pages; Vercel's Vite preset already rewrites this way and ignores the file.
-/*  /index.html  200
