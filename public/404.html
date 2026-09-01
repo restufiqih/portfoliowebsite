@@ -19,13 +19,20 @@
         display: flex;
         flex-direction: column;
       }
+      body.menu-open { overflow: hidden; }
 
-      /* Header — the same bar the site carries, rebuilt here because a real 404
-         has to be a static file and cannot mount the React one. */
-      header { padding: 30px 50px; }
+      /* The site's header, rebuilt here: a real 404 is served as a file and
+         cannot mount the React one. Desktop lays the links out in the bar;
+         below 1024 they move into a full-screen menu, the same swap the site
+         itself makes. */
+      /* Above the menu, not under it: the close button lives in this bar, so
+         the overlay must not cover it. Same order the site uses. */
+      header { position: relative; z-index: 70; padding: 30px 50px; }
       .bar { display: flex; align-items: center; justify-content: space-between; }
       .logo { display: block; flex-shrink: 0; }
+      .logo svg { display: block; width: 44px; height: 44px; }
       .actions { display: flex; align-items: center; gap: 30px; }
+
       .status { display: flex; align-items: center; gap: 10px; height: 44px; }
       .dot { position: relative; display: flex; width: 7px; height: 7px; flex-shrink: 0; }
       .dot span { position: absolute; inset: 0; border-radius: 999px; background: #fff; }
@@ -33,37 +40,34 @@
       @keyframes ping { 75%, 100% { transform: scale(2); opacity: 0; } }
       @media (prefers-reduced-motion: reduce) { .dot .ping { animation: none; } }
 
-      nav { display: flex; align-items: center; gap: 30px; }
-      .actions a, .status p {
-        font-weight: 300;
-        font-size: 16px;
-        line-height: 22px;
-        color: #fff;
-        white-space: nowrap;
+      .status p, .bar-nav a { font-weight: 300; font-size: 16px; line-height: 22px; color: #fff; white-space: nowrap; }
+
+      .bar-nav { display: flex; align-items: center; gap: 30px; }
+      .bar-nav a { position: relative; display: flex; align-items: center; height: 44px; text-decoration: none; }
+      .bar-nav a::after {
+        content: ""; position: absolute; left: 0; bottom: 0;
+        width: 0; height: 1.5px; background: #fff; transition: width 0.3s ease;
       }
-      nav a {
-        position: relative;
-        display: flex;
-        align-items: center;
-        height: 44px;
-        text-decoration: none;
+      .bar-nav a:hover::after { width: 100%; }
+
+      .menu-btn {
+        display: none; align-items: center; justify-content: center;
+        height: 44px; background: none; border: 0; padding: 0;
+        color: #fff; cursor: pointer;
       }
-      nav a::after {
-        content: "";
-        position: absolute;
-        left: 0; bottom: 0;
-        width: 0; height: 1.5px;
-        background: #fff;
-        transition: width 0.3s ease;
+
+      .menu { position: fixed; inset: 0; z-index: 60; background: #1500E1; display: none; flex-direction: column; }
+      .menu.open { display: flex; }
+      .menu-inner { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
+      .menu a {
+        width: 100%; text-align: center; text-decoration: none; color: #fff;
+        font-weight: 300; letter-spacing: -0.4px;
       }
-      nav a:hover::after { width: 100%; }
 
       main {
         flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
         gap: 20px;
         padding: 0 50px 50px;
         text-align: center;
@@ -76,21 +80,34 @@
         line-height: 1.2;
         letter-spacing: -2.8px;
       }
-      main p {
-        font-weight: 300;
-        font-size: 16px;
-        line-height: 22px;
-        max-width: 322px;
+      main p { font-weight: 300; font-size: 16px; line-height: 22px; max-width: 322px; }
+
+      /* Below the desktop breakpoint the site carries a hamburger instead of a
+         row of links. The clamps are the same ramp the rest of the site uses
+         across the tablet range: flat at the 768 figure and below, growing to
+         4/3 of it by 1024. */
+      @media (max-width: 1023px) {
+        header { padding: clamp(20px, 2.6042vw, 26.67px) 16px; }
+        .logo svg { width: 34px; height: 34px; }
+        .actions { gap: clamp(20px, 2.6042vw, 26.67px); }
+        .status { gap: clamp(10px, 1.3021vw, 13.33px); height: clamp(44px, 5.7292vw, 58.67px); }
+        .dot { width: clamp(7px, 0.9115vw, 9.33px); height: clamp(7px, 0.9115vw, 9.33px); }
+        .status p { font-size: clamp(16px, 2.0833vw, 21.33px); line-height: clamp(22px, 2.8646vw, 29.33px); }
+        .bar-nav { display: none; }
+        .menu-btn { display: inline-flex; height: clamp(44px, 5.7292vw, 58.67px); }
+        .menu-btn svg { width: clamp(24px, 3.125vw, 32px); height: clamp(24px, 3.125vw, 32px); }
+        .menu-inner {
+          gap: clamp(40px, 5.2083vw, 53.33px);
+          padding: clamp(114px, 14.8438vw, 152px) 16px clamp(40px, 5.2083vw, 53.33px);
+        }
+        .menu a { font-size: clamp(20px, 2.6042vw, 26.67px); line-height: clamp(28px, 3.6458vw, 37.33px); }
+        main { padding: 0 16px 40px; }
       }
 
-      /* Below the desktop breakpoint the site swaps to a hamburger. There is no
-         menu to open from a static page, so the links step aside and the mark
-         alone carries the way back. */
-      @media (max-width: 1023px) {
-        header { padding: 20px 16px; }
-        nav { display: none; }
-        .actions { gap: 20px; }
-        main { padding: 0 16px 40px; }
+      @media (min-width: 768px) and (max-width: 1023px) {
+        header { padding-left: clamp(40px, 5.2083vw, 53.33px); padding-right: clamp(40px, 5.2083vw, 53.33px); }
+        .logo svg { width: 45px; height: 45px; }
+        .menu-inner { padding-left: clamp(40px, 5.2083vw, 53.33px); padding-right: clamp(40px, 5.2083vw, 53.33px); }
       }
     </style>
   </head>
@@ -98,33 +115,79 @@
     <header>
       <div class="bar">
         <a class="logo" href="/" aria-label="restufiqih — home">
-          <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M14.7154 42.3748C1.54019 32.2843 0.588755 13.3454 11.4143 5.4378C21.2922 -1.7776 32.6681 3.39301 33.9261 12.5464C35.1841 21.6999 31.5484 28.0369 23.6533 29.0979C15.7581 30.1589 16.2638 21.2466 23.6533 21.2466C29.8555 21.2466 36.832 26.8025 41.1261 30.0591" stroke="#fff" stroke-width="4"/>
           </svg>
         </a>
 
         <div class="actions">
           <div class="status">
-            <span class="dot">
-              <span class="ping"></span>
-              <span></span>
-            </span>
+            <span class="dot"><span class="ping"></span><span></span></span>
             <p>Available for Project</p>
           </div>
-          <nav>
+
+          <nav class="bar-nav">
             <a href="/#works">Work</a>
             <a href="/#services">Services</a>
             <a href="/#kpis">KPI&rsquo;s</a>
             <a href="/about">About</a>
             <a href="/#contact">Contact Me</a>
           </nav>
+
+          <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="menu">
+            <svg id="menuIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 8H20M4 16H20" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
         </div>
       </div>
     </header>
+
+    <div class="menu" id="menu">
+      <div class="menu-inner">
+        <a href="/#works">Work</a>
+        <a href="/#services">Services</a>
+        <a href="/#kpis">KPI&rsquo;s</a>
+        <a href="/about">About</a>
+        <a href="/#contact">Contact Me</a>
+      </div>
+    </div>
 
     <main>
       <h1>404</h1>
       <p>The page you are looking for does not exist or may have been moved.</p>
     </main>
+
+    <script>
+      (function () {
+        var btn = document.getElementById('menuBtn');
+        var menu = document.getElementById('menu');
+        var icon = document.getElementById('menuIcon');
+        var HAMBURGER = '<path d="M4 8H20M4 16H20" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+        var CLOSE = '<line x1="6" y1="6" x2="18" y2="18" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><line x1="18" y1="6" x2="6" y2="18" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>';
+
+        function setOpen(open) {
+          menu.classList.toggle('open', open);
+          document.body.classList.toggle('menu-open', open);
+          btn.setAttribute('aria-expanded', String(open));
+          btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+          icon.innerHTML = open ? CLOSE : HAMBURGER;
+        }
+
+        btn.addEventListener('click', function () {
+          setOpen(!menu.classList.contains('open'));
+        });
+
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') setOpen(false);
+        });
+
+        // The menu only exists below the desktop breakpoint; leaving it open
+        // while the bar takes the links back would trap the page behind it.
+        window.matchMedia('(min-width: 1024px)').addEventListener('change', function (e) {
+          if (e.matches) setOpen(false);
+        });
+      })();
+    </script>
   </body>
 </html>
