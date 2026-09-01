@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
@@ -86,6 +86,37 @@ export default function App() {
     const id = requestAnimationFrame(() => ScrollTrigger.refresh())
     return () => cancelAnimationFrame(id)
   }, [isAbout])
+
+  // A section link arriving from outside the app -- the 404 page's header, or a
+  // pasted /#services -- lands here with a hash and nothing mounted to act on.
+  // Held until the loading screen has let go of the scroll, then run once.
+  const jumpedRef = useRef(false)
+  useEffect(() => {
+    if (jumpedRef.current) return
+    if (loading && !isAbout) return
+    const id = window.location.hash.slice(1)
+    if (!id) return
+    jumpedRef.current = true
+
+    let tries = 0
+    let timer
+    // Timers rather than animation frames, so a backgrounded tab does not leave
+    // the jump queued forever.
+    const settle = () => {
+      if (id === 'contact') {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'auto' })
+        return
+      }
+      const el = document.getElementById(id)
+      if (!el) {
+        if (tries++ < 60) timer = setTimeout(settle, 16)
+        return
+      }
+      el.scrollIntoView({ behavior: 'auto' })
+    }
+    timer = setTimeout(settle, 16)
+    return () => clearTimeout(timer)
+  }, [loading, isAbout])
 
   return (
     <div className="min-h-screen bg-black" style={{ overflowX: 'clip' }}>

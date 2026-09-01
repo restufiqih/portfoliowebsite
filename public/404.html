@@ -6,66 +6,126 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
-    <title>Page not found — restufiqih</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@400&display=swap" rel="stylesheet">
+    <title>404 — restufiqih</title>
     <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
+      *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
       body {
         min-height: 100svh;
         background: #1500E1;
         color: #fff;
         font-family: "Geist", system-ui, -apple-system, sans-serif;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Header — the same bar the site carries, rebuilt here because a real 404
+         has to be a static file and cannot mount the React one. */
+      header { padding: 30px 50px; }
+      .bar { display: flex; align-items: center; justify-content: space-between; }
+      .logo { display: block; flex-shrink: 0; }
+      .actions { display: flex; align-items: center; gap: 30px; }
+      .status { display: flex; align-items: center; gap: 10px; height: 44px; }
+      .dot { position: relative; display: flex; width: 7px; height: 7px; flex-shrink: 0; }
+      .dot span { position: absolute; inset: 0; border-radius: 999px; background: #fff; }
+      .dot .ping { animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite; }
+      @keyframes ping { 75%, 100% { transform: scale(2); opacity: 0; } }
+      @media (prefers-reduced-motion: reduce) { .dot .ping { animation: none; } }
+
+      nav { display: flex; align-items: center; gap: 30px; }
+      .actions a, .status p {
         font-weight: 300;
+        font-size: 16px;
+        line-height: 22px;
+        color: #fff;
+        white-space: nowrap;
+      }
+      nav a {
+        position: relative;
+        display: flex;
+        align-items: center;
+        height: 44px;
+        text-decoration: none;
+      }
+      nav a::after {
+        content: "";
+        position: absolute;
+        left: 0; bottom: 0;
+        width: 0; height: 1.5px;
+        background: #fff;
+        transition: width 0.3s ease;
+      }
+      nav a:hover::after { width: 100%; }
+
+      main {
+        flex: 1;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 40px;
-        padding: 80px 16px;
+        gap: 20px;
+        padding: 0 50px 50px;
         text-align: center;
       }
-      .copy { display: flex; flex-direction: column; align-items: center; gap: 14px; }
-      /* Same ramp the site uses: the mobile figure holds to 768, then grows
-         with the viewport, and the desktop range takes over at 1024. */
       h1 {
         font-weight: 300;
-        font-size: clamp(40px, 5.2083vw, 60px);
-        line-height: 1.15;
-        letter-spacing: -0.02em;
+        /* 70 at 1440, easing down with the viewport the way the site's other
+           headings do. */
+        font-size: clamp(36px, 4.8611vw, 70px);
+        line-height: 1.2;
+        letter-spacing: -2.8px;
       }
-      p {
-        font-size: clamp(16px, 2.0833vw, 18px);
-        line-height: 1.45;
-        color: rgba(255, 255, 255, 0.7);
-        max-width: 460px;
-      }
-      a.home {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        height: 44px;
-        padding: 0 24px;
-        border-radius: 99px;
-        background: #fff;
-        color: #000;
+      main p {
+        font-family: "Inter", system-ui, -apple-system, sans-serif;
+        font-weight: 400;
         font-size: 16px;
         line-height: 22px;
-        text-decoration: none;
-        transition: opacity 0.3s ease;
+        max-width: 322px;
       }
-      a.home:hover { opacity: 0.85; }
+
+      /* Below the desktop breakpoint the site swaps to a hamburger. There is no
+         menu to open from a static page, so the links step aside and the mark
+         alone carries the way back. */
+      @media (max-width: 1023px) {
+        header { padding: 20px 16px; }
+        nav { display: none; }
+        .actions { gap: 20px; }
+        main { padding: 0 16px 40px; }
+      }
     </style>
   </head>
   <body>
-    <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path d="M14.7154 42.3748C1.54019 32.2843 0.588755 13.3454 11.4143 5.4378C21.2922 -1.7776 32.6681 3.39301 33.9261 12.5464C35.1841 21.6999 31.5484 28.0369 23.6533 29.0979C15.7581 30.1589 16.2638 21.2466 23.6533 21.2466C29.8555 21.2466 36.832 26.8025 41.1261 30.0591" stroke="#fff" stroke-width="4"/>
-    </svg>
+    <header>
+      <div class="bar">
+        <a class="logo" href="/" aria-label="restufiqih — home">
+          <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14.7154 42.3748C1.54019 32.2843 0.588755 13.3454 11.4143 5.4378C21.2922 -1.7776 32.6681 3.39301 33.9261 12.5464C35.1841 21.6999 31.5484 28.0369 23.6533 29.0979C15.7581 30.1589 16.2638 21.2466 23.6533 21.2466C29.8555 21.2466 36.832 26.8025 41.1261 30.0591" stroke="#fff" stroke-width="4"/>
+          </svg>
+        </a>
 
-    <div class="copy">
-      <h1>This page doesn&rsquo;t exist</h1>
-      <p>The link may be broken, or the page may have moved.</p>
-    </div>
+        <div class="actions">
+          <div class="status">
+            <span class="dot">
+              <span class="ping"></span>
+              <span></span>
+            </span>
+            <p>Available for Project</p>
+          </div>
+          <nav>
+            <a href="/#works">Work</a>
+            <a href="/#services">Services</a>
+            <a href="/#kpis">KPI&rsquo;s</a>
+            <a href="/about">About</a>
+            <a href="/#contact">Contact Me</a>
+          </nav>
+        </div>
+      </div>
+    </header>
 
-    <a class="home" href="/">Back to home</a>
+    <main>
+      <h1>404</h1>
+      <p>The page you are looking for does not exist or may have been moved.</p>
+    </main>
   </body>
 </html>
