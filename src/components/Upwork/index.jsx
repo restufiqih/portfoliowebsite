@@ -90,16 +90,16 @@ export default function Upwork() {
     >
       <div ref={titleRef} className="flex flex-col items-center w-full" style={{ gap: s(30), maxWidth: isTablet ? s(500) : fluid(490, 684) }}>
         <div className="flex flex-col items-center text-center w-full" style={{ gap: s(20) }}>
-          <div className="text-black font-light font-['Geist'] text-center" style={headingStyle}>
+          <h2 className="text-black font-light font-['Geist'] text-center" style={headingStyle}>
             {isMobile ? (
-              <p>Every great partnership starts with trust</p>
+              <span className="block">Every great partnership starts with trust</span>
             ) : (
               <>
-                <p>Every great partnership</p>
-                <p>starts with trust</p>
+                <span className="block">Every great partnership</span>
+                <span className="block">starts with trust</span>
               </>
             )}
-          </div>
+          </h2>
           <p className="text-black font-light font-['Geist'] text-center" style={bodyStyle}>
             Every project starts with trust. Over the years, I've partnered with founders and product teams to turn ideas into meaningful digital experiences.
           </p>

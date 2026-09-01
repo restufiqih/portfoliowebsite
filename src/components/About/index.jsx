@@ -200,7 +200,7 @@ export default function About() {
         }}
       >
         <Navbar />
-        <div
+        <h1
           className="w-full flex flex-col items-center justify-center"
           style={{
             maxWidth: CONTENT_MAX,
@@ -235,25 +235,25 @@ export default function About() {
                   style={{ width: 8, height: 8 }}
                   aria-hidden
                 />
-                <p
-                  className="text-white font-light font-['Geist'] text-center"
+                <span
+                  className="block text-white font-light font-['Geist'] text-center"
                   style={heroStyle}
                 >
                   Top 3% UI/UX Designer on
-                </p>
+                </span>
               </>
             )}
           </div>
-          <p
+          <span
             ref={(el) => (heroLineRefs.current[1] = el)}
-            className="text-white font-light font-['Geist'] text-center"
+            className="block text-white font-light font-['Geist'] text-center"
             style={{ ...heroStyle, ...(isMobile ? { width: '100%' } : { maxWidth: 960 }) }}
           >
             {isMobile
               ? 'Top 3% UI/UX Designer on Upwork, designing for the world.'
               : 'Upwork, designing for the world.'}
-          </p>
-        </div>
+          </span>
+        </h1>
       </section>
 
       {/* Body — the blue-to-white gradient bleeds over the top of this block */}

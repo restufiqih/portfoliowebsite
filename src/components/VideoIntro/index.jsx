@@ -311,10 +311,10 @@ export default function VideoIntro() {
         style={sec2PadStyle}
       >
         <div ref={titleRef} className="flex flex-col items-center w-full" style={isTablet ? { gap: sc(20), maxWidth: sc(500) } : isMobileView ? { gap: 20 } : { maxWidth: fluid(389, 540), gap: fluid(22, 30) }}>
-          <div className="text-black font-light font-['Geist'] text-center" style={whatStyle}>
-            <p>What I'm</p>
-            <p>actually good at</p>
-          </div>
+          <h2 className="text-black font-light font-['Geist'] text-center" style={whatStyle}>
+            <span className="block">What I'm</span>
+            <span className="block">actually good at</span>
+          </h2>
           <p className="text-black font-light font-['Geist'] text-center" style={bodyStyle}>
             Over the years, I've focused on a few things and worked hard to do them exceptionally well. Here's where I can bring the most value.
           </p>

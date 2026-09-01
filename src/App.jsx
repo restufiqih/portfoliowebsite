@@ -87,6 +87,32 @@ export default function App() {
     return () => cancelAnimationFrame(id)
   }, [isAbout])
 
+  // Keep the title, description, and canonical in step with the route. Social
+  // crawlers do not run JS and still read index.html, but this fixes the browser
+  // tab and what Google shows once it renders the page.
+  useEffect(() => {
+    const meta = isAbout
+      ? {
+          title: 'About — Akhdiyat Restu Fiqih, UI/UX Designer',
+          description:
+            "About Akhdiyat Restu Fiqih — a Top Rated Plus UI/UX designer on Upwork with 6+ years designing products across SaaS, fintech, education, and mobile apps.",
+          canonical: 'https://www.restufiqih.com/about',
+        }
+      : {
+          title: 'Akhdiyat Restu Fiqih — Top Rated Plus UI/UX Designer on Upwork',
+          description:
+            'Akhdiyat Restu Fiqih is a Top Rated Plus UI/UX designer on Upwork with 6+ years designing digital products — SaaS, fintech, education, and mobile apps — for global clients.',
+          canonical: 'https://www.restufiqih.com/',
+        }
+    document.title = meta.title
+    document
+      .querySelector('meta[name="description"]')
+      ?.setAttribute('content', meta.description)
+    document
+      .querySelector('link[rel="canonical"]')
+      ?.setAttribute('href', meta.canonical)
+  }, [isAbout])
+
   // A section link arriving from outside the app -- the 404 page's header, or a
   // pasted /#services -- lands here with a hash and nothing mounted to act on.
   // Held until the loading screen has let go of the scroll, then run once.

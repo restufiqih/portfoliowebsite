@@ -206,7 +206,7 @@ function HowItWorksDesktop() {
             paddingRight: fluid(72, 100),
           }}
         >
-          <p
+          <h2
             ref={headingRef}
             className="text-black font-light font-['Geist'] text-center"
             style={{ fontSize: fluid(43, 60), lineHeight: fluid(50, 70), letterSpacing: -2.4 }}
@@ -214,7 +214,7 @@ function HowItWorksDesktop() {
             Every project is unique,
             <br />
             but here&apos;s how I approach them.
-          </p>
+          </h2>
         </div>
 
         {/* Full-bleed, so panels slide past the screen edges instead of being
@@ -379,13 +379,13 @@ function HowItWorksStacked() {
       <div className="w-full flex flex-col" style={{ gap: t(60) }}>
         {/* The heading runs the full padded width rather than the card column's,
             so the line after the comma stays on one line. */}
-        <p
+        <h2
           ref={headingRef}
           className="text-black font-light font-['Geist'] text-center w-full"
           style={{ fontSize: t(40), lineHeight: tl(46), letterSpacing: tn(0.8) }}
         >
           Every project is unique,{isTablet ? <br /> : ' '}but here&apos;s how I approach them.
-        </p>
+        </h2>
 
         <div
           className="flex flex-col w-full"

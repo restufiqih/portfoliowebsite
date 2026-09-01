@@ -460,9 +460,9 @@ export default function Testimonial() {
 
             <div ref={leftColRef} className="flex-1 flex flex-col gap-[20px] md:gap-[30px] justify-center">
               <div className="flex flex-col gap-[16px] md:gap-[20px]">
-                <p className="text-black text-[28px] sm:text-[36px] font-light font-['Geist']" style={titleStyle}>
+                <h2 className="text-black text-[28px] sm:text-[36px] font-light font-['Geist']" style={titleStyle}>
                   What clients say
-                </p>
+                </h2>
                 <div className="text-black text-[16px] font-light font-['Geist'] leading-[24px]" style={bodyStyle}>
                   <p>My clients explain it better than I ever could.</p>
                   <p>Their experiences say more about my work than any description I could write.</p>

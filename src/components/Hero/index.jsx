@@ -15,14 +15,16 @@ function HeroDesktopLayout({ titleRef, descRef, yearRef }) {
     <>
       <div className="relative z-10 flex-1 h-full flex flex-col min-w-0 pointer-events-none">
         <div className="flex-1" />
-        <div ref={titleRef} className="flex flex-col items-start shrink-0 pointer-events-none">
-          <p className="text-white font-light font-['Geist']" style={titleStyle}>
+        {/* One h1 for the page. The two lines stay separate elements because the
+            intro staggers them, so they are spans inside the heading. */}
+        <h1 ref={titleRef} className="flex flex-col items-start shrink-0 pointer-events-none">
+          <span className="block text-white font-light font-['Geist']" style={titleStyle}>
             Top Rated Plus
-          </p>
-          <p className="text-white font-light font-['Geist']" style={titleStyle}>
+          </span>
+          <span className="block text-white font-light font-['Geist']" style={titleStyle}>
             UI/UX Designer on Upwork
-          </p>
-        </div>
+          </span>
+        </h1>
       </div>
 
       <div className="relative z-10 h-full flex flex-col items-end justify-center shrink-0 pointer-events-none" style={{ gap: fluid(28, 40), paddingTop: fluid(29, 41) }}>
@@ -58,13 +60,13 @@ function HeroMobileLayout({ titleRef, descRef, yearRef, sidePad = 16, textMaxWid
           className="relative z-10"
           style={{ paddingTop: s(10), paddingLeft: sidePad, paddingRight: sidePad, paddingBottom: s(showYear ? 60 : 30), display: 'flex', flexDirection: 'column', alignItems: 'center', gap: s(20), textAlign: 'center' }}
         >
-          <p
+          <h1
             ref={titleRef}
             className="text-white font-light font-['Geist']"
             style={{ fontSize: s(40), lineHeight: sl(46), letterSpacing: 0, ...(textMaxWidth ? { maxWidth: textMaxWidth } : {}) }}
           >
             Top Rated Plus UI/UX Designer on Upwork
-          </p>
+          </h1>
           <p ref={descRef} className="font-light font-['Geist']" style={{ fontSize: s(16), lineHeight: sl(22), ...(textMaxWidth ? { maxWidth: textMaxWidth } : {}) }}>
             <span className="text-white">Good design shouldn't need an explanation.</span>
             {showYear && <br />}
