@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef, useEffect } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useBreakpoint } from '../../hooks/useBreakpoint'
-import { fluid, scaleTablet } from '../../utils/fluid'
+import { fluid, fluidSpace, scaleTablet } from '../../utils/fluid'
 import { useTabletScale } from '../../hooks/useTabletScale'
 
 import orbit1 from '../../assets/orbit/orbit-1.png'
@@ -84,10 +84,12 @@ function DesktopTrailImages({ sectionRef, imgRefs }) {
     <div
       key={i}
       ref={(el) => { imgRefs.current[i] = el }}
-      className="absolute top-0 left-0 rounded-[20px] overflow-hidden pointer-events-none"
+      className="absolute top-0 left-0 overflow-hidden pointer-events-none"
       style={{
-        width: '146.667px',
-        height: '110px',
+        // Desktop only — this trail is not rendered below 1024.
+        width: fluidSpace(146.667),
+        height: fluidSpace(110),
+        borderRadius: fluidSpace(20),
         zIndex: COUNT - i,
       }}
     >
@@ -264,7 +266,7 @@ export default function Quote() {
       ) : (
         <>
           <DesktopTrailImages sectionRef={sectionRef} imgRefs={imgRefs} />
-          <div className="relative z-10 text-center px-5">
+          <div className="relative z-10 text-center" style={{ paddingLeft: fluidSpace(20), paddingRight: fluidSpace(20) }}>
             <p
               ref={topTextRef}
               className="font-light font-['Geist']"

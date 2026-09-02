@@ -4,7 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import CharWord from '../CharWord'
 import ContactFooter from '../ContactFooter'
 import { useBreakpoint } from '../../hooks/useBreakpoint'
-import { fluid, scaleTablet } from '../../utils/fluid'
+import { fluid, fluidSpace, fluidType, scaleTablet } from '../../utils/fluid'
 import card1 from '../../assets/nebula/card-1.png'
 import card2 from '../../assets/nebula/card-2.png'
 import card3 from '../../assets/nebula/card-3.png'
@@ -206,8 +206,13 @@ export default function Nebula() {
       {!isMobileView && (
         <div
           ref={tooltipRef}
-          className="pointer-events-none absolute z-50 flex items-center justify-center rounded-[99px] bg-white/20 backdrop-blur-md px-[14px] py-[6px] text-[14px] font-light font-['Geist'] text-white tracking-[0px] leading-[20px] whitespace-nowrap"
-          style={{ opacity: 0 }}
+          className="pointer-events-none absolute z-50 flex items-center justify-center rounded-[99px] bg-white/20 backdrop-blur-md font-light font-['Geist'] text-white tracking-[0px] whitespace-nowrap"
+          style={{
+            opacity: 0,
+            paddingLeft: fluidSpace(14), paddingRight: fluidSpace(14),
+            paddingTop: fluidSpace(6), paddingBottom: fluidSpace(6),
+            ...fluidType(14, 20),
+          }}
         >
           Click logo to learn more
         </div>
@@ -217,9 +222,11 @@ export default function Nebula() {
         ref={textRef}
         className={isMobileView
           ? "text-center font-light font-['Geist'] tracking-[0px]"
-          : "text-center px-4 font-light font-['Geist'] tracking-[0px]"
+          : "text-center font-light font-['Geist'] tracking-[0px]"
         }
-        style={{ maxWidth: s(520), fontSize: s(24), lineHeight: isTablet ? scaleTablet(34) : '34px' }}
+        style={isDesktop
+          ? { maxWidth: fluidSpace(520), paddingLeft: fluidSpace(16), paddingRight: fluidSpace(16), ...fluidType(24, 34) }
+          : { maxWidth: s(520), fontSize: s(24), lineHeight: isTablet ? scaleTablet(34) : '34px' }}
       >
         {line1.map((w, i) => (
           <CharWord key={`l1-${i}`} word={w} isLast={false} charClassName="char" initialColor="rgba(255,255,255,0.25)" />

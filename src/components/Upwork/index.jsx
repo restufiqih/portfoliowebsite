@@ -4,7 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import UpworkCard from '../UpworkCard'
 import RollingButton from '../RollingButton'
 import { useBreakpoint } from '../../hooks/useBreakpoint'
-import { fluid, scaleTablet } from '../../utils/fluid'
+import { fluid, fluidSpace, scaleTablet } from '../../utils/fluid'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -12,16 +12,18 @@ export default function Upwork() {
   const sectionRef = useRef(null)
   const titleRef = useRef(null)
   const cardRef = useRef(null)
-  const { isMobile, isTablet, scale } = useBreakpoint()
+  const { isMobile, isTablet, isDesktop, scale } = useBreakpoint()
 
   // Tablet holds its 768 figures and grows them with the viewport from there.
   const s = (n) => (isTablet ? scaleTablet(n) : n)
   const sl = (n) => (isTablet ? scaleTablet(n) : `${n}px`)
+  // Desktop rides the 1024->1440 ramp; the other two keep what they had.
+  const sp = (n) => (isDesktop ? fluidSpace(n) : s(n))
 
   const sectionStyle = isMobile
     ? { borderRadius: '0 0 40px 40px', padding: '80px 16px', gap: 50, marginTop: -1, zIndex: 2 }
     : {
-        borderRadius: isTablet ? `0 0 ${scaleTablet(60)} ${scaleTablet(60)}` : '0 0 60px 60px',
+        borderRadius: isTablet ? `0 0 ${scaleTablet(60)} ${scaleTablet(60)}` : `0 0 ${fluid(43, 60)} ${fluid(43, 60)}`,
         gap: isTablet ? s(65) : fluid(65, 90),
         paddingLeft: isTablet ? s(72) : fluid(72, 100),
         paddingRight: isTablet ? s(72) : fluid(72, 100),
@@ -88,8 +90,8 @@ export default function Upwork() {
       }
       style={sectionStyle}
     >
-      <div ref={titleRef} className="flex flex-col items-center w-full" style={{ gap: s(30), maxWidth: isTablet ? s(500) : fluid(490, 684) }}>
-        <div className="flex flex-col items-center text-center w-full" style={{ gap: s(20) }}>
+      <div ref={titleRef} className="flex flex-col items-center w-full" style={{ gap: sp(30), maxWidth: isTablet ? s(500) : fluid(490, 684) }}>
+        <div className="flex flex-col items-center text-center w-full" style={{ gap: sp(20) }}>
           <h2 className="text-black font-light font-['Geist'] text-center" style={headingStyle}>
             {isMobile ? (
               <span className="block">Every great partnership starts with trust</span>

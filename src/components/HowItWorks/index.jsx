@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { fluid, scaleTablet, scaleTabletNeg } from '../../utils/fluid'
+import { fluid, fluidSpace, fluidType, scaleTablet, scaleTabletNeg } from '../../utils/fluid'
 import { useBreakpoint } from '../../hooks/useBreakpoint'
 
 import discoverImg from '../../assets/howitworks/discover.png'
@@ -242,14 +242,14 @@ function HowItWorksDesktop() {
                     style={{
                       width: fluid(257, 360),
                       height: fluid(257, 360),
-                      borderRadius: 30,
+                      borderRadius: fluidSpace(30),
                     }}
                   >
                     <img
                       src={step.src}
                       alt=""
                       className="w-full h-full object-cover pointer-events-none"
-                      style={{ borderRadius: 30 }}
+                      style={{ borderRadius: fluidSpace(30) }}
                     />
                   </div>
 
@@ -272,17 +272,17 @@ function HowItWorksDesktop() {
                       </p>
                     </div>
 
-                    <div className="flex flex-wrap" style={{ gap: 10 }}>
+                    <div className="flex flex-wrap" style={{ gap: fluidSpace(10) }}>
                       {step.tags.map((tag) => (
                         <span
                           key={tag}
                           className="bg-white text-black font-light font-['Geist'] whitespace-nowrap inline-flex items-center justify-center"
                           style={{
-                            height: 38,
-                            padding: '0 14px',
+                            height: fluidSpace(38),
+                            padding: `0 ${fluidSpace(14)}`,
+                            // A pill, so the corner holds while the box ramps.
                             borderRadius: 30,
-                            fontSize: 16,
-                            lineHeight: '22px',
+                            ...fluidType(16, 22),
                           }}
                         >
                           {tag}

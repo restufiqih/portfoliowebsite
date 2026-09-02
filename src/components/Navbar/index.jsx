@@ -2,7 +2,7 @@ import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { DrawLogo, NavLink, navLinks, handleNavClick } from './shared'
 import { useBreakpoint } from '../../hooks/useBreakpoint'
-import { scaleTablet } from '../../utils/fluid'
+import { fluid, scaleTablet } from '../../utils/fluid'
 import menuIcon from '../../assets/icons/menu-hamburger.svg'
 
 const HamburgerIcon = ({ color = 'white' }) => (
@@ -63,7 +63,10 @@ function MobileMenu({ open, onClose, isTablet }) {
   )
 }
 
-function DesktopNavbar({ stickyVisible }) {
+// `onLight` paints the top bar for a white page — the detail pages — rather
+// than for the brand-blue hero. The sticky bar below is already white on every
+// page and does not change.
+function DesktopNavbar({ stickyVisible, onLight }) {
   const navRef = useRef(null)
   const actionsRef = useRef(null)
 
@@ -75,52 +78,78 @@ function DesktopNavbar({ stickyVisible }) {
       .to(actionsRef.current, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.5 }, '-=0.3')
   }, [])
 
+  // Desktop rides the 1024->1440 ramp, the same one every section below the
+  // navbar is built on. Before this the bar was the only chrome held at flat
+  // pixels, so at 1024 its 50 sat against a hero inset that had already
+  // dropped to 36.
+  const pad = { paddingLeft: fluid(36, 50), paddingRight: fluid(36, 50) }
+  const rowGap = fluid(22, 30)
+  const markSize = fluid(32, 44)
+  const itemH = fluid(32, 44)
+
+  // Figma 686:2755 — on a white page the mark is brand blue, the availability
+  // dot follows it, and the links are black.
+  const markColor = onLight ? '#1500E1' : 'white'
+  const dotColor = onLight ? 'bg-[#1500E1]' : 'bg-white'
+  const labelColor = onLight ? 'text-black' : 'text-white'
+
   return (
     <>
-      <nav ref={navRef} className="absolute top-0 left-0 w-full z-50 bg-transparent py-[30px] px-[50px]">
+      <nav
+        ref={navRef}
+        className="absolute top-0 left-0 w-full z-50 bg-transparent"
+        style={{ ...pad, paddingTop: fluid(22, 30), paddingBottom: fluid(22, 30) }}
+      >
         <div className="flex justify-between items-center">
-          <DrawLogo size={44} color="white" />
-          <div ref={actionsRef} className="flex items-center gap-[30px]">
-            <div className="flex items-center gap-[10px] h-[44px] py-[6px]">
-              <span className="relative flex h-2.5 w-2.5 items-center justify-center shrink-0">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+          <DrawLogo size={markSize} color={markColor} />
+          <div ref={actionsRef} className="flex items-center" style={{ gap: rowGap }}>
+            <div className="flex items-center" style={{ gap: fluid(7, 10), height: itemH }}>
+              <span className="relative flex items-center justify-center shrink-0" style={{ width: fluid(7, 10), height: fluid(7, 10) }}>
+                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${dotColor} opacity-75`} />
+                <span className={`relative inline-flex rounded-full ${dotColor}`} style={{ width: fluid(6, 8), height: fluid(6, 8) }} />
               </span>
-              <span className="text-white text-[16px] font-light font-['Geist'] leading-[22px] whitespace-nowrap">
+              <span
+                className={`${labelColor} font-light font-['Geist'] whitespace-nowrap`}
+                style={{ fontSize: fluid(14, 16), lineHeight: fluid(18, 22) }}
+              >
                 Available for Project
               </span>
             </div>
-            <NavLink label="Work" href="#works" />
-            <NavLink label="Services" href="#services" />
-            <NavLink label="KPI's" href="#kpis" />
-            <NavLink label="About" href="/about" />
-            <NavLink label="Contact Me" href="#contact" />
+            <NavLink label="Work" href="/work" dark={onLight} height={itemH} />
+            <NavLink label="Services" href="#services" dark={onLight} height={itemH} />
+            <NavLink label="KPI's" href="#kpis" dark={onLight} height={itemH} />
+            <NavLink label="About" href="/about" dark={onLight} height={itemH} />
+            <NavLink label="Contact Me" href="#contact" dark={onLight} height={itemH} />
           </div>
         </div>
       </nav>
 
       <nav
-        className={`fixed top-0 left-0 w-full z-50 py-0 px-[50px] bg-white transition-transform duration-300 ease-out ${
+        className={`fixed top-0 left-0 w-full z-50 py-0 bg-white transition-transform duration-300 ease-out ${
           stickyVisible ? 'translate-y-0' : '-translate-y-full'
         }`}
+        style={pad}
       >
         <div className="flex justify-between items-center">
-          <DrawLogo className="w-[44px] h-[44px] origin-left scale-[0.682]" size={44} color="#1500E1" />
-          <div className="flex items-center gap-[30px]">
-            <div className="flex items-center gap-[10px] h-[44px] py-[6px]">
-              <span className="relative flex h-2.5 w-2.5 items-center justify-center shrink-0">
+          <DrawLogo className="origin-left scale-[0.682]" size={markSize} color="#1500E1" />
+          <div className="flex items-center" style={{ gap: rowGap }}>
+            <div className="flex items-center" style={{ gap: fluid(7, 10), height: itemH }}>
+              <span className="relative flex items-center justify-center shrink-0" style={{ width: fluid(7, 10), height: fluid(7, 10) }}>
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#1500E1] opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#1500E1]" />
+                <span className="relative inline-flex rounded-full bg-[#1500E1]" style={{ width: fluid(6, 8), height: fluid(6, 8) }} />
               </span>
-              <span className="text-black text-[16px] font-light font-['Geist'] leading-[22px] whitespace-nowrap">
+              <span
+                className="text-black font-light font-['Geist'] whitespace-nowrap"
+                style={{ fontSize: fluid(14, 16), lineHeight: fluid(18, 22) }}
+              >
                 Available for Project
               </span>
             </div>
-            <NavLink label="Work" href="#works" dark />
-            <NavLink label="Services" href="#services" dark />
-            <NavLink label="KPI's" href="#kpis" dark />
-            <NavLink label="About" href="/about" dark />
-            <NavLink label="Contact Me" href="#contact" dark />
+            <NavLink label="Work" href="/work" dark height={itemH} />
+            <NavLink label="Services" href="#services" dark height={itemH} />
+            <NavLink label="KPI's" href="#kpis" dark height={itemH} />
+            <NavLink label="About" href="/about" dark height={itemH} />
+            <NavLink label="Contact Me" href="#contact" dark height={itemH} />
           </div>
         </div>
       </nav>
@@ -128,10 +157,18 @@ function DesktopNavbar({ stickyVisible }) {
   )
 }
 
-function MobileNavbar({ stickyVisible, menuOpen, onMenuOpen, onMenuClose, isTablet }) {
+function MobileNavbar({ stickyVisible, menuOpen, onMenuOpen, onMenuClose, isTablet, onLight }) {
   const navRef = useRef(null)
   const s = (n) => (isTablet ? scaleTablet(n) : n)
   const sl = (n) => (isTablet ? scaleTablet(n) : `${n}px`)
+  // The open menu is a full-bleed brand-blue sheet and the bar sits on top of
+  // it, so a bar painted for a white page (the detail pages) would put a blue
+  // mark and black labels straight onto blue. While the menu is open the bar
+  // always takes its on-dark colours, whatever page it is on.
+  const onDark = !onLight || menuOpen
+  const markColor = onDark ? 'white' : '#1500E1'
+  const dotColor = onDark ? 'bg-white' : 'bg-[#1500E1]'
+  const labelColor = onDark ? 'text-white' : 'text-black'
 
   useLayoutEffect(() => {
     gsap.set(navRef.current, { opacity: 0, y: -20, filter: 'blur(10px)' })
@@ -146,23 +183,23 @@ function MobileNavbar({ stickyVisible, menuOpen, onMenuOpen, onMenuClose, isTabl
         style={{ background: 'transparent', paddingTop: s(20), paddingBottom: s(20), paddingLeft: isTablet ? s(40) : 16, paddingRight: isTablet ? s(40) : 16 }}
       >
         <div className="flex items-center justify-between">
-          <DrawLogo size={isTablet ? Math.round(34 * 4 / 3) : 34} color="white" />
+          <DrawLogo size={isTablet ? Math.round(34 * 4 / 3) : 34} color={markColor} />
           <div className="flex items-center" style={{ gap: s(20) }}>
             <div className="flex items-center" style={{ gap: s(10) }}>
               <span className="relative flex shrink-0" style={{ width: s(7), height: s(7) }}>
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
-                <span className="relative inline-flex rounded-full bg-white" style={{ width: s(7), height: s(7) }} />
+                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${dotColor} opacity-75`} />
+                <span className={`relative inline-flex rounded-full ${dotColor}`} style={{ width: s(7), height: s(7) }} />
               </span>
-              <span className="text-white font-light font-['Geist'] whitespace-nowrap" style={{ fontSize: s(16), lineHeight: sl(22) }}>
+              <span className={`${labelColor} font-light font-['Geist'] whitespace-nowrap`} style={{ fontSize: s(16), lineHeight: sl(22) }}>
                 Available for Project
               </span>
             </div>
             <button
-              className="text-white flex items-center justify-center cursor-pointer"
+              className={`${labelColor} flex items-center justify-center cursor-pointer`}
               style={{ height: s(44) }}
               onClick={menuOpen ? onMenuClose : onMenuOpen}
             >
-              {menuOpen ? <CloseIcon /> : <HamburgerIcon color="white" />}
+              {menuOpen ? <CloseIcon /> : <HamburgerIcon color={onDark ? 'white' : 'black'} />}
             </button>
           </div>
         </div>
@@ -204,7 +241,7 @@ function MobileNavbar({ stickyVisible, menuOpen, onMenuOpen, onMenuClose, isTabl
   )
 }
 
-export default function Navbar() {
+export default function Navbar({ onLight = false }) {
   const [stickyVisible, setStickyVisible] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const { isMobileView, isTablet } = useBreakpoint()
@@ -227,8 +264,9 @@ export default function Navbar() {
       onMenuOpen={() => setMenuOpen(true)}
       onMenuClose={() => setMenuOpen(false)}
       isTablet={isTablet}
+      onLight={onLight}
     />
   ) : (
-    <DesktopNavbar stickyVisible={stickyVisible} />
+    <DesktopNavbar stickyVisible={stickyVisible} onLight={onLight} />
   )
 }

@@ -5,7 +5,7 @@ import LogoMarquee from '../LogoMarquee'
 import RollingButton from '../RollingButton'
 import testimonialBg from '../../assets/testimonial-bg.png'
 import { useBreakpoint } from '../../hooks/useBreakpoint'
-import { fluid, scaleTablet } from '../../utils/fluid'
+import { fluid, fluidSpace, fluidType, scaleTablet } from '../../utils/fluid'
 
 import client1Photo from '../../assets/clients/client1.png'
 import client2Photo from '../../assets/clients/client2.png'
@@ -102,6 +102,8 @@ export default function Testimonial() {
   // Tablet holds its 768 figures and grows them with the viewport from there.
   const s = (n) => (isTablet ? scaleTablet(n) : n)
   const sl = (n) => (isTablet ? scaleTablet(n) : `${n}px`)
+  // Desktop rides the 1024->1440 ramp; tablet and mobile keep what they had.
+  const sp = (n) => (isDesktop ? fluidSpace(n) : s(n))
 
   const sectionStyle = isDesktop ? {
     gap: fluid(58, 80), paddingTop: fluid(130, 180), paddingBottom: fluid(288, 400),
@@ -298,8 +300,16 @@ export default function Testimonial() {
       ref={(el) => { rightColRef.current = el; cardAreaRef.current = el }}
       className={isMobileView
         ? 'relative w-full bg-black rounded-[30px] flex flex-col gap-[40px] pt-[20px] pb-[60px] px-[20px] overflow-hidden select-none'
-        : 'relative flex-1 bg-black rounded-[30px] flex flex-col gap-[40px] pt-[20px] pb-[20px] px-[20px] overflow-hidden select-none cursor-pointer'
+        : 'relative flex-1 bg-black flex flex-col overflow-hidden select-none cursor-pointer'
       }
+      style={isMobileView ? undefined : {
+        borderRadius: fluidSpace(30),
+        gap: fluidSpace(40),
+        paddingTop: fluidSpace(20),
+        paddingBottom: fluidSpace(20),
+        paddingLeft: fluidSpace(20),
+        paddingRight: fluidSpace(20),
+      }}
       onMouseDown={!isMobileView ? handleHoldStart : undefined}
       onMouseUp={!isMobileView ? handleHoldEnd : undefined}
       onMouseLeave={!isMobileView ? (e) => { handleMouseLeave(); setCardHovered(false) } : undefined}
@@ -311,8 +321,13 @@ export default function Testimonial() {
       {!isMobileView && (
         <div
           ref={tooltipRef}
-          className="pointer-events-none absolute z-50 flex items-center justify-center rounded-[99px] bg-white/20 backdrop-blur-md px-[14px] py-[6px] text-[14px] font-light font-['Geist'] text-white tracking-[0px] leading-[20px] whitespace-nowrap transition-opacity duration-200"
-          style={{ opacity: isDesktop && cardHovered && !holding ? 1 : 0 }}
+          className="pointer-events-none absolute z-50 flex items-center justify-center rounded-[99px] bg-white/20 backdrop-blur-md font-light font-['Geist'] text-white tracking-[0px] whitespace-nowrap transition-opacity duration-200"
+          style={{
+            opacity: isDesktop && cardHovered && !holding ? 1 : 0,
+            paddingLeft: fluidSpace(14), paddingRight: fluidSpace(14),
+            paddingTop: fluidSpace(6), paddingBottom: fluidSpace(6),
+            ...fluidType(14, 20),
+          }}
         >
           Hold to pause
         </div>
@@ -324,28 +339,33 @@ export default function Testimonial() {
         onClickBar={jumpTo}
       />
 
-      <div ref={contentRef} className="flex flex-col" style={{ gap: s(20) }}>
+      <div ref={contentRef} className="flex flex-col" style={{ gap: sp(20) }}>
         <div
           className="flex items-center"
           style={{
-            gap: isMobileView ? s(14) : 20,
-            ...(isTablet ? { paddingLeft: s(20), paddingRight: s(20) } : !isMobileView ? { paddingLeft: 20, paddingRight: 20 } : {}),
+            gap: isMobileView ? s(14) : fluidSpace(20),
+            ...(isTablet ? { paddingLeft: s(20), paddingRight: s(20) } : !isMobileView ? { paddingLeft: fluidSpace(20), paddingRight: fluidSpace(20) } : {}),
           }}
         >
           <img
             src={current.photo}
             alt={current.name}
             className="rounded-full object-cover shrink-0"
-            style={{ width: isMobileView ? s(46) : 52, height: isMobileView ? s(46) : 52 }}
+            style={{ width: isMobileView ? s(46) : fluidSpace(52), height: isMobileView ? s(46) : fluidSpace(52) }}
           />
-          <div className="flex flex-col" style={{ gap: s(2) }}>
+          <div className="flex flex-col" style={{ gap: sp(2) }}>
             <p
               className="text-white font-light font-['Geist']"
-              style={{ fontSize: isMobileView ? s(18) : 20, lineHeight: isMobileView ? sl(26) : '28px' }}
+              style={isMobileView
+                ? { fontSize: s(18), lineHeight: sl(26) }
+                : fluidType(20, 28)}
             >
               {current.name}
             </p>
-            <p className="text-white/70 font-light font-['Geist']" style={{ fontSize: s(16), lineHeight: sl(22) }}>
+            <p
+              className="text-white/70 font-light font-['Geist']"
+              style={isDesktop ? fluidType(16, 22) : { fontSize: s(16), lineHeight: sl(22) }}
+            >
               {current.company}
             </p>
           </div>
@@ -354,11 +374,11 @@ export default function Testimonial() {
         <div
           className={isMobileView
             ? 'flex items-center'
-            : 'flex items-center justify-center px-[20px] min-h-[200px]'
+            : 'flex items-center justify-center min-h-[200px]'
           }
           style={isMobileView
             ? { height: s(360), ...(isTablet ? { paddingLeft: s(20), paddingRight: s(20) } : {}) }
-            : cardHeightStyle}
+            : { ...cardHeightStyle, paddingLeft: fluidSpace(20), paddingRight: fluidSpace(20) }}
         >
           <p
             className="text-white font-light font-['Geist']"
@@ -379,27 +399,35 @@ export default function Testimonial() {
       className="flex flex-col"
       style={{
         background: '#f2f4f7',
-        borderRadius: s(30),
-        gap: isMobileView ? s(20) : 24,
-        padding: isMobileView ? (isTablet ? s(24) : 20) : 24,
+        borderRadius: sp(30),
+        gap: isMobileView ? s(20) : fluidSpace(24),
+        padding: isMobileView ? (isTablet ? s(24) : 20) : fluidSpace(24),
       }}
     >
-      <p className="text-black font-light font-['Geist']" style={{ fontSize: s(16), lineHeight: sl(22) }}>
+      <p
+        className="text-black font-light font-['Geist']"
+        style={isDesktop ? fluidType(16, 22) : { fontSize: s(16), lineHeight: sl(22) }}
+      >
         Insights from completed jobs
       </p>
-      <div className="flex flex-wrap" style={{ gap: s(10) }}>
+      <div className="flex flex-wrap" style={{ gap: sp(10) }}>
         {insights.map((tag) => (
           <div
             key={tag}
             className="bg-white flex items-center justify-center"
             style={{
+              // A pill either way, so the corner stays put; the box it wraps
+              // is what rides the ramp.
               borderRadius: s(30),
-              height: isMobileView ? s(34) : 38,
-              paddingLeft: isMobileView ? s(12) : 14,
-              paddingRight: isMobileView ? s(12) : 14,
+              height: isMobileView ? s(34) : fluidSpace(38),
+              paddingLeft: isMobileView ? s(12) : fluidSpace(14),
+              paddingRight: isMobileView ? s(12) : fluidSpace(14),
             }}
           >
-            <p className={`text-black font-light font-['Geist'] whitespace-nowrap ${isMobileView ? 'text-[14px] leading-[20px] tracking-[-0.02em]' : 'text-[16px] leading-[22px]'}`}>
+            <p
+              className={`text-black font-light font-['Geist'] whitespace-nowrap ${isMobileView ? 'text-[14px] leading-[20px] tracking-[-0.02em]' : ''}`}
+              style={isDesktop ? fluidType(16, 22) : undefined}
+            >
               {tag}
             </p>
           </div>
@@ -456,10 +484,10 @@ export default function Testimonial() {
         </div>
       ) : (
         <div className="relative z-10 flex items-center justify-center w-full px-5" style={contentPadStyle}>
-          <div className="flex flex-col lg:flex-row gap-10 lg:gap-[80px] items-center w-full max-w-[950px]">
+          <div className="flex flex-col lg:flex-row gap-10 items-center w-full max-w-[950px]" style={isDesktop ? { gap: fluidSpace(80) } : undefined}>
 
-            <div ref={leftColRef} className="flex-1 flex flex-col gap-[20px] md:gap-[30px] justify-center">
-              <div className="flex flex-col gap-[16px] md:gap-[20px]">
+            <div ref={leftColRef} className="flex-1 flex flex-col gap-[20px] justify-center" style={isDesktop ? { gap: fluidSpace(30) } : undefined}>
+              <div className="flex flex-col gap-[16px]" style={isDesktop ? { gap: fluidSpace(20) } : undefined}>
                 <h2 className="text-black text-[28px] sm:text-[36px] font-light font-['Geist']" style={titleStyle}>
                   What clients say
                 </h2>

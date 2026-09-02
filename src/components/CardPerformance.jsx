@@ -5,22 +5,24 @@ import IdCard from './IdCard'
 import greenBg from '../assets/card_performance/Card Performance.png'
 import upworkLogo from '../assets/card_performance/upwork-logo.svg'
 import { useBreakpoint } from '../hooks/useBreakpoint'
-import { fluid, fluidNeg, scaleTablet, scaleTabletNeg } from '../utils/fluid'
+import { fluid, fluidNeg, fluidSpace, fluidType, scaleTablet, scaleTabletNeg } from '../utils/fluid'
 
 gsap.registerPlugin(ScrollTrigger)
 
 function StatCard({ value, label, isDesktop, isMobile }) {
   return (
     <div
-      className="flex-1 min-w-0 flex flex-col rounded-[20px] relative"
+      className="flex-1 min-w-0 flex flex-col relative"
       style={{
+        borderRadius: fluidSpace(20),
         padding: isDesktop ? fluid(22, 30) : isMobile ? 30 : scaleTablet(28),
         background: 'linear-gradient(to bottom, rgba(255,255,255,0.18), rgba(255,255,255,0.07))',
         backdropFilter: 'blur(5px)',
         WebkitBackdropFilter: 'blur(5px)',
       }}
     >
-      <div className="absolute inset-0 rounded-[20px] pointer-events-none" style={{
+      <div className="absolute inset-0 pointer-events-none" style={{
+        borderRadius: fluidSpace(20),
         padding: '1.5px',
         background: 'linear-gradient(to bottom, rgba(255,255,255,0.4), rgba(255,255,255,0.1))',
         mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
@@ -151,8 +153,14 @@ export default function CardPerformance() {
     >
       <div
         ref={tooltipRef}
-        className={`pointer-events-none absolute z-50 items-center justify-center rounded-[99px] bg-white/20 backdrop-blur-md px-[14px] py-[6px] text-[14px] font-light font-['Geist'] text-white tracking-[0px] leading-[20px] whitespace-nowrap transition-opacity duration-200 ${isMobile ? 'hidden' : 'flex'}`}
-        style={{ opacity: hovered ? 1 : 0 }}
+        className={`pointer-events-none absolute z-50 items-center justify-center rounded-[99px] bg-white/20 backdrop-blur-md font-light font-['Geist'] text-white tracking-[0px] whitespace-nowrap transition-opacity duration-200 ${isMobile ? 'hidden' : 'flex'}`}
+        style={{
+          opacity: hovered ? 1 : 0,
+          paddingLeft: fluidSpace(14), paddingRight: fluidSpace(14),
+          paddingTop: fluidSpace(6), paddingBottom: fluidSpace(6),
+          // Already at the scale's floor, so the label holds at 14/20.
+          ...fluidType(14, 20),
+        }}
       >
         See Upwork Profile
       </div>
@@ -182,7 +190,10 @@ export default function CardPerformance() {
             </div>
           </div>
         ) : (
-          <div className="relative flex-1 h-full flex flex-col items-start py-[30px] rounded-[20px] z-[2]">
+          <div
+            className="relative flex-1 h-full flex flex-col items-start z-[2]"
+            style={{ paddingTop: fluidSpace(30), paddingBottom: fluidSpace(30), borderRadius: fluidSpace(20) }}
+          >
             <div
               ref={idCardRef}
               className="absolute transition-all duration-300 ease-out"

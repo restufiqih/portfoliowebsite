@@ -1,6 +1,7 @@
-import { useLayoutEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { useBreakpoint } from '../hooks/useBreakpoint'
+import { fluidPx } from '../utils/fluid'
 
 import bluegulf from '../assets/logos/bluegulf.svg'
 import sellmax from '../assets/logos/sellmax.png'
@@ -37,9 +38,19 @@ const allLogos = [...logos, ...logos]
 export default function LogoMarquee() {
   const trackRef = useRef(null)
   const { isMobileView } = useBreakpoint()
-  const sizeScale = isMobileView ? 0.9 : 1
+
+  // The track's loop length is measured in JavaScript, so the ramp has to be a
+  // number rather than a clamp — hence the tracked viewport width.
+  const [vw, setVw] = useState(typeof window !== 'undefined' ? window.innerWidth : 1440)
+  useEffect(() => {
+    const onResize = () => setVw(window.innerWidth)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
+  const sizeScale = isMobileView ? 0.9 : fluidPx(0.72, 1, vw)
   const slotHeight = isMobileView ? 90 : 100
-  const gap = isMobileView ? 60 : 70
+  const gap = isMobileView ? 60 : fluidPx(50, 70, vw)
   const containerHeight = isMobileView ? slotHeight : slotHeight * sizeScale
 
   useLayoutEffect(() => {

@@ -4,17 +4,12 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import RollingButton from '../RollingButton'
 import CharWord from '../CharWord'
 import { useBreakpoint } from '../../hooks/useBreakpoint'
-import { fluid, scaleTablet } from '../../utils/fluid'
+import { fluid, fluidSpace, fluidType, scaleTablet } from '../../utils/fluid'
+import { caseStudies, caseStudyPath } from '../../data/caseStudies'
+import { getStory } from '../../data/stories'
+import { navigate } from '../../utils/route'
 
 import bgGradient from '../../assets/works/bg-gradient.png'
-import retuneLogo from '../../assets/works/retune-logo.svg'
-import retuneThumbnail from '../../assets/works/retune-thumbnail.png'
-import catatmakLogo from '../../assets/works/catatmak-logo.svg'
-import catatmakThumbnail from '../../assets/works/catatmak-thumbnail.png'
-import digiverseLogo from '../../assets/works/digiverse-logo.svg'
-import digiverseThumbnail from '../../assets/works/digiverse-thumbnail.png'
-import jettLogo from '../../assets/works/jett-logo.svg'
-import jettThumbnail from '../../assets/works/jett-thumbnail.png'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -101,104 +96,22 @@ const CARD_SURFACES = {
   primary: { background: BRAND_BLUE, border: 'none', onLight: false, chipBorder: CHIP_BORDER_ON_DARK },
 }
 
-// Each project brings its own tile: the fill behind the mark, how much of the
-// tile the mark takes up, and whether the tile needs an outline to read. A mark
-// on a coloured tile carries its own edge and never does.
-const RETUNE_TILE = {
-  src: retuneLogo,
-  fill: '#fff',
-  markW: 26.571 / 62,
-  markH: 33.214 / 62,
-  outlined: true,
-}
-
-const DIGIVERSE_TILE = {
-  src: digiverseLogo,
-  fill: '#fff',
-  markW: 25.333 / 62,
-  markH: 38 / 62,
-  outlined: true,
-}
-
-// Figma 709:49311 — the artwork is the whole tile, rounded corner and all, so
-// it fills the box and the fill behind it only guards against a seam.
-const JETT_TILE = {
-  src: jettLogo,
-  fill: '#000',
-  markW: 1,
-  markH: 1,
-  outlined: false,
-}
-
-const CATATMAK_TILE = {
-  // Exported whole rather than rebuilt: the mark is a dozen vector layers with
-  // container-relative transforms, and the tile fill is part of the artwork.
-  src: catatmakLogo,
-  fill: '#3497F9',
-  // 56 of the tile's 62, so the tile's own fill draws the rounded edge rather
-  // than the artwork — the whole-tile export baked white corners into it.
-  markW: 56 / 62,
-  markH: 56 / 62,
-  outlined: false,
-}
-
 // The project mark, on its white tile. Figma 686:3000 (desktop, in the copy
 // column) and 694:6619 (stacked, overlaid on the thumbnail). The mark keeps a
 // fixed share of the tile at both sizes, so one set of fractions covers both.
-const LOGO_TILE_DESKTOP = 62
+const LOGO_TILE_DESKTOP = fluidSpace(62)
 const LOGO_TILE_STACKED = 40
-const LOGO_TILE_RADIUS_DESKTOP = 13.286
+const LOGO_TILE_RADIUS_DESKTOP = fluidSpace(13.286)
 const LOGO_TILE_RADIUS_STACKED = 8.571
 // Gap between the mark and the title block beneath it, desktop only.
-const LOGO_GAP = 40
+const LOGO_GAP = fluidSpace(40)
 
 // How far the stacked card's tile is inset from the thumbnail's bottom-left.
 const LOGO_INSET_STACKED = 10
 
 // Thumbnail corner. The stacked card's is smaller because the card itself is.
-const THUMB_RADIUS_DESKTOP = 20
+const THUMB_RADIUS_DESKTOP = fluidSpace(20)
 const THUMB_RADIUS_STACKED = 14
-
-const caseStudies = [
-  {
-    title: 'Retune',
-    description:
-      'Retune is an AI-powered SaaS platform that transforms a single piece of content (such as a YouTube video) into ready-to-publish formats for 7 different platforms automatically, including blogs, newsletters, and social media.',
-    tags: ['Web App Design', 'Visual Branding'],
-    src: retuneThumbnail,
-    logo: RETUNE_TILE,
-    variant: 'dark',
-    href: '#',
-  },
-  {
-    title: 'Catatmak',
-    description: 'Lorem ipsum dolor sit amet consectetur. Hendrerit massa id pharetra.',
-    // Figma 652:1140 — Catatmak carries a single tag.
-    tags: ['Mobile App Design'],
-    src: catatmakThumbnail,
-    logo: CATATMAK_TILE,
-    variant: 'light',
-    href: '#',
-  },
-  {
-    title: 'DigiVerse Studio',
-    description: 'Lorem ipsum dolor sit amet consectetur. Hendrerit massa id pharetra.',
-    tags: ['Web App Design', 'Visual Branding'],
-    src: digiverseThumbnail,
-    logo: DIGIVERSE_TILE,
-    variant: 'dark',
-    href: '#',
-  },
-  {
-    title: 'JETT',
-    description: 'Lorem ipsum dolor sit amet consectetur. Hendrerit massa id pharetra.',
-    tags: ['Website Design', 'Interaction Design', 'Visual Branding'],
-    src: jettThumbnail,
-    logo: JETT_TILE,
-    variant: 'light',
-    href: '#',
-  },
-]
 
 // The whole CTA sentence is revealed, so the wipe starts on its very first
 // word rather than picking up halfway through.
@@ -242,7 +155,9 @@ export default function Works() {
   // Geist/24/Light, flat on every breakpoint — what both the desktop (652:718)
   // and mobile (656:1618) frames specify. Tracking as the -2% the token states
   // rather than the px it resolves to, so it stays correct if the size moves.
-  const ctaStyle = { fontSize: s(24), lineHeight: sl(34), letterSpacing: '-0.02em' }
+  const ctaStyle = isDesktop
+    ? { ...fluidType(24, 34), letterSpacing: '-0.02em' }
+    : { fontSize: s(24), lineHeight: sl(34), letterSpacing: '-0.02em' }
 
   // Same shape as the other sections: capped at CONTENT_MAX and centred, with
   // the shared fluid side padding. The gradient behind it stays full-bleed.
@@ -554,8 +469,14 @@ export default function Works() {
       {!isMobile && (
         <div
           ref={tooltipRef}
-          className="pointer-events-none absolute z-50 flex items-center justify-center rounded-[99px] bg-white/20 backdrop-blur-md px-[14px] py-[6px] text-[14px] font-light font-['Geist'] text-white tracking-[0px] leading-[20px] whitespace-nowrap"
-          style={{ opacity: 0 }}
+          className="pointer-events-none absolute z-50 flex items-center justify-center rounded-[99px] bg-white/20 backdrop-blur-md font-light font-['Geist'] text-white tracking-[0px] whitespace-nowrap"
+          style={{
+            opacity: 0,
+            paddingLeft: fluidSpace(14), paddingRight: fluidSpace(14),
+            paddingTop: fluidSpace(6), paddingBottom: fluidSpace(6),
+            // Already at the scale's floor, so the label holds at 14/20.
+            ...fluidType(14, 20),
+          }}
         >
           Details
         </div>
@@ -596,6 +517,12 @@ export default function Works() {
           {caseStudies.map((study, i) => {
             const surface = CARD_SURFACES[study.variant]
             const textColor = surface.onLight ? 'text-black' : 'text-white'
+
+            // A card links exactly when its detail page has been written --
+            // asked of the story itself rather than tracked by a flag beside
+            // it. The rest still render as anchors so nothing about the layout
+            // shifts, but they have no href and so are not clickable.
+            const detailHref = getStory(study.id) ? caseStudyPath(study) : undefined
 
             // The mark on its tile. Same piece either way; only the size and
             // where it is anchored differ.
@@ -646,8 +573,8 @@ export default function Works() {
                 }}
               >
                 <img
-                  src={study.src}
-                  alt={study.title}
+                  src={study.thumbnail}
+                  alt={study.name}
                   className={`w-full h-full object-cover ${isDesktop ? 'transition-transform duration-700 ease-out group-hover:scale-105' : ''}`}
                   style={{ borderRadius: thumbRadius }}
                 />
@@ -662,7 +589,7 @@ export default function Works() {
             )
 
             const copy = (
-              <div className="flex flex-col" style={{ gap: stacked ? s(14) : 14 }}>
+              <div className="flex flex-col" style={{ gap: stacked ? s(14) : fluidSpace(14) }}>
                 <p
                   className={`font-light font-['Geist'] ${textColor}`}
                   style={{
@@ -671,7 +598,7 @@ export default function Works() {
                     letterSpacing: stacked ? sn(0.6) : -0.8,
                   }}
                 >
-                  {study.title}
+                  {study.name}
                 </p>
                 <p
                   className={`font-light font-['Geist'] ${textColor}`}
@@ -687,8 +614,8 @@ export default function Works() {
             )
 
             const tagRow = (
-              <div className="flex gap-[10px] flex-wrap">
-                {study.tags.map((tag) => (
+              <div className="flex flex-wrap" style={{ gap: stacked ? 10 : fluidSpace(10) }}>
+                {study.services.map((tag) => (
                   <span
                     key={tag}
                     className={`font-light font-['Geist'] whitespace-nowrap ${textColor}`}
@@ -698,14 +625,17 @@ export default function Works() {
                       // beats any border class — that is what was painting the
                       // white card's tags black instead of neutral/300.
                       border: `1px solid ${surface.chipBorder}`,
+                      // Pill either way, so the corner holds; the box rides
+                      // the ramp instead.
                       borderRadius: 30,
-                      height: stacked ? s(34) : 38,
-                      padding: stacked ? `0 ${isTablet ? scaleTablet(12) : '12px'}` : '0 14px',
+                      height: stacked ? s(34) : fluidSpace(38),
+                      padding: stacked ? `0 ${isTablet ? scaleTablet(12) : '12px'}` : `0 ${fluidSpace(14)}`,
                       display: 'inline-flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: stacked ? s(14) : 16,
-                      lineHeight: stacked ? sl(20) : '22px',
+                      ...(stacked
+                        ? { fontSize: s(14), lineHeight: sl(20) }
+                        : fluidType(16, 22)),
                       letterSpacing: stacked ? sn(0.28) : 0,
                     }}
                   >
@@ -726,13 +656,22 @@ export default function Works() {
                 }}
               >
                 <a
-                  href={study.href}
+                  href={detailHref}
+                  onClick={(e) => {
+                    if (!detailHref) return
+                    // In-app route rather than a page load: the site routes on
+                    // pathname, and a plain navigation would throw away the
+                    // loaded bundle.
+                    e.preventDefault()
+                    navigate(detailHref)
+                    window.scrollTo({ top: 0, behavior: 'auto' })
+                  }}
                   ref={(el) => (cardInnerRefs.current[i] = el)}
-                  className="case-card block overflow-hidden cursor-pointer group"
+                  className={`case-card block overflow-hidden group ${detailHref ? 'cursor-pointer' : ''}`}
                   style={{
                     background: surface.background,
                     border: surface.border,
-                    borderRadius: 30,
+                    borderRadius: stacked ? 30 : fluidSpace(30),
                     padding: stacked ? s(20) : fluid(30, 50),
                     display: 'flex',
                     // Mobile and tablet stack the image above the copy; desktop
@@ -792,7 +731,14 @@ export default function Works() {
         </div>
 
         <div ref={ctaWrapRef} className="w-full flex justify-center" style={{ marginTop: s(CTA_GAP) }}>
-        <div className="flex flex-col items-center" style={{ gap: 30, padding: '0 20px', maxWidth: 700 }}>
+        <div
+          className="flex flex-col items-center"
+          style={{
+            gap: isDesktop ? fluidSpace(30) : 30,
+            padding: `0 ${isDesktop ? fluidSpace(20) : '20px'}`,
+            maxWidth: isDesktop ? fluidSpace(700) : 700,
+          }}
+        >
           <p ref={highlightRef} className="text-center font-light font-['Geist']" style={ctaStyle}>
             {ctaWords.map((w, i) => (
               <CharWord key={i} word={w} isLast={i === ctaWords.length - 1} initialColor="rgba(0,0,0,0.3)" />
