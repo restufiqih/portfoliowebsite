@@ -62,10 +62,19 @@ const SIDE_PAD_COMPACT_MAX = 53.33
 const TEXT_MAX_TABLET = 500
 
 // The mark on its tile, 686:2845 / 807:817 — the same 56 on both frames.
+// The chip line the Services label is centred against, and the chips' own box.
+const CHIP_H = 34
+
 const NEUTRAL_200 = '#E3E6EB'
 const LABEL_COLOR = 'rgba(0,0,0,0.7)'
 // base/black in the design file — headings sit a shade off pure black.
 const HEADING_COLOR = '#212121'
+
+// The note's dots, as a progress cycle: none, one, two, three, hold, over
+// again. `DOT_STEP` is how long each one waits before the next appears and
+// `DOT_HOLD` how long all three stand before it restarts.
+const DOT_STEP = 0.32
+const DOT_HOLD = 0.5
 
 // Every section sits 100 from its neighbours at 1440 and 80 at 390. The one
 // exception on both frames is a feature note and the screens it introduces:
@@ -105,6 +114,66 @@ function buildRamp({ isDesktop, isTablet }) {
   const sectionGap = isDesktop ? fluidSpace(SECTION_GAP) : scaleCompact(SECTION_GAP_MOBILE)
 
   return { L, T, sidePad, textMax, sectionGap, isDesktop, isTablet }
+}
+
+// 813:22536 — the line a case study carries while its write-up is unwritten.
+// The trailing dots are split off and run as a progress cycle: they arrive one
+// after another, hold, and start over, which is the page saying the writing is
+// still happening rather than that it has stalled.
+//
+// `visibility` rather than opacity or the text itself: a hidden element still
+// takes its space, so the three dots always occupy the same width and the
+// centred line never shifts as they come and go. Fading them in place read as
+// a blink instead of as progress.
+function Note({ text, ui }) {
+  const rootRef = useRef(null)
+  const dotRefs = useRef([])
+
+  const trailing = text.match(/\.+$/)
+  const dots = trailing ? trailing[0] : ''
+  const lead = dots ? text.slice(0, -dots.length) : text
+
+  useLayoutEffect(() => {
+    const marks = dotRefs.current.filter(Boolean)
+    if (!marks.length) return
+    const ctx = gsap.context(() => {
+      // Hidden outright, before the timeline exists. A `set` at position 0
+      // only lands on the timeline's first tick, which is after the first
+      // paint — long enough to flash all three dots on arrival.
+      gsap.set(marks, { visibility: 'hidden' })
+
+      const tl = gsap.timeline({ repeat: -1 })
+      tl.set(marks, { visibility: 'hidden' }, 0)
+      marks.forEach((mark, i) => {
+        tl.set(mark, { visibility: 'visible' }, (i + 1) * DOT_STEP)
+      })
+      // An empty tween, purely to hold the finished line before the cycle
+      // starts over — without it the third dot would vanish the moment it
+      // arrived.
+      tl.to({}, { duration: DOT_HOLD })
+    }, rootRef)
+    return () => ctx.revert()
+  }, [text])
+
+  return (
+    <div
+      ref={rootRef}
+      className="flex flex-col items-center w-full"
+      style={{ maxWidth: CONTENT_MAX, margin: '0 auto', padding: `0 ${ui.sidePad}` }}
+    >
+      <p
+        className="font-light font-['Geist'] text-center"
+        style={{ ...ui.T('body'), color: '#000', width: ui.textMax, maxWidth: '100%' }}
+      >
+        {lead}
+        {dots.split('').map((dot, i) => (
+          <span key={i} ref={(el) => (dotRefs.current[i] = el)}>
+            {dot}
+          </span>
+        ))}
+      </p>
+    </div>
+  )
 }
 
 // One item of body copy: either a run of paragraphs or a numbered list. The
@@ -238,6 +307,12 @@ function StoryBlock({ block, ui }) {
     return <Gallery rows={block.rows} ui={ui} />
   }
 
+  // A single centred line, across the whole content width rather than in one
+  // half of the split the prose blocks use.
+  if (block.type === 'note') {
+    return <Note text={block.text} ui={ui} />
+  }
+
   if (block.type === 'caption') {
     return (
       <SplitRow side="left" ui={ui}>
@@ -352,7 +427,14 @@ export default function CaseStudy({ study }) {
 
   // 686:2907 / 807:829 — a labelled row. Desktop sets the label beside the body
   // in a fixed 100 column; the 390 frame stacks it above instead.
-  const metaRow = (label, children) => (
+  //
+  // `labelBox` is the height the label is centred in, for a row whose body is
+  // taller than a line of type — 824:23539 gives Services a 34 box so the word
+  // sits level with the chips rather than at their top. Desktop only: on the
+  // 390 frame the label is above the chips, where there is nothing to centre
+  // against. A row without it keeps the label at the top, which is right where
+  // the body runs to several lines.
+  const metaRow = (label, children, labelBox) => (
     <div
       className="flex w-full"
       style={{
@@ -360,12 +442,23 @@ export default function CaseStudy({ study }) {
         gap: isDesktop ? L(10) : scaleCompact(10),
       }}
     >
-      <p
-        className="shrink-0 font-medium font-['Geist']"
-        style={{ ...T('body'), width: isDesktop ? L(100) : '100%', color: LABEL_COLOR }}
+      <div
+        className="shrink-0 flex"
+        style={{
+          width: isDesktop ? L(100) : '100%',
+          // Centred only where there is a box to centre in. Left to itself the
+          // wrapper stretches to the row, and centring there would drop the
+          // Role label into the middle of its three lines instead of sitting it
+          // on the first.
+          ...(isDesktop && labelBox
+            ? { height: L(labelBox), alignItems: 'center' }
+            : { alignItems: 'flex-start' }),
+        }}
       >
-        {label}
-      </p>
+        <p className="w-full font-medium font-['Geist']" style={{ ...T('body'), color: LABEL_COLOR }}>
+          {label}
+        </p>
+      </div>
       {children}
     </div>
   )
@@ -423,7 +516,7 @@ export default function CaseStudy({ study }) {
                 className="inline-flex items-center justify-center shrink-0 whitespace-nowrap bg-white text-black font-light font-['Geist']"
                 style={{
                   ...T('chip'),
-                  height: L(34),
+                  height: L(CHIP_H),
                   padding: `0 ${L(12)}`,
                   // A pill, so the corner holds while the box rides the ramp.
                   borderRadius: 30,
@@ -437,7 +530,8 @@ export default function CaseStudy({ study }) {
                 {service}
               </span>
             ))}
-          </div>
+          </div>,
+          CHIP_H
         )}
       </div>
     </div>

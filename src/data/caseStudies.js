@@ -82,24 +82,27 @@ export const caseStudies = [
   },
   {
     id: 'catatmak',
+    // Figma 813:22486 — the hero of the Catatmak detail page.
     name: 'Catatmak',
-    tagline: 'Lorem ipsum',
-    headline: null,
-    description: 'Lorem ipsum dolor sit amet consectetur. Hendrerit massa id pharetra.',
-    role: null,
-    // Figma 652:1140 — Catatmak carries a single tag.
-    services: ['Mobile App Design'],
+    tagline: 'Financial Tracking App',
+    headline: 'Personal & Business Finance Tracker for Everyday Use',
+    description:
+      'Catatmak is a financial tracking app that comes in two modes: personal for everyday needs including splitting bills with friends, and business for small enterprises that need collaborative bookkeeping across a team.',
+    role: 'UI/UX Designer. Worked within the product team, leading research, user flow, and interface design across both personal and business experiences.',
+    services: ['Mobile App Design', 'Visual Branding'],
     logo: CATATMAK_TILE,
     thumbnail: catatmakThumbnail,
     variant: 'light',
   },
   {
     id: 'digiverse',
+    // Figma 823:23033 — the hero of the DigiVerse Studio detail page.
     name: 'DigiVerse Studio',
-    tagline: 'Lorem ipsum',
-    headline: null,
-    description: 'Lorem ipsum dolor sit amet consectetur. Hendrerit massa id pharetra.',
-    role: null,
+    tagline: 'Business Intelligence Tool',
+    headline: 'Self-Service Data Visualization Platform',
+    description:
+      'DigiVerse Studio is a business intelligence tool within the Telkom Corporate University LMS ecosystem, enabling internal teams to process and visualize data on their own without depending on the technical team.',
+    role: 'UI/UX Designer. Worked within the product team on research, interaction design, and interface systems, while also shaping the product’s visual identity and design language.',
     services: ['Web App Design', 'Visual Branding'],
     logo: DIGIVERSE_TILE,
     thumbnail: digiverseThumbnail,
@@ -107,12 +110,15 @@ export const caseStudies = [
   },
   {
     id: 'jett',
+    // Figma 823:23183 — the hero of the JETT detail page.
     name: 'JETT',
-    tagline: 'Lorem ipsum',
-    headline: null,
-    description: 'Lorem ipsum dolor sit amet consectetur. Hendrerit massa id pharetra.',
-    role: null,
-    services: ['Website Design', 'Interaction Design', 'Visual Branding'],
+    tagline: 'Medical Device Website',
+    headline: 'Marketing Website for a Medical Plasma Device',
+    description:
+      'JETT Plasma is a plasma-based medical device for ophthalmology, dermatology, and aesthetic procedures. This website was designed to introduce the technology to medical practitioners and clinics, and convince them to adopt it.',
+    role: 'UI/UX Designer. Led the project end to end, from research and visual identity through interface design, motion, and front-end development alongside a teammate.',
+    // 823:23302. Three chips, which wrap to two rows against the 350 column.
+    services: ['Website Design', 'Visual Branding', 'Development'],
     logo: JETT_TILE,
     thumbnail: jettThumbnail,
     variant: 'light',
