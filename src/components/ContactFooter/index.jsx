@@ -129,9 +129,7 @@ function IndonesiaTime() {
 // The block owns its own frame. Callers used to pass className/style, which is
 // how the two pages drifted apart — everything that decides how this looks now
 // lives here, and a host section only supplies the background behind it.
-// `wordmark`, when given, is the name that sits under the mark — Figma
-// 686:2820, which the case-study footer carries and the landing page does not.
-export default function ContactFooter({ innerRef, wordmark }) {
+export default function ContactFooter({ innerRef }) {
   const { isMobile, isTablet, isMobileView } = useBreakpoint()
   // Tablet holds its 768 figures and grows them with the viewport from there.
   const s = (n) => (isTablet ? scaleTablet(n) : n)
@@ -211,21 +209,7 @@ export default function ContactFooter({ innerRef, wordmark }) {
         </span>
       </div>
 
-      {wordmark ? (
-        <div className="flex flex-col items-center" style={{ gap: sp(20) }}>
-          <FooterLogo size={sp(60)} />
-          <span
-            className="text-white font-light font-['Geist'] text-center whitespace-nowrap"
-            style={isDesktop
-              ? { ...fluidType(18, 26), letterSpacing: '-0.02em' }
-              : { fontSize: s(18), lineHeight: sl(26), letterSpacing: '-0.36px' }}
-          >
-            {wordmark}
-          </span>
-        </div>
-      ) : (
-        <FooterLogo size={sp(60)} />
-      )}
+      <FooterLogo size={sp(60)} />
     </div>
   )
 }

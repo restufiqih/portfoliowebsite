@@ -15,7 +15,6 @@ gsap.registerPlugin(ScrollTrigger)
 // here rather than in either page.
 
 const BRAND_BLUE = '#1500E1'
-const WORDMARK = 'Akhdiyat Restu Fiqih'
 
 // The wash's box runs past the footer's edge and the tail is clipped away,
 // where it is long since solid. Same box and treatment the Testimonial section
@@ -120,7 +119,7 @@ export default function FooterWash({ children }) {
       </div>
 
       <div style={{ background: BRAND_BLUE }}>
-        <ContactFooter wordmark={WORDMARK} />
+        <ContactFooter />
       </div>
     </>
   )
