@@ -5,7 +5,7 @@ import RollingButton from '../RollingButton'
 import CharWord from '../CharWord'
 import { useBreakpoint } from '../../hooks/useBreakpoint'
 import { fluid, fluidSpace, fluidType, scaleTablet } from '../../utils/fluid'
-import { caseStudies, caseStudyPath } from '../../data/caseStudies'
+import { CASE_STUDY_BASE, caseStudies, caseStudyPath } from '../../data/caseStudies'
 import { getStory } from '../../data/stories'
 import { navigate } from '../../utils/route'
 
@@ -744,7 +744,7 @@ export default function Works() {
               <CharWord key={i} word={w} isLast={i === ctaWords.length - 1} initialColor="rgba(0,0,0,0.3)" />
             ))}
           </p>
-          <RollingButton label="Explore More Case Studies" />
+          <RollingButton label="Explore More Case Studies" to={CASE_STUDY_BASE} />
         </div>
         </div>
 
