@@ -10,7 +10,7 @@ import { TRACK_DISPLAY, TRACK_TEXT, fluid, scaleTablet } from '../../utils/fluid
 // the rig or the camera inside the scene splits them apart, because the rope
 // mesh lives outside the rig and rebuilds its curve from physics world
 // coordinates. Phones sit it lower than tablets; nudge to taste.
-const LANYARD_NUDGE_PHONE = 0
+const LANYARD_NUDGE_PHONE = -20
 const LANYARD_NUDGE_TABLET = -40
 
 // Rope thickness. Measured against the card, the stock 0.65 already holds the
@@ -75,7 +75,7 @@ function HeroMobileLayout({ titleRef, descRef, yearRef, sidePad = 16, textMaxWid
         <div style={{ flex: 1 }} />
         <div
           className="relative z-10"
-          style={{ paddingTop: s(10), paddingLeft: sidePad, paddingRight: sidePad, paddingBottom: s(showYear ? 60 : 30), display: 'flex', flexDirection: 'column', alignItems: 'center', gap: s(20), textAlign: 'center' }}
+          style={{ paddingTop: s(10), paddingLeft: sidePad, paddingRight: sidePad, paddingBottom: s(showYear ? 60 : 50), display: 'flex', flexDirection: 'column', alignItems: 'center', gap: s(20), textAlign: 'center' }}
         >
           <h1
             ref={titleRef}
