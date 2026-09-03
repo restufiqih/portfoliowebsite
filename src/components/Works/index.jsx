@@ -34,7 +34,7 @@ const CONTENT_MAX = 1440
 // about two thirds of a screen per card, the same rhythm as desktop.
 const CARD_GAP = 6 // vh
 const CARD_GAP_MOBILE = 20 // px
-const CARD_INSET_MOBILE = 24 // px, the side inset the design lays the cards out at
+const CARD_INSET_MOBILE = 16 // px, the side inset the design lays the cards out at
 
 // Tablet runs the stacked card, whose full-width image makes it far taller than
 // the desktop one. Capping it keeps a whole card above the fold, and 500 is
