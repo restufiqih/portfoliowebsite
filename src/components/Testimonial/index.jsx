@@ -5,7 +5,7 @@ import LogoMarquee from '../LogoMarquee'
 import RollingButton from '../RollingButton'
 import testimonialBg from '../../assets/testimonial-bg.png'
 import { useBreakpoint } from '../../hooks/useBreakpoint'
-import { fluid, fluidSpace, fluidType, scaleTablet } from '../../utils/fluid'
+import { TRACK_DISPLAY, TRACK_TEXT, fluid, fluidSpace, fluidType, scaleTablet } from '../../utils/fluid'
 
 import client1Photo from '../../assets/clients/client1.png'
 import client2Photo from '../../assets/clients/client2.png'
@@ -108,9 +108,9 @@ export default function Testimonial() {
   const sectionStyle = isDesktop ? {
     gap: fluid(58, 80), paddingTop: fluid(130, 180), paddingBottom: fluid(288, 400),
   } : {}
-  const titleStyle = isDesktop ? { fontSize: fluid(43, 60), lineHeight: fluid(50, 70), letterSpacing: -3 } : {}
-  const bodyStyle = isDesktop ? { fontSize: fluid(14, 18), lineHeight: fluid(19, 26), letterSpacing: 0 } : {}
-  const cardTextStyle = isDesktop ? { fontSize: fluid(14, 20), lineHeight: fluid(20, 28), letterSpacing: 0 } : {}
+  const titleStyle = isDesktop ? { fontSize: fluid(43, 60), lineHeight: fluid(50, 70), letterSpacing: TRACK_DISPLAY } : {}
+  const bodyStyle = isDesktop ? { fontSize: fluid(14, 18), lineHeight: fluid(19, 26), letterSpacing: TRACK_TEXT } : {}
+  const cardTextStyle = isDesktop ? { fontSize: fluid(14, 20), lineHeight: fluid(20, 28), letterSpacing: TRACK_TEXT } : {}
   const cardHeightStyle = isDesktop ? { minHeight: fluid(281, 390) } : {}
   const contentPadStyle = isDesktop ? { paddingLeft: fluid(72, 100), paddingRight: fluid(72, 100) } : {}
 
@@ -321,8 +321,9 @@ export default function Testimonial() {
       {!isMobileView && (
         <div
           ref={tooltipRef}
-          className="pointer-events-none absolute z-50 flex items-center justify-center rounded-[99px] bg-white/20 backdrop-blur-md font-light font-['Geist'] text-white tracking-[0px] whitespace-nowrap transition-opacity duration-200"
+          className="pointer-events-none absolute z-50 flex items-center justify-center rounded-[99px] bg-white/20 backdrop-blur-md font-light font-['Geist'] text-white whitespace-nowrap transition-opacity duration-200"
           style={{
+            letterSpacing: TRACK_TEXT,
             opacity: isDesktop && cardHovered && !holding ? 1 : 0,
             paddingLeft: fluidSpace(14), paddingRight: fluidSpace(14),
             paddingTop: fluidSpace(6), paddingBottom: fluidSpace(6),
@@ -357,8 +358,8 @@ export default function Testimonial() {
             <p
               className="text-white font-light font-['Geist']"
               style={isMobileView
-                ? { fontSize: s(18), lineHeight: sl(26) }
-                : fluidType(20, 28)}
+                ? { fontSize: s(18), lineHeight: sl(26), letterSpacing: TRACK_TEXT }
+                : { ...fluidType(20, 28), letterSpacing: TRACK_TEXT }}
             >
               {current.name}
             </p>
@@ -383,7 +384,7 @@ export default function Testimonial() {
           <p
             className="text-white font-light font-['Geist']"
             style={isMobileView
-              ? { fontSize: s(18), lineHeight: sl(26) }
+              ? { fontSize: s(18), lineHeight: sl(26), letterSpacing: TRACK_TEXT }
               : { fontSize: 16, lineHeight: '24px', ...cardTextStyle }
             }
           >
@@ -461,7 +462,7 @@ export default function Testimonial() {
       {isMobileView ? (
         <div className="relative z-10 flex flex-col items-center w-full" style={{ paddingLeft: isTablet ? s(40) : 16, paddingRight: isTablet ? s(40) : 16 }}>
           <div ref={mobileTitleRef} className="flex flex-col text-center w-full" style={{ gap: s(20), marginBottom: s(50), ...(isTablet ? { maxWidth: s(500) } : {}) }}>
-            <p className="text-black font-light font-['Geist']" style={{ fontSize: s(36), lineHeight: sl(42), letterSpacing: 0 }}>
+            <p className="text-black font-light font-['Geist']" style={{ fontSize: s(36), lineHeight: sl(42), letterSpacing: TRACK_DISPLAY }}>
               What clients say
             </p>
             <div className="text-black font-light font-['Geist']" style={{ fontSize: s(16), lineHeight: sl(22) }}>

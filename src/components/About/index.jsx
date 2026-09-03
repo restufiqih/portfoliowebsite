@@ -5,7 +5,7 @@ import Navbar from '../Navbar'
 import Nebula from '../Nebula'
 import UpworkCard from '../UpworkCard'
 import { useBreakpoint } from '../../hooks/useBreakpoint'
-import { fluid, scaleTablet } from '../../utils/fluid'
+import { TRACK_DISPLAY, TRACK_TEXT, fluid, scaleTablet } from '../../utils/fluid'
 
 import bgGradient from '../../assets/works/bg-gradient.png'
 import testimonialBg from '../../assets/testimonial-bg.png'
@@ -97,17 +97,17 @@ export default function About() {
   // Tablet holds its 768 figures and grows them with the viewport from there.
   const t = (n) => (isTablet ? scaleTablet(n) : n)
   const tl = (n) => (isTablet ? scaleTablet(n) : `${n}px`)
-  const tn = (n) => (isTablet ? `calc(-1 * ${scaleTablet(n)})` : -n)
 
   const heroStyle = isMobile
-    ? { fontSize: 40, lineHeight: '46px', letterSpacing: -0.8 }
+    ? { fontSize: 40, lineHeight: '46px', letterSpacing: TRACK_DISPLAY }
     : isTablet
-      ? { fontSize: t(43), lineHeight: tl(52), letterSpacing: tn(1.72) }
-      : { fontSize: fluid(50, 70), lineHeight: fluid(60, 84), letterSpacing: -2.8 }
+      ? { fontSize: t(43), lineHeight: tl(52), letterSpacing: TRACK_DISPLAY }
+      : { fontSize: fluid(50, 70), lineHeight: fluid(60, 84), letterSpacing: TRACK_DISPLAY }
 
+  // Mobile lands on Geist/16, the one step the design file leaves untracked.
   const bodyStyle = isMobile
-    ? { fontSize: 16, lineHeight: '24px', letterSpacing: -0.32 }
-    : { fontSize: t(18), lineHeight: tl(26), letterSpacing: tn(0.36) }
+    ? { fontSize: 16, lineHeight: '24px' }
+    : { fontSize: t(18), lineHeight: tl(26), letterSpacing: TRACK_TEXT }
 
   // The hero keeps the 24 its own frame specifies; the detail block below runs
   // tighter on mobile.

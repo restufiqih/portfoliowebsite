@@ -4,7 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import UpworkCard from '../UpworkCard'
 import RollingButton from '../RollingButton'
 import { useBreakpoint } from '../../hooks/useBreakpoint'
-import { fluid, fluidSpace, scaleTablet } from '../../utils/fluid'
+import { TRACK_DISPLAY, TRACK_TEXT, fluid, fluidSpace, scaleTablet } from '../../utils/fluid'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -39,12 +39,12 @@ export default function Upwork() {
       }
 
   const headingStyle = isMobile || isTablet
-    ? { fontSize: s(36), lineHeight: sl(42), letterSpacing: 0 }
-    : { fontSize: fluid(43, 60), lineHeight: fluid(50, 70), letterSpacing: -3 }
+    ? { fontSize: s(36), lineHeight: sl(42), letterSpacing: TRACK_DISPLAY }
+    : { fontSize: fluid(43, 60), lineHeight: fluid(50, 70), letterSpacing: TRACK_DISPLAY }
 
   const bodyStyle = isMobile || isTablet
-    ? { fontSize: s(16), lineHeight: sl(22), letterSpacing: 0 }
-    : { fontSize: fluid(14, 18), lineHeight: fluid(19, 26), letterSpacing: 0 }
+    ? { fontSize: s(16), lineHeight: sl(22) }
+    : { fontSize: fluid(14, 18), lineHeight: fluid(19, 26), letterSpacing: TRACK_TEXT }
 
   const animConfig = isMobile
     ? { titleY: 80, cardY: 100, cardStart: 'top 80%', cardEnd: 'top 20%' }

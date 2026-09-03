@@ -3,13 +3,13 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Lanyard from '../Lanyard'
 import { useBreakpoint } from '../../hooks/useBreakpoint'
-import { fluid, scaleTablet } from '../../utils/fluid'
+import { TRACK_DISPLAY, TRACK_TEXT, fluid, scaleTablet } from '../../utils/fluid'
 
 gsap.registerPlugin(ScrollTrigger)
 
 function HeroDesktopLayout({ titleRef, descRef, yearRef }) {
-  const titleStyle = { fontSize: fluid(50, 70), lineHeight: fluid(60, 84), letterSpacing: -4 }
-  const descStyle = { fontSize: fluid(16, 22), lineHeight: fluid(22, 30), letterSpacing: 0 }
+  const titleStyle = { fontSize: fluid(50, 70), lineHeight: fluid(60, 84), letterSpacing: TRACK_DISPLAY }
+  const descStyle = { fontSize: fluid(16, 22), lineHeight: fluid(22, 30), letterSpacing: TRACK_TEXT }
 
   return (
     <>
@@ -63,7 +63,7 @@ function HeroMobileLayout({ titleRef, descRef, yearRef, sidePad = 16, textMaxWid
           <h1
             ref={titleRef}
             className="text-white font-light font-['Geist']"
-            style={{ fontSize: s(40), lineHeight: sl(46), letterSpacing: 0, ...(textMaxWidth ? { maxWidth: textMaxWidth } : {}) }}
+            style={{ fontSize: s(40), lineHeight: sl(46), letterSpacing: TRACK_DISPLAY, ...(textMaxWidth ? { maxWidth: textMaxWidth } : {}) }}
           >
             Top Rated Plus UI/UX Designer on Upwork
           </h1>

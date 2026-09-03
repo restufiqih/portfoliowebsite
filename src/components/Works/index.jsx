@@ -4,7 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import RollingButton from '../RollingButton'
 import CharWord from '../CharWord'
 import { useBreakpoint } from '../../hooks/useBreakpoint'
-import { fluid, fluidSpace, fluidType, scaleTablet } from '../../utils/fluid'
+import { TRACK_DISPLAY, TRACK_TEXT, fluid, fluidSpace, fluidType, scaleTablet } from '../../utils/fluid'
 import { CASE_STUDY_BASE, caseStudies, caseStudyPath } from '../../data/caseStudies'
 import { getStory } from '../../data/stories'
 import { navigate } from '../../utils/route'
@@ -144,20 +144,19 @@ export default function Works() {
   // from there, the same whole-layout ramp every section below desktop uses.
   const s = (n) => (isTablet ? scaleTablet(n) : n)
   const sl = (n) => (isTablet ? scaleTablet(n) : `${n}px`)
-  const sn = (n) => (isTablet ? `calc(-1 * ${scaleTablet(n)})` : -n)
 
   const titleStyle = isMobile
-    ? { fontSize: 36, lineHeight: '42px', letterSpacing: 0 }
+    ? { fontSize: 36, lineHeight: '42px', letterSpacing: TRACK_DISPLAY }
     : isTablet
-    ? { fontSize: s(43), lineHeight: sl(50), letterSpacing: sn(3) }
-    : { fontSize: fluid(43, 60), lineHeight: fluid(50, 70), letterSpacing: -3 }
+    ? { fontSize: s(43), lineHeight: sl(50), letterSpacing: TRACK_DISPLAY }
+    : { fontSize: fluid(43, 60), lineHeight: fluid(50, 70), letterSpacing: TRACK_DISPLAY }
 
   // Geist/24/Light, flat on every breakpoint — what both the desktop (652:718)
   // and mobile (656:1618) frames specify. Tracking as the -2% the token states
   // rather than the px it resolves to, so it stays correct if the size moves.
   const ctaStyle = isDesktop
-    ? { ...fluidType(24, 34), letterSpacing: '-0.02em' }
-    : { fontSize: s(24), lineHeight: sl(34), letterSpacing: '-0.02em' }
+    ? { ...fluidType(24, 34), letterSpacing: TRACK_TEXT }
+    : { fontSize: s(24), lineHeight: sl(34), letterSpacing: TRACK_TEXT }
 
   // Same shape as the other sections: capped at CONTENT_MAX and centred, with
   // the shared fluid side padding. The gradient behind it stays full-bleed.
@@ -469,8 +468,9 @@ export default function Works() {
       {!isMobile && (
         <div
           ref={tooltipRef}
-          className="pointer-events-none absolute z-50 flex items-center justify-center rounded-[99px] bg-white/20 backdrop-blur-md font-light font-['Geist'] text-white tracking-[0px] whitespace-nowrap"
+          className="pointer-events-none absolute z-50 flex items-center justify-center rounded-[99px] bg-white/20 backdrop-blur-md font-light font-['Geist'] text-white whitespace-nowrap"
           style={{
+            letterSpacing: TRACK_TEXT,
             opacity: 0,
             paddingLeft: fluidSpace(14), paddingRight: fluidSpace(14),
             paddingTop: fluidSpace(6), paddingBottom: fluidSpace(6),
@@ -595,7 +595,7 @@ export default function Works() {
                   style={{
                     fontSize: stacked ? s(30) : fluid(30, 40),
                     lineHeight: stacked ? sl(36) : fluid(36, 46),
-                    letterSpacing: stacked ? sn(0.6) : -0.8,
+                    letterSpacing: TRACK_TEXT,
                   }}
                 >
                   {study.name}
@@ -605,7 +605,8 @@ export default function Works() {
                   style={{
                     fontSize: stacked ? s(16) : fluid(15, 18),
                     lineHeight: stacked ? sl(22) : fluid(22, 26),
-                    letterSpacing: stacked ? 0 : -0.36,
+                    // Stacked lands on Geist/16, the one untracked step.
+                    letterSpacing: stacked ? 0 : TRACK_TEXT,
                   }}
                 >
                   {study.description}
@@ -634,9 +635,8 @@ export default function Works() {
                       alignItems: 'center',
                       justifyContent: 'center',
                       ...(stacked
-                        ? { fontSize: s(14), lineHeight: sl(20) }
+                        ? { fontSize: s(14), lineHeight: sl(20), letterSpacing: TRACK_TEXT }
                         : fluidType(16, 22)),
-                      letterSpacing: stacked ? sn(0.28) : 0,
                     }}
                   >
                     {tag}

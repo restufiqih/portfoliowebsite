@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState, useEffect } from 'react'
 import { gsap } from 'gsap'
 import { useBreakpoint } from '../../hooks/useBreakpoint'
-import { fluid, fluidSpace, fluidType, scaleTablet } from '../../utils/fluid'
+import { TRACK_DISPLAY, TRACK_TEXT, fluid, fluidSpace, fluidType, scaleTablet } from '../../utils/fluid'
 
 // Shared between the landing page's closing section and the About page, which
 // carry the same contact block in the design.
@@ -18,11 +18,13 @@ const ctaLinks = [
 function CtaRollingButton({ label, href, mobile }) {
   const [hovered, setHovered] = useState(false)
   const textClass = mobile
-    ? "text-white text-[18px] font-light font-['Geist'] leading-[26px] tracking-[0px] whitespace-nowrap block"
-    : "text-white font-light font-['Geist'] tracking-[0px] whitespace-nowrap block"
+    ? "text-white text-[18px] font-light font-['Geist'] leading-[26px] whitespace-nowrap block"
+    : "text-white font-light font-['Geist'] whitespace-nowrap block"
   // Desktop rides the ramp; the roll travels exactly one line, so the transform
   // is written against the same value with calc() rather than a fixed px.
+  // Geist/16 is the one step the design file leaves untracked.
   const desktopType = fluidType(16, 22)
+  const mobileType = { letterSpacing: TRACK_TEXT }
   const lineH = mobile ? '26px' : desktopType.lineHeight
   return (
     <a
@@ -45,8 +47,8 @@ function CtaRollingButton({ label, href, mobile }) {
           transform: hovered ? `translateY(calc(-1 * ${lineH}))` : 'translateY(0px)',
           transition: 'transform 0.3s ease-in-out',
         }}>
-          <span className={textClass} style={mobile ? undefined : desktopType}>{label}</span>
-          <span className={textClass} style={mobile ? undefined : desktopType}>{label}</span>
+          <span className={textClass} style={mobile ? mobileType : desktopType}>{label}</span>
+          <span className={textClass} style={mobile ? mobileType : desktopType}>{label}</span>
         </div>
       </div>
     </a>
@@ -157,8 +159,8 @@ export default function ContactFooter({ innerRef }) {
       <p
         className="text-white font-light font-['Geist'] text-center"
         style={isMobileView
-          ? { fontSize: s(36), lineHeight: sl(42), letterSpacing: 0 }
-          : { fontSize: fluid(50, 70), lineHeight: fluid(60, 84), letterSpacing: -4 }
+          ? { fontSize: s(36), lineHeight: sl(42), letterSpacing: TRACK_DISPLAY }
+          : { fontSize: fluid(50, 70), lineHeight: fluid(60, 84), letterSpacing: TRACK_DISPLAY }
         }
       >
         <>Let&apos;s talk about<br />your next project.</>
@@ -195,15 +197,15 @@ export default function ContactFooter({ innerRef }) {
             <span className="relative inline-flex rounded-full bg-white" style={{ width: s(7), height: s(7) }} />
           </span>
           <span
-            className="text-white font-light font-['Geist'] tracking-[0px]"
-            style={isDesktop ? fluidType(16, 22) : { fontSize: s(18), lineHeight: sl(26) }}
+            className="text-white font-light font-['Geist']"
+            style={isDesktop ? fluidType(16, 22) : { fontSize: s(18), lineHeight: sl(26), letterSpacing: TRACK_TEXT }}
           >
             Based in Indonesia
           </span>
         </div>
         <span
-          className="text-white font-light font-['Geist'] tracking-[0px]"
-          style={isDesktop ? fluidType(16, 22) : { fontSize: s(18), lineHeight: sl(26) }}
+          className="text-white font-light font-['Geist']"
+          style={isDesktop ? fluidType(16, 22) : { fontSize: s(18), lineHeight: sl(26), letterSpacing: TRACK_TEXT }}
         >
           <IndonesiaTime />
         </span>

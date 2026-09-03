@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef, useEffect } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useBreakpoint } from '../../hooks/useBreakpoint'
-import { fluid, fluidSpace, scaleTablet } from '../../utils/fluid'
+import { TRACK_DISPLAY, fluid, fluidSpace, scaleTablet } from '../../utils/fluid'
 import { useTabletScale } from '../../hooks/useTabletScale'
 
 import orbit1 from '../../assets/orbit/orbit-1.png'
@@ -185,10 +185,10 @@ export default function Quote() {
     : { topFrom: -60 * scale, topTo: 20 * scale, bottomFrom: 60 * scale, bottomTo: -20 * scale }
 
   const textStyle = isTablet
-    ? { fontSize: s(36), lineHeight: sl(42), letterSpacing: 0 }
+    ? { fontSize: s(36), lineHeight: sl(42), letterSpacing: TRACK_DISPLAY }
     : isMobileView
-    ? { fontSize: 32, lineHeight: '38px', letterSpacing: 0 }
-    : { fontSize: fluid(65, 90), lineHeight: fluid(75, 104), letterSpacing: -4 }
+    ? { fontSize: 32, lineHeight: '38px', letterSpacing: TRACK_DISPLAY }
+    : { fontSize: fluid(65, 90), lineHeight: fluid(75, 104), letterSpacing: TRACK_DISPLAY }
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {

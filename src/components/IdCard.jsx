@@ -3,7 +3,7 @@ import verifiedBadge from '../assets/idcard/verified-badge.svg'
 import topRated from '../assets/idcard/top-rated.svg'
 import jobSuccess from '../assets/idcard/job-success.svg'
 import { useBreakpoint } from '../hooks/useBreakpoint'
-import { fluid } from '../utils/fluid'
+import { TRACK_TEXT, fluid } from '../utils/fluid'
 
 // Mobile scale: 0.68 of desktop max (fits 375px+ screens with 24px padding)
 const MOBILE_SCALE = 0.68
@@ -65,14 +65,14 @@ export default function IdCard() {
         {/* Name & role */}
         <div className="flex flex-col flex-1 min-w-0" style={{ gap: f(3, 4) }}>
           <p
-            className="text-white font-light font-['Geist'] tracking-[-0.6px]"
-            style={{ fontSize: f(21, 30), lineHeight: f(26, 36) }}
+            className="text-white font-light font-['Geist']"
+            style={{ letterSpacing: TRACK_TEXT, fontSize: f(21, 30), lineHeight: f(26, 36) }}
           >
             Akhdiyat Restu Fiqih
           </p>
           <p
-            className="text-white/80 font-light font-['Geist'] tracking-[-0.44px]"
-            style={{ fontSize: f(16, 22), lineHeight: f(21, 30) }}
+            className="text-white/80 font-light font-['Geist']"
+            style={{ letterSpacing: TRACK_TEXT, fontSize: f(16, 22), lineHeight: f(21, 30) }}
           >
             UI/UX Designer
           </p>
@@ -93,7 +93,7 @@ export default function IdCard() {
           </div>
           <p
             className="text-white font-light font-['Geist'] text-center whitespace-nowrap"
-            style={{ fontSize: f(14, 20), lineHeight: f(20, 28), letterSpacing: '-0.4px' }}
+            style={{ fontSize: f(14, 20), lineHeight: f(20, 28), letterSpacing: TRACK_TEXT }}
           >
             Top Rated Plus
           </p>
@@ -107,7 +107,7 @@ export default function IdCard() {
           </div>
           <p
             className="text-white font-light font-['Geist'] text-center whitespace-nowrap"
-            style={{ fontSize: f(14, 20), lineHeight: f(20, 28), letterSpacing: '-0.4px' }}
+            style={{ fontSize: f(14, 20), lineHeight: f(20, 28), letterSpacing: TRACK_TEXT }}
           >
             100% Job Success
           </p>

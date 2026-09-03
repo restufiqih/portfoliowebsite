@@ -89,3 +89,13 @@ export function fluidPx(min, max, vw) {
 export function scaleCompact(px) {
   return fluidBetween(px, +(px * 4 / 3).toFixed(2), 390, 1024)
 }
+
+// ——— Tracking ————————————————————————————————————————————————————————————
+//
+// The design file gives Geist two tracking values: display type is set at -4%
+// and everything else at -2%. Both are written as an em rather than the px the
+// frames measure, because every size on this site is on a ramp — a px value
+// taken off the 1440 frame is only correct at 1440 and drifts wider as the
+// viewport narrows. -4% of 70px is the same -4% at 50.
+export const TRACK_DISPLAY = '-0.04em'
+export const TRACK_TEXT = '-0.02em'

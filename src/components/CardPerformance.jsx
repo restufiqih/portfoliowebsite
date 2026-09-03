@@ -5,7 +5,7 @@ import IdCard from './IdCard'
 import greenBg from '../assets/card_performance/Card Performance.png'
 import upworkLogo from '../assets/card_performance/upwork-logo.svg'
 import { useBreakpoint } from '../hooks/useBreakpoint'
-import { fluid, fluidNeg, fluidSpace, fluidType, scaleTablet, scaleTabletNeg } from '../utils/fluid'
+import { TRACK_TEXT, fluid, fluidNeg, fluidSpace, fluidType, scaleTablet, scaleTabletNeg } from '../utils/fluid'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -31,8 +31,9 @@ function StatCard({ value, label, isDesktop, isMobile }) {
         WebkitMaskComposite: 'xor',
       }} />
       <div className="flex flex-col gap-[6px] text-center w-full">
-        <p className="text-white font-light font-['Geist'] tracking-[0px]"
+        <p className="text-white font-light font-['Geist']"
           style={{
+            letterSpacing: TRACK_TEXT,
             fontSize: isDesktop ? fluid(22, 30) : isMobile ? 30 : scaleTablet(28),
             lineHeight: isDesktop ? fluid(26, 36) : isMobile ? '36px' : scaleTablet(33),
           }}>
@@ -153,8 +154,9 @@ export default function CardPerformance() {
     >
       <div
         ref={tooltipRef}
-        className={`pointer-events-none absolute z-50 items-center justify-center rounded-[99px] bg-white/20 backdrop-blur-md font-light font-['Geist'] text-white tracking-[0px] whitespace-nowrap transition-opacity duration-200 ${isMobile ? 'hidden' : 'flex'}`}
+        className={`pointer-events-none absolute z-50 items-center justify-center rounded-[99px] bg-white/20 backdrop-blur-md font-light font-['Geist'] text-white whitespace-nowrap transition-opacity duration-200 ${isMobile ? 'hidden' : 'flex'}`}
         style={{
+          letterSpacing: TRACK_TEXT,
           opacity: hovered ? 1 : 0,
           paddingLeft: fluidSpace(14), paddingRight: fluidSpace(14),
           paddingTop: fluidSpace(6), paddingBottom: fluidSpace(6),

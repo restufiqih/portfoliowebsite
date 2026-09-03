@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useLayoutEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useBreakpoint } from '../../hooks/useBreakpoint'
-import { fluid, scaleTablet } from '../../utils/fluid'
+import { TRACK_DISPLAY, TRACK_TEXT, fluid, scaleTablet } from '../../utils/fluid'
 import HowItWorks from '../HowItWorks'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -208,7 +208,7 @@ function ServiceCard({ title, desc, bg, carousel, isDesktop, isMobileView, isTab
     >
       {carousel === 'branding' ? <BrandingMarquee s={s} /> : <SlideCarousel type={carousel} s={s} />}
       <div className="flex flex-col w-full text-center" style={{ filter: 'drop-shadow(0px 0px 5px rgba(0,0,0,0.2))', gap: z(14), paddingLeft: z(40), paddingRight: z(40), ...(isDesktop ? { paddingLeft: fluid(29, 40), paddingRight: fluid(29, 40), gap: fluid(10, 14) } : {}) }}>
-        <p className="text-white font-light font-['Geist'] tracking-[-0.6px]" style={{ fontSize: z(30), lineHeight: zl(36), ...(isDesktop ? { fontSize: fluid(22, 30), lineHeight: fluid(26, 36) } : {}) }}>
+        <p className="text-white font-light font-['Geist']" style={{ letterSpacing: TRACK_TEXT, fontSize: z(30), lineHeight: zl(36), ...(isDesktop ? { fontSize: fluid(22, 30), lineHeight: fluid(26, 36) } : {}) }}>
           {title}
         </p>
         <p className="text-white/80 font-normal font-['Geist']" style={{ fontSize: z(16), lineHeight: zl(22), ...(isDesktop ? { fontSize: fluid(14, 16), lineHeight: fluid(18, 22) } : {}) }}>
@@ -246,12 +246,13 @@ export default function VideoIntro() {
     : { ...{ padding: fluid(72, 100), gap: fluid(36, 50) }, borderRadius: `${fluid(43, 60)} ${fluid(43, 60)} 0 0`, marginTop: `clamp(-60px, calc(-43px - 17 * (100vw - 1024px) / 416), -43px)` }
 
   const whatStyle = isMobileView
-    ? { fontSize: sc(36), lineHeight: scl(42), letterSpacing: isTablet ? `calc(-1 * ${scaleTablet(0.72)})` : '-0.72px' }
-    : { fontSize: fluid(43, 60), lineHeight: fluid(50, 70) }
+    ? { fontSize: sc(36), lineHeight: scl(42), letterSpacing: TRACK_DISPLAY }
+    : { fontSize: fluid(43, 60), lineHeight: fluid(50, 70), letterSpacing: TRACK_DISPLAY }
 
+  // Stacked lands on Geist/16, the one step the design file leaves untracked.
   const bodyStyle = isMobileView
     ? { fontSize: sc(16), lineHeight: scl(22) }
-    : { fontSize: fluid(14, 18), lineHeight: fluid(20, 26) }
+    : { fontSize: fluid(14, 18), lineHeight: fluid(20, 26), letterSpacing: TRACK_TEXT }
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {

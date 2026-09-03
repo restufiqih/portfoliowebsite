@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { fluid, fluidSpace, fluidType, scaleTablet, scaleTabletNeg } from '../../utils/fluid'
+import { TRACK_DISPLAY, TRACK_TEXT, fluid, fluidSpace, fluidType, scaleTablet, scaleTabletNeg } from '../../utils/fluid'
 import { useBreakpoint } from '../../hooks/useBreakpoint'
 
 import discoverImg from '../../assets/howitworks/discover.png'
@@ -209,7 +209,7 @@ function HowItWorksDesktop() {
           <h2
             ref={headingRef}
             className="text-black font-light font-['Geist'] text-center"
-            style={{ fontSize: fluid(43, 60), lineHeight: fluid(50, 70), letterSpacing: -2.4 }}
+            style={{ fontSize: fluid(43, 60), lineHeight: fluid(50, 70), letterSpacing: TRACK_DISPLAY }}
           >
             Every project is unique,
             <br />
@@ -260,13 +260,13 @@ function HowItWorksDesktop() {
                     <div className="flex flex-col" style={{ gap: fluid(14, 20) }}>
                       <p
                         className="text-black font-light font-['Geist']"
-                        style={{ fontSize: fluid(29, 40), lineHeight: fluid(33, 46), letterSpacing: -0.8 }}
+                        style={{ fontSize: fluid(29, 40), lineHeight: fluid(33, 46), letterSpacing: TRACK_TEXT }}
                       >
                         {step.title}
                       </p>
                       <p
                         className="text-black font-light font-['Geist']"
-                        style={{ fontSize: fluid(14, 18), lineHeight: fluid(20, 26), letterSpacing: -0.36 }}
+                        style={{ fontSize: fluid(14, 18), lineHeight: fluid(20, 26), letterSpacing: TRACK_TEXT }}
                       >
                         {step.body}
                       </p>
@@ -382,7 +382,7 @@ function HowItWorksStacked() {
         <h2
           ref={headingRef}
           className="text-black font-light font-['Geist'] text-center w-full"
-          style={{ fontSize: t(40), lineHeight: tl(46), letterSpacing: tn(0.8) }}
+          style={{ fontSize: t(40), lineHeight: tl(46), letterSpacing: TRACK_DISPLAY }}
         >
           Every project is unique,{isTablet ? <br /> : ' '}but here&apos;s how I approach them.
         </h2>
