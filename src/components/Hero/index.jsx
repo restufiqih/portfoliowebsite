@@ -5,6 +5,14 @@ import Lanyard from '../Lanyard'
 import { useBreakpoint } from '../../hooks/useBreakpoint'
 import { TRACK_DISPLAY, TRACK_TEXT, fluid, scaleTablet } from '../../utils/fluid'
 
+// How far the lanyard canvas is nudged vertically on small screens, in px.
+// The whole canvas moves, so the card and its rope travel together — shifting
+// the rig or the camera inside the scene splits them apart, because the rope
+// mesh lives outside the rig and rebuilds its curve from physics world
+// coordinates. Phones sit it lower than tablets; nudge to taste.
+const LANYARD_NUDGE_PHONE = 0
+const LANYARD_NUDGE_TABLET = -40
+
 gsap.registerPlugin(ScrollTrigger)
 
 function HeroDesktopLayout({ titleRef, descRef, yearRef }) {
@@ -94,6 +102,7 @@ export default function Hero({ onReady }) {
   const descRef = useRef(null)
   const yearRef = useRef(null)
   const { isMobileView, isTablet, scale } = useBreakpoint()
+  const lanyardNudge = isTablet ? LANYARD_NUDGE_TABLET : LANYARD_NUDGE_PHONE
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -164,7 +173,7 @@ export default function Hero({ onReady }) {
           }
       }
     >
-      <div className={isMobileView ? 'absolute z-0' : 'absolute inset-0 z-0 -left-1/3'} style={isMobileView ? { top: 0, left: 0, right: 0, height: '100svh', transform: 'translateY(-40px)' } : {}}>
+      <div className={isMobileView ? 'absolute z-0' : 'absolute inset-0 z-0 -left-1/3'} style={isMobileView ? { top: 0, left: 0, right: 0, height: '100svh', transform: `translateY(${lanyardNudge}px)` } : {}}>
         <Lanyard position={[0, 0, isMobileView ? 15.5 : 15]} gravity={[0, -40, 0]} fov={isTablet ? 18 : isMobileView ? 21.5 : 16} onReady={onReady} />
       </div>
 
