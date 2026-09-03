@@ -151,8 +151,10 @@ export default function ContactFooter({ innerRef }) {
         minHeight: '100vh',
         paddingTop: sp(110),
         paddingBottom: sp(110),
-        paddingLeft: sp(20),
-        paddingRight: sp(20),
+        // Desktop keeps its side inset; mobile and tablet run edge to edge, so
+        // the block centres on the full width rather than a 20px-narrower one.
+        paddingLeft: isDesktop ? fluidSpace(20) : 0,
+        paddingRight: isDesktop ? fluidSpace(20) : 0,
         gap: isMobileView ? s(60) : fluidSpace(80),
       }}
     >
