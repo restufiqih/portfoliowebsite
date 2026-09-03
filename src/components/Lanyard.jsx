@@ -14,7 +14,7 @@ import * as THREE from 'three';
 
 extend({ MeshLineGeometry, MeshLineMaterial });
 
-export default function Lanyard({ position = [0, 0, 30], gravity = [0, -40, 0], fov = 20, transparent = true, delay = 0, onReady }) {
+export default function Lanyard({ position = [0, 0, 30], gravity = [0, -40, 0], fov = 20, transparent = true, delay = 0, lineWidth = 0.65, onReady }) {
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 1024);
   const [visible, setVisible] = useState(false);
 
@@ -48,7 +48,7 @@ export default function Lanyard({ position = [0, 0, 30], gravity = [0, -40, 0], 
         <ambientLight intensity={Math.PI} />
         <Suspense fallback={null}>
           <Physics gravity={gravity} timeStep={isMobile ? 1 / 30 : 1 / 60}>
-            <Band isMobile={isMobile} onReady={onReady} />
+            <Band isMobile={isMobile} lineWidth={lineWidth} onReady={onReady} />
           </Physics>
         </Suspense>
         <Environment blur={0.75}>
@@ -62,7 +62,7 @@ export default function Lanyard({ position = [0, 0, 30], gravity = [0, -40, 0], 
   );
 }
 
-function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false, onReady }) {
+function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false, lineWidth = 0.65, onReady }) {
   const band = useRef(),
     fixed = useRef(),
     j1 = useRef(),
@@ -203,7 +203,7 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false, onReady }) {
           useMap
           map={texture}
           repeat={[-4, 1]}
-          lineWidth={0.65}
+          lineWidth={lineWidth}
         />
       </mesh>
     </>

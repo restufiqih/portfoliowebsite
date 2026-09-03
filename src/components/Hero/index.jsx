@@ -13,6 +13,15 @@ import { TRACK_DISPLAY, TRACK_TEXT, fluid, scaleTablet } from '../../utils/fluid
 const LANYARD_NUDGE_PHONE = 0
 const LANYARD_NUDGE_TABLET = -40
 
+// Rope thickness. Measured against the card, the stock 0.65 already holds the
+// same rope-to-card proportion at every breakpoint (3.7% / 3.7% / 3.5%), so
+// these are not a proportion fix — they are a by-eye correction to the rope's
+// absolute weight, which reads too light on a small screen at 8px against the
+// 12.7px it gets on desktop.
+const LANYARD_LINE_WIDTH_PHONE = 1.2
+const LANYARD_LINE_WIDTH_TABLET = 0.9
+const LANYARD_LINE_WIDTH_DESKTOP = 0.65
+
 gsap.registerPlugin(ScrollTrigger)
 
 function HeroDesktopLayout({ titleRef, descRef, yearRef }) {
@@ -103,6 +112,7 @@ export default function Hero({ onReady }) {
   const yearRef = useRef(null)
   const { isMobileView, isTablet, scale } = useBreakpoint()
   const lanyardNudge = isTablet ? LANYARD_NUDGE_TABLET : LANYARD_NUDGE_PHONE
+  const lanyardLineWidth = isTablet ? LANYARD_LINE_WIDTH_TABLET : isMobileView ? LANYARD_LINE_WIDTH_PHONE : LANYARD_LINE_WIDTH_DESKTOP
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -174,7 +184,7 @@ export default function Hero({ onReady }) {
       }
     >
       <div className={isMobileView ? 'absolute z-0' : 'absolute inset-0 z-0 -left-1/3'} style={isMobileView ? { top: 0, left: 0, right: 0, height: '100svh', transform: `translateY(${lanyardNudge}px)` } : {}}>
-        <Lanyard position={[0, 0, isMobileView ? 15.5 : 15]} gravity={[0, -40, 0]} fov={isTablet ? 18 : isMobileView ? 21.5 : 16} onReady={onReady} />
+        <Lanyard position={[0, 0, isMobileView ? 15.5 : 15]} lineWidth={lanyardLineWidth} gravity={[0, -40, 0]} fov={isTablet ? 18 : isMobileView ? 21.5 : 16} onReady={onReady} />
       </div>
 
       {isMobileView
