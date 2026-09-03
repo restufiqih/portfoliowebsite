@@ -382,7 +382,7 @@ function HowItWorksStacked() {
         <h2
           ref={headingRef}
           className="text-black font-light font-['Geist'] text-center w-full"
-          style={{ fontSize: t(40), lineHeight: tl(46), letterSpacing: TRACK_DISPLAY }}
+          style={{ fontSize: t(36), lineHeight: tl(42), letterSpacing: TRACK_DISPLAY }}
         >
           Every project is unique,{isTablet ? <br /> : ' '}but here&apos;s how I approach them.
         </h2>

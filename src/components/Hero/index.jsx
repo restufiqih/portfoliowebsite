@@ -63,7 +63,7 @@ function HeroMobileLayout({ titleRef, descRef, yearRef, sidePad = 16, textMaxWid
           <h1
             ref={titleRef}
             className="text-white font-light font-['Geist']"
-            style={{ fontSize: s(40), lineHeight: sl(46), letterSpacing: TRACK_DISPLAY, ...(textMaxWidth ? { maxWidth: textMaxWidth } : {}) }}
+            style={{ fontSize: s(isTablet ? 46 : 40), lineHeight: sl(isTablet ? 53 : 46), letterSpacing: TRACK_DISPLAY, ...(textMaxWidth ? { maxWidth: textMaxWidth } : {}) }}
           >
             Top Rated Plus UI/UX Designer on Upwork
           </h1>

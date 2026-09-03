@@ -148,7 +148,7 @@ export default function Works() {
   const titleStyle = isMobile
     ? { fontSize: 36, lineHeight: '42px', letterSpacing: TRACK_DISPLAY }
     : isTablet
-    ? { fontSize: s(43), lineHeight: sl(50), letterSpacing: TRACK_DISPLAY }
+    ? { fontSize: s(36), lineHeight: sl(42), letterSpacing: TRACK_DISPLAY }
     : { fontSize: fluid(43, 60), lineHeight: fluid(50, 70), letterSpacing: TRACK_DISPLAY }
 
   // Geist/24/Light, flat on every breakpoint — what both the desktop (652:718)
