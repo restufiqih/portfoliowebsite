@@ -13,7 +13,8 @@
 
 import overview01 from '../../assets/works/catatmak/overview-01.jpg'
 import overviewTile from '../../assets/works/catatmak/overview-tile.jpg'
-import overview02 from '../../assets/works/catatmak/overview-02.jpg'
+import overview02 from '../../assets/works/catatmak/overview-02.png'
+import overview03 from '../../assets/works/catatmak/overview-03.jpg'
 import persona01 from '../../assets/works/catatmak/persona-01.jpg'
 import persona02 from '../../assets/works/catatmak/persona-02.jpg'
 import challenge01 from '../../assets/works/catatmak/challenge-01.jpg'
@@ -106,7 +107,12 @@ export default [
           at(0, 296.66668701171875, 900, 670,
             img(overview01, 900, 670, 'Catatmak logging a transaction over WhatsApp')),
         ], true),
-        img(overview02, 510, 967, 'Catatmak first-time logging prompt'),
+        // 952:2815 — two pictures with 10 between them, and the run of empty
+        // below is what squares this column off against the 967 beside it.
+        group(510, 966.6666870117188, [
+          at(0, 0, 510, 510, img(overview02, 510, 510, 'Catatmak first-time logging prompt')),
+          at(0, 520, 510, 250, img(overview03, 510, 250, 'Catatmak quick entry bar')),
+        ]),
       ],
     ],
   },
