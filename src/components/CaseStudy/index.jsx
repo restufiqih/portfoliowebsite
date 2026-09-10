@@ -24,6 +24,9 @@ const TYPE = {
   // 30/36 at 1440 (745:31315), 24/34 at 390 (807:1144).
   heading: { size: 30, line: 36, mobile: [24, 34], tracked: true },
   subheading: { size: 20, line: 28, mobile: [20, 28], tracked: true },
+  // 24/34 at 1440 (753:74766, 755:26689, 779:39437 and the rest). Split from
+  // subheading, which the hero's study name still sets at 20/28 (686:2821).
+  captionHeading: { size: 24, line: 34, mobile: [20, 28], tracked: true },
   body: { size: 16, line: 22, mobile: [16, 22], tracked: false },
   // Already at the scale's floor; it holds on every frame.
   chip: { size: 14, line: 20, mobile: [14, 20], tracked: true },
@@ -56,6 +59,12 @@ const SIDE_PAD = 50
 const SIDE_PAD_MOBILE = 16
 const SIDE_PAD_COMPACT_MAX = 53.33
 
+// The body sections run tighter than the hero: they sit at x=10, 1420 wide
+// (721:29286, 797:50026, 745:31295 and the rest), while the hero column and the
+// header keep the 50 they are drawn at. Desktop only -- the compact ramp below
+// 1024 is left as it was.
+const BODY_PAD = 10
+
 // Text and screens both run to the side padding on every breakpoint. Below
 // desktop the copy is capped as well: screens want the full width once there is
 // some, a measure that wide does not.
@@ -87,7 +96,7 @@ const CAPTION_GAP = 40
 // named type token, and the rest are the figures the two frames disagree on.
 function buildRamp({ isDesktop, isTablet }) {
   // Structure. The two frames agree on almost every one of these — the tile is
-  // 56 and the gallery gap 20 at both 1440 and 390 — so below desktop the
+  // 56 and the gallery gap 10 at both 1440 and 390 — so below desktop the
   // figure is taken as drawn and grown from 768. The handful the frames do
   // disagree on (side padding, section gap, and the hero's own spacing) are
   // named separately rather than being run through here.
@@ -102,9 +111,15 @@ function buildRamp({ isDesktop, isTablet }) {
     }
   }
 
+  // Tablet runs everything at 10 — hero included — so only phones keep the
+  // compact ramp, which is the inset their own frame draws.
   const sidePad = isDesktop
     ? fluidSpace(SIDE_PAD)
-    : fluidBetween(SIDE_PAD_MOBILE, SIDE_PAD_COMPACT_MAX, 390, 1024)
+    : isTablet
+      ? `${BODY_PAD}px`
+      : fluidBetween(SIDE_PAD_MOBILE, SIDE_PAD_COMPACT_MAX, 390, 1024)
+
+  const bodyPad = isDesktop ? fluidSpace(BODY_PAD) : sidePad
 
   // The cap applies below desktop at every width rather than switching on at
   // the tablet breakpoint: at 390 the column is 358 wide so it is inert, and it
@@ -113,7 +128,7 @@ function buildRamp({ isDesktop, isTablet }) {
 
   const sectionGap = isDesktop ? fluidSpace(SECTION_GAP) : scaleCompact(SECTION_GAP_MOBILE)
 
-  return { L, T, sidePad, textMax, sectionGap, isDesktop, isTablet }
+  return { L, T, sidePad, bodyPad, textMax, sectionGap, isDesktop, isTablet }
 }
 
 // 813:22536 — the line a case study carries while its write-up is unwritten.
@@ -159,7 +174,7 @@ function Note({ text, ui }) {
     <div
       ref={rootRef}
       className="flex flex-col items-center w-full"
-      style={{ maxWidth: CONTENT_MAX, margin: '0 auto', padding: `0 ${ui.sidePad}` }}
+      style={{ maxWidth: CONTENT_MAX, margin: '0 auto', padding: `0 ${ui.bodyPad}` }}
     >
       <p
         className="font-light font-['Geist'] text-center"
@@ -234,7 +249,7 @@ function SplitRow({ side, children, ui }) {
   return (
     <div
       className="flex items-start w-full"
-      style={{ maxWidth: CONTENT_MAX, margin: '0 auto', padding: `0 ${ui.sidePad}` }}
+      style={{ maxWidth: CONTENT_MAX, margin: '0 auto', padding: `0 ${ui.bodyPad}` }}
     >
       {ui.isDesktop && side === 'right' && spacer}
       <div className="flex flex-col items-center" style={{ flex: '1 0 0', minWidth: 0 }}>
@@ -245,37 +260,90 @@ function SplitRow({ side, children, ui }) {
   )
 }
 
+// A gallery cell is either a picture or a group of pictures. A group carries the
+// x/y/w/h each child has inside it in the 1440 frame and lays them out as
+// percentages of its own box, which reproduces the frame exactly — including
+// the odd gap, like the 20 between the three tiles above the Overview shot,
+// where every other seam in the page is 10.
+// A group marked `keep` holds its arrangement at every width instead of being
+// broken up below desktop — for blocks that only read as a set, like the type
+// specimen sitting over its swatches.
+const leaves = (cell) => (cell.items && !cell.keep ? cell.items.flatMap(leaves) : [cell])
+
+function Picture({ image, ui, fill = false, style }) {
+  return (
+    <div
+      className="relative overflow-hidden"
+      style={{
+        ...(fill
+          ? { width: '100%', height: '100%' }
+          : { aspectRatio: `${image.w} / ${image.h}` }),
+        borderRadius: ui.L(6),
+        ...style,
+      }}
+    >
+      <img src={image.src} alt={image.alt} loading="lazy" className="w-full h-full object-cover" />
+    </div>
+  )
+}
+
+// `fill` marks a cell placed by a group: its box is already set by the absolute
+// wrapper, so it stretches to it instead of sizing itself from a flex basis
+// that nothing would honour.
+function Cell({ cell, ui, fill = false }) {
+  const box = fill
+    ? { width: '100%', height: '100%' }
+    : {
+    flex: `${cell.w} 1 0`,
+    minWidth: 0,
+    // Some cells hang lower than their neighbour in the 1440 frame. Below
+    // desktop every picture is on its own line, so the offset would only ever
+    // read as a gap above it.
+    marginTop: cell.offsetTop && ui.isDesktop ? ui.L(cell.offsetTop) : undefined,
+  }
+
+  if (!cell.items) return <Picture image={cell} ui={ui} fill={fill} style={box} />
+
+  return (
+    <div style={{ ...box, position: 'relative', ...(fill ? {} : { aspectRatio: `${cell.w} / ${cell.h}` }) }}>
+      {cell.items.map((child, i) => (
+        <div
+          key={i}
+          style={{
+            position: 'absolute',
+            left: `${(child.x / cell.w) * 100}%`,
+            top: `${(child.y / cell.h) * 100}%`,
+            width: `${(child.w / cell.w) * 100}%`,
+            height: `${(child.h / cell.h) * 100}%`,
+          }}
+        >
+          <Cell cell={child} ui={ui} fill />
+        </div>
+      ))}
+    </div>
+  )
+}
+
 function Gallery({ rows, ui }) {
-  const gap = ui.L(20)
-  // The 390 frame stacks every screen; only 1440 sets them side by side.
-  const laidOut = ui.isDesktop ? rows : rows.flatMap((row) => row.map((image) => [image]))
+  // 10 on every frame: the pairs sit 705 wide at x=0 and x=715 inside a 1420
+  // band, and the rows clear each other by the same 10 (721:29286).
+  const gap = ui.L(10)
+  // The 390 frame stacks every screen, groups included: each picture gets a
+  // line of its own at the full column width.
+  const laidOut = ui.isDesktop
+    ? rows
+    : rows.flatMap((row) => row.flatMap(leaves).map((image) => [image]))
   return (
     <div
       className="flex flex-col w-full"
-      style={{ maxWidth: CONTENT_MAX, margin: '0 auto', padding: `0 ${ui.sidePad}`, gap }}
+      style={{ maxWidth: CONTENT_MAX, margin: '0 auto', padding: `0 ${ui.bodyPad}`, gap }}
     >
+      {/* Rows are top-aligned: one holding two different aspect ratios lets each
+          cell keep its own height rather than both stretching to the taller. */}
       {laidOut.map((row, i) => (
-        <div key={i} className="flex w-full" style={{ gap }}>
-          {row.map((image, j) => (
-            <div
-              key={j}
-              className="relative overflow-hidden"
-              style={{
-                // Grow in proportion to the width the image has in the frame,
-                // so an uneven row (433 beside 887) keeps its split at any size.
-                flex: `${image.w} 1 0`,
-                minWidth: 0,
-                aspectRatio: `${image.w} / ${image.h}`,
-                borderRadius: ui.L(6),
-              }}
-            >
-              <img
-                src={image.src}
-                alt={image.alt}
-                loading="lazy"
-                className="w-full h-full object-cover"
-              />
-            </div>
+        <div key={i} className="flex w-full items-start" style={{ gap }}>
+          {row.map((cell, j) => (
+            <Cell key={j} cell={cell} ui={ui} />
           ))}
         </div>
       ))}
@@ -319,7 +387,7 @@ function StoryBlock({ block, ui }) {
         <TextGroup
           heading={block.heading}
           body={block.body}
-          headingToken="subheading"
+          headingToken="captionHeading"
           gap={ui.L(14)}
           ui={ui}
         />
