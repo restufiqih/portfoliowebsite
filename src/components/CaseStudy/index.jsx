@@ -1,10 +1,11 @@
-import { useLayoutEffect, useRef } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import Navbar from '../Navbar'
 import FooterWash from '../FooterWash'
 import { useBreakpoint } from '../../hooks/useBreakpoint'
 import { fluidBetween, fluidSpace, fluidType, scaleCompact } from '../../utils/fluid'
 import { getStory } from '../../data/stories'
+import Lightbox from './Lightbox'
 
 // The Retune detail page. Two frames are drawn — 1440 (Figma 686:2754) and 390
 // (807:844) — and the page is built the way every section of the landing page
@@ -270,10 +271,13 @@ function SplitRow({ side, children, ui }) {
 // specimen sitting over its swatches.
 const leaves = (cell) => (cell.items && !cell.keep ? cell.items.flatMap(leaves) : [cell])
 
-function Picture({ image, ui, fill = false, style }) {
+function Picture({ image, ui, onOpen, fill = false, style }) {
   return (
-    <div
-      className="relative overflow-hidden"
+    <button
+      type="button"
+      onClick={() => onOpen?.(image)}
+      aria-label={image.alt ? `Open ${image.alt}` : 'Open image preview'}
+      className="relative overflow-hidden block p-0 border-0 bg-transparent cursor-zoom-in"
       style={{
         ...(fill
           ? { width: '100%', height: '100%' }
@@ -283,14 +287,14 @@ function Picture({ image, ui, fill = false, style }) {
       }}
     >
       <img src={image.src} alt={image.alt} loading="lazy" className="w-full h-full object-cover" />
-    </div>
+    </button>
   )
 }
 
 // `fill` marks a cell placed by a group: its box is already set by the absolute
 // wrapper, so it stretches to it instead of sizing itself from a flex basis
 // that nothing would honour.
-function Cell({ cell, ui, fill = false }) {
+function Cell({ cell, ui, onOpen, fill = false }) {
   const box = fill
     ? { width: '100%', height: '100%' }
     : {
@@ -302,7 +306,7 @@ function Cell({ cell, ui, fill = false }) {
     marginTop: cell.offsetTop && ui.isDesktop ? ui.L(cell.offsetTop) : undefined,
   }
 
-  if (!cell.items) return <Picture image={cell} ui={ui} fill={fill} style={box} />
+  if (!cell.items) return <Picture image={cell} ui={ui} onOpen={onOpen} fill={fill} style={box} />
 
   return (
     <div style={{ ...box, position: 'relative', ...(fill ? {} : { aspectRatio: `${cell.w} / ${cell.h}` }) }}>
@@ -317,14 +321,14 @@ function Cell({ cell, ui, fill = false }) {
             height: `${(child.h / cell.h) * 100}%`,
           }}
         >
-          <Cell cell={child} ui={ui} fill />
+          <Cell cell={child} ui={ui} onOpen={onOpen} fill />
         </div>
       ))}
     </div>
   )
 }
 
-function Gallery({ rows, ui }) {
+function Gallery({ rows, ui, onOpen }) {
   // 10 on every frame: the pairs sit 705 wide at x=0 and x=715 inside a 1420
   // band, and the rows clear each other by the same 10 (721:29286).
   const gap = ui.L(10)
@@ -343,7 +347,7 @@ function Gallery({ rows, ui }) {
       {laidOut.map((row, i) => (
         <div key={i} className="flex w-full items-start" style={{ gap }}>
           {row.map((cell, j) => (
-            <Cell key={j} cell={cell} ui={ui} />
+            <Cell key={j} cell={cell} ui={ui} onOpen={onOpen} />
           ))}
         </div>
       ))}
@@ -351,7 +355,7 @@ function Gallery({ rows, ui }) {
   )
 }
 
-function StoryBlock({ block, ui }) {
+function StoryBlock({ block, ui, onOpen }) {
   if (block.type === 'divider') {
     // The rule takes no height of its own. In both frames it is a zero-height
     // vector with the stroke straddling it, and the gap to the section below is
@@ -372,7 +376,7 @@ function StoryBlock({ block, ui }) {
   }
 
   if (block.type === 'gallery') {
-    return <Gallery rows={block.rows} ui={ui} />
+    return <Gallery rows={block.rows} ui={ui} onOpen={onOpen} />
   }
 
   // A single centred line, across the whole content width rather than in one
@@ -416,6 +420,7 @@ function StoryBlock({ block, ui }) {
 export default function CaseStudy({ study }) {
   const tile = study.logo
   const story = getStory(study.id)
+  const [preview, setPreview] = useState(null)
   const { isDesktop, isTablet } = useBreakpoint()
   const ui = buildRamp({ isDesktop, isTablet })
   const { L, T } = ui
@@ -683,12 +688,14 @@ export default function CaseStudy({ study }) {
                       : ui.sectionGap,
                 }}
               >
-                <StoryBlock block={block} ui={ui} />
+                <StoryBlock block={block} ui={ui} onOpen={setPreview} />
               </div>
             ))}
           </div>
         )}
       </FooterWash>
+
+      {preview && <Lightbox image={preview} onClose={() => setPreview(null)} />}
     </div>
   )
 }
