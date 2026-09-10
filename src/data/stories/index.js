@@ -2,12 +2,13 @@
 // A study with no entry here has no detail page at all: the route falls through
 // and its cards carry no link.
 import retune from './retune'
+import catatmak from './catatmak'
 import comingSoon from './coming-soon'
 
 export const stories = {
   retune,
+  catatmak,
   // Written up to the hero, with the body still to come.
-  catatmak: comingSoon,
   digiverse: comingSoon,
   jett: comingSoon,
 }

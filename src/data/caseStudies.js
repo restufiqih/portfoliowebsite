@@ -82,12 +82,12 @@ export const caseStudies = [
   },
   {
     id: 'catatmak',
-    // Figma 813:22486 — the hero of the Catatmak detail page.
+    // Figma 855:20558 — the hero of the Catatmak detail page.
     name: 'Catatmak',
     tagline: 'Financial Tracking App',
-    headline: 'Personal & Business Finance Tracker for Everyday Use',
+    headline: 'Everyday Financial Tracking App',
     description:
-      'Catatmak is a financial tracking app that comes in two modes: personal for everyday needs including splitting bills with friends, and business for small enterprises that need collaborative bookkeeping across a team.',
+      'Catatmak is a personal finance app designed to be used every day, with receipt-scan recording and a split bill feature for sharing expenses with friends.',
     role: 'UI/UX Designer. Worked within the product team, leading research, user flow, and interface design across both personal and business experiences.',
     services: ['Mobile App Design', 'Visual Branding'],
     logo: CATATMAK_TILE,
