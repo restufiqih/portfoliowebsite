@@ -65,6 +65,20 @@ const CATATMAK_TILE = {
 
 export const caseStudies = [
   {
+    id: 'catatmak',
+    // Figma 855:20558 — the hero of the Catatmak detail page.
+    name: 'Catatmak',
+    tagline: 'Financial Tracking App',
+    headline: 'Everyday Financial Tracking App',
+    description:
+      'Catatmak is a personal finance app designed to be used every day, with receipt-scan recording and a split bill feature for sharing expenses with friends.',
+    role: 'UI/UX Designer. Worked within the product team, leading research, user flow, and interface design across both personal and business experiences.',
+    services: ['Mobile App Design', 'Visual Branding'],
+    logo: CATATMAK_TILE,
+    thumbnail: catatmakThumbnail,
+    variant: 'dark',
+  },
+  {
     id: 'retune',
     // Figma 686:2833 — the hero of the Retune detail page.
     name: 'Retune',
@@ -78,20 +92,6 @@ export const caseStudies = [
     thumbnail: retuneThumbnail,
     // The one field that is not detail-page content: how the landing page
     // paints this project's card. See CARD_SURFACES in Works.
-    variant: 'dark',
-  },
-  {
-    id: 'catatmak',
-    // Figma 855:20558 — the hero of the Catatmak detail page.
-    name: 'Catatmak',
-    tagline: 'Financial Tracking App',
-    headline: 'Everyday Financial Tracking App',
-    description:
-      'Catatmak is a personal finance app designed to be used every day, with receipt-scan recording and a split bill feature for sharing expenses with friends.',
-    role: 'UI/UX Designer. Worked within the product team, leading research, user flow, and interface design across both personal and business experiences.',
-    services: ['Mobile App Design', 'Visual Branding'],
-    logo: CATATMAK_TILE,
-    thumbnail: catatmakThumbnail,
     variant: 'light',
   },
   {
