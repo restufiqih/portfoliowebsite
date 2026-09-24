@@ -10,7 +10,7 @@
 // never disagree.
 
 import retuneLogo from '../assets/works/retune-logo.svg'
-import retuneThumbnail from '../assets/works/retune-thumbnail.png'
+import retuneThumbnail from '../assets/works/retune-thumbnail.jpg'
 import catatmakLogo from '../assets/works/catatmak-logo.svg'
 import catatmakThumbnail from '../assets/works/catatmak-thumbnail.png'
 import digiverseLogo from '../assets/works/digiverse-logo.svg'
