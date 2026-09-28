@@ -3,11 +3,13 @@
 // and its cards carry no link.
 import retune from './retune'
 import catatmak from './catatmak'
+import emailAction from './emailAction'
 import comingSoon from './coming-soon'
 
 export const stories = {
   retune,
   catatmak,
+  'email-action': emailAction,
   // Written up to the hero, with the body still to come.
   digiverse: comingSoon,
   jett: comingSoon,

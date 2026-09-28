@@ -15,6 +15,8 @@ import catatmakLogo from '../assets/works/catatmak-logo.svg'
 import catatmakThumbnail from '../assets/works/catatmak-thumbnail.png'
 import digiverseLogo from '../assets/works/digiverse-logo.svg'
 import digiverseThumbnail from '../assets/works/digiverse-thumbnail.png'
+import emailActionLogo from '../assets/works/email-action-logo.svg'
+import emailActionThumbnail from '../assets/works/email-action-thumbnail.jpg'
 import jettLogo from '../assets/works/jett-logo.svg'
 import jettThumbnail from '../assets/works/jett-thumbnail.png'
 
@@ -41,6 +43,17 @@ const DIGIVERSE_TILE = {
   outlined: true,
 }
 
+// Figma 1038:14033 — like JETT, the artwork is the whole tile, rounded corner
+// and all. The exported mark is orange on black at rx 12 of 56, which is the
+// same corner-to-tile ratio the other marks are drawn at.
+const EMAIL_ACTION_TILE = {
+  src: emailActionLogo,
+  fill: '#000',
+  markW: 1,
+  markH: 1,
+  outlined: false,
+}
+
 // Figma 709:49311 — the artwork is the whole tile, rounded corner and all, so
 // it fills the box and the fill behind it only guards against a seam.
 const JETT_TILE = {
@@ -64,6 +77,21 @@ const CATATMAK_TILE = {
 }
 
 export const caseStudies = [
+  {
+    id: 'email-action',
+    // Figma 1038:12194 — the hero of the Email Action detail page. Its frame is
+    // still named "Case Study - Catatmak", a leftover from being duplicated.
+    name: 'Email Action',
+    tagline: 'Inbox Automation Tool',
+    headline: 'Email Automation & Inbox Management Platform',
+    description:
+      'Email Action is a web application that helps users take control of their inbox through automated rules, from moving and labeling to archiving and unsubscribing from specific senders.',
+    role: 'UI/UX Designer. Worked alongside other designers in the product team, focusing on research, user flow, and interface design across the core modules.',
+    services: ['Web App Design', 'Visual Branding'],
+    logo: EMAIL_ACTION_TILE,
+    thumbnail: emailActionThumbnail,
+    variant: 'dark',
+  },
   {
     id: 'catatmak',
     // Figma 855:20558 — the hero of the Catatmak detail page.
@@ -124,6 +152,22 @@ export const caseStudies = [
     variant: 'light',
   },
 ]
+
+// The work index lists every study above. The landing page carries only four,
+// because the stack is a pitch rather than a catalogue and a fifth card costs a
+// whole screen of scrolling to reach the section below it. DigiVerse is the one
+// held back: it is the oldest of the five and the only one whose write-up is
+// still unwritten, so it stays a click away on /work rather than leading with a
+// page that has nothing under its hero yet.
+//
+// Order is the landing page's own, not a slice of the list above: Email Action
+// takes the third slot DigiVerse used to hold, which keeps the dark/light
+// alternation the stack is painted in.
+const HOME_IDS = ['catatmak', 'retune', 'email-action', 'jett']
+
+export const homeCaseStudies = HOME_IDS.map((id) =>
+  caseStudies.find((study) => study.id === id)
+)
 
 export const CASE_STUDY_BASE = '/work'
 

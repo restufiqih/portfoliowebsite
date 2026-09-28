@@ -5,7 +5,7 @@ import RollingButton from '../RollingButton'
 import CharWord from '../CharWord'
 import { useBreakpoint } from '../../hooks/useBreakpoint'
 import { TRACK_DISPLAY, TRACK_TEXT, fluid, fluidSpace, fluidType, scaleTablet } from '../../utils/fluid'
-import { CASE_STUDY_BASE, caseStudies, caseStudyPath } from '../../data/caseStudies'
+import { CASE_STUDY_BASE, homeCaseStudies, caseStudyPath } from '../../data/caseStudies'
 import { getStory } from '../../data/stories'
 import { navigate } from '../../utils/route'
 
@@ -298,7 +298,7 @@ export default function Works() {
       // the moment it lands, so slowing it there would only be a hitch before
       // it picks the page's speed back up.
       let lift = 0
-      const rests = i < caseStudies.length - 1
+      const rests = i < homeCaseStudies.length - 1
       if (rests && gap > 0 && gap < ARRIVAL_CUSHION) {
         lift = ARRIVAL_CUSHION * arrivalEase(gap / ARRIVAL_CUSHION) - gap
       }
@@ -331,7 +331,7 @@ export default function Works() {
         if (!el) continue
         const r = el.getBoundingClientRect()
         if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) {
-          overLight = CARD_SURFACES[caseStudies[i].variant].onLight
+          overLight = CARD_SURFACES[homeCaseStudies[i].variant].onLight
           break
         }
       }
@@ -514,7 +514,7 @@ export default function Works() {
             ...(isTablet ? { maxWidth: s(CARD_MAX_TABLET), margin: '0 auto' } : {}),
           }}
         >
-          {caseStudies.map((study, i) => {
+          {homeCaseStudies.map((study, i) => {
             const surface = CARD_SURFACES[study.variant]
             const textColor = surface.onLight ? 'text-black' : 'text-white'
 
