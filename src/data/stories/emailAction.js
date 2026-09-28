@@ -453,4 +453,26 @@ export default [
       ],
     ],
   },
+
+  // 1038:13664 — the last of the story; the Footer below it is the site's own.
+  // One text node in the frame, taken as two paragraphs at the turn the other
+  // two studies break on, where the delivery gives way to what changed for the
+  // people using it.
+  {
+    type: 'prose',
+    side: 'right',
+    groups: [
+      {
+        heading: 'The Result',
+        body: [
+          {
+            paragraphs: [
+              'The complete app design was delivered in under one month. Its coverage went beyond the happy path: every module includes empty states, loading states, empty search results, and error states specific to each type of failure, so the development team never had to guess when encountering conditions outside the main scenario.',
+              'But what matters more is the shift in working method it offers users. Inbox cleanup that used to be endless repetitive work is now settled once through rules that keep running. Senders that were only ever felt as noise are now visible as a list that can be acted on. And every automated action leaves a trace that can be inspected, so users keep control of the inbox they’ve handed over to the system.',
+            ],
+          },
+        ],
+      },
+    ],
+  },
 ]
