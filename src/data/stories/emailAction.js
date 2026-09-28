@@ -62,6 +62,11 @@ const at = (x, y, w, h, cell) => ({ ...cell, x, y, w, h })
 // A picture the design draws twice, once for each frame: the wide asset, and
 // the one that replaces it below desktop. The narrow one is its own drawing
 // rather than the same artwork reflowed, so it carries its own size.
+//
+// 1152:54267 used to have no fill, which Figma pads with #E5E5E5 on export --
+// the grey had to be cleared back to transparency, and the asset kept as a
+// PNG for it. The frame carries its own white now, and rounds the corners of
+// both cards, so it comes across opaque and is a JPEG again.
 const withCompact = (cell, src, w, h) => ({ ...cell, compact: { src, w, h } })
 
 export default [
