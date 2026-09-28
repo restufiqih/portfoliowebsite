@@ -3,9 +3,6 @@
 // long-form story, kept as data so the page is a renderer rather than a wall of
 // markup. Block shapes and spacing rules are documented in retune.js.
 //
-// The frame is still named "Case Study - Catatmak" in the file: it was duplicated
-// from that page and never renamed. Everything inside it is Email Action.
-//
 // Straight apostrophes in the source have been set as U+2019, which is what the
 // other two written case studies use throughout.
 //
@@ -126,7 +123,7 @@ export default [
         body: [
           {
             paragraphs: [
-              'Research narrowed user needs down to two profiles with fundamentally different relationships to money.',
+              'Research narrowed down to two user profiles with different sources of the same problem.',
             ],
           },
         ],

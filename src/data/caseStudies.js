@@ -79,8 +79,7 @@ const CATATMAK_TILE = {
 export const caseStudies = [
   {
     id: 'email-action',
-    // Figma 1038:12194 — the hero of the Email Action detail page. Its frame is
-    // still named "Case Study - Catatmak", a leftover from being duplicated.
+    // Figma 1038:12194 — the hero of the Email Action detail page.
     name: 'Email Action',
     tagline: 'Inbox Automation Tool',
     headline: 'Email Automation & Inbox Management Platform',
