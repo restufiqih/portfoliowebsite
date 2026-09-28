@@ -89,7 +89,7 @@ export const caseStudies = [
     services: ['Web App Design', 'Visual Branding'],
     logo: EMAIL_ACTION_TILE,
     thumbnail: emailActionThumbnail,
-    variant: 'dark',
+    variant: 'light',
   },
   {
     id: 'catatmak',
@@ -160,8 +160,9 @@ export const caseStudies = [
 // page that has nothing under its hero yet.
 //
 // Order is the landing page's own, not a slice of the list above: Email Action
-// takes the third slot DigiVerse used to hold, which keeps the dark/light
-// alternation the stack is painted in.
+// takes the third slot DigiVerse used to hold. It is painted white rather than
+// inheriting the black that slot used to carry, so the stack runs one dark card
+// and then three light ones.
 const HOME_IDS = ['catatmak', 'retune', 'email-action', 'jett']
 
 export const homeCaseStudies = HOME_IDS.map((id) =>
