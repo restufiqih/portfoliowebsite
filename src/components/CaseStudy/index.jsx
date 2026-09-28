@@ -271,22 +271,32 @@ function SplitRow({ side, children, ui }) {
 // specimen sitting over its swatches.
 const leaves = (cell) => (cell.items && !cell.keep ? cell.items.flatMap(leaves) : [cell])
 
+// An image may carry a `compact` variant: a second asset the design draws for
+// the narrow frame, used below desktop in place of the wide one. It is a whole
+// separate picture, not the same artwork rescaled -- the persona block, for
+// one, puts its two cards side by side at 1440 and stacks them at 390 -- so it
+// brings its own width and height, and with them its own aspect ratio. The
+// preview opens whichever is on screen rather than always the wide one.
+const shownImage = (image, ui) =>
+  !ui.isDesktop && image.compact ? { ...image, ...image.compact } : image
+
 function Picture({ image, ui, onOpen, fill = false, style }) {
+  const shown = shownImage(image, ui)
   return (
     <button
       type="button"
-      onClick={() => onOpen?.(image)}
-      aria-label={image.alt ? `Open ${image.alt}` : 'Open image preview'}
+      onClick={() => onOpen?.(shown)}
+      aria-label={shown.alt ? `Open ${shown.alt}` : 'Open image preview'}
       className="relative overflow-hidden block p-0 border-0 bg-transparent cursor-zoom-in"
       style={{
         ...(fill
           ? { width: '100%', height: '100%' }
-          : { aspectRatio: `${image.w} / ${image.h}` }),
+          : { aspectRatio: `${shown.w} / ${shown.h}` }),
         borderRadius: ui.L(6),
         ...style,
       }}
     >
-      <img src={image.src} alt={image.alt} loading="lazy" className="w-full h-full object-cover" />
+      <img src={shown.src} alt={shown.alt} loading="lazy" className="w-full h-full object-cover" />
     </button>
   )
 }

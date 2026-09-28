@@ -20,7 +20,7 @@ import features01 from '../../assets/works/email-action/features-01.jpg'
 import mockup04 from '../../assets/works/email-action/mockup-04.png'
 import mockup05 from '../../assets/works/email-action/mockup-05.jpg'
 import persona01 from '../../assets/works/email-action/persona-01.jpg'
-import persona02 from '../../assets/works/email-action/persona-02.png'
+import personaCompact from '../../assets/works/email-action/persona-compact.jpg'
 import challenge01 from '../../assets/works/email-action/challenge-01.jpg'
 import flow01 from '../../assets/works/email-action/flow-01.png'
 import wireframe01 from '../../assets/works/email-action/wireframe-01.jpg'
@@ -58,6 +58,11 @@ const img = (src, w, h, alt, offsetTop) => ({ src, w, h, alt, offsetTop })
 // phone it gets a line to itself instead of shrinking inside a flattened slab.
 const group = (w, h, items, keep = false) => ({ w, h, items, keep })
 const at = (x, y, w, h, cell) => ({ ...cell, x, y, w, h })
+
+// A picture the design draws twice, once for each frame: the wide asset, and
+// the one that replaces it below desktop. The narrow one is its own drawing
+// rather than the same artwork reflowed, so it carries its own size.
+const withCompact = (cell, src, w, h) => ({ ...cell, compact: { src, w, h } })
 
 export default [
   // 1038:12297
@@ -137,23 +142,16 @@ export default [
     type: 'gallery',
     rows: [
       [
-        // 1038:12779 and 1046:17131. Two cards that overlap on purpose: Sarah's
-        // photograph is set 194.78 above her own card and rises over David's,
-        // so the pair is stacked at the offsets the frame gives them rather
-        // than cut apart at the seam, which would take the top off her head.
-        //
-        // Her picture carries the transparency that overlap needs -- Figma
-        // exports the bleed filled with white, which would paint over David --
-        // so the white around her was cleared before it was saved. Marked
-        // `keep` because the overlap is the point: broken into separate rows on
-        // a phone the two would drift apart and it would read as a mistake.
-        // Each is still its own picture, and still opens on its own.
-        group(1420, 1318, [
-          at(0, 0, 1420, 943.5,
-            img(persona01, 1420, 943.5, 'David, the first research persona')),
-          at(0, 517.2177734375, 1420, 800.7822265625,
-            img(persona02, 1420, 800.7822265625, 'Sarah, the second research persona')),
-        ], true),
+        // 1038:12769 at 1440, 1152:54267 at 390. One picture again rather than
+        // the two it was briefly split into. The two cards overlap on purpose
+        // -- Sarah's photograph is set above her own card and rises over
+        // David's -- and the narrow frame redraws the block rather than
+        // reflowing it, so each width is given the asset drawn for it instead
+        // of one being made to stand in for the other.
+        withCompact(
+          img(persona01, 1420, 1318, 'David and Sarah, the two research personas'),
+          personaCompact, 358, 342.35211181640625,
+        ),
       ],
     ],
   },
