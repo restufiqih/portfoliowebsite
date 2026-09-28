@@ -271,6 +271,14 @@ function SplitRow({ side, children, ui }) {
 // specimen sitting over its swatches.
 const leaves = (cell) => (cell.items && !cell.keep ? cell.items.flatMap(leaves) : [cell])
 
+// A group may also carry a `compact`: the arrangement the narrow frame draws
+// for the same pictures. The specimen is two columns at 1440 and one at 390,
+// which is a different set of positions rather than a different set of assets,
+// so below desktop the group stands in for itself and holds that arrangement
+// instead of being broken into one picture per line.
+const resolveCompact = (cell, ui) =>
+  !ui.isDesktop && cell.compact?.items ? { ...cell.compact, keep: true } : cell
+
 // An image may carry a `compact` variant: a second asset the design draws for
 // the narrow frame, used below desktop in place of the wide one. It is a whole
 // separate picture, not the same artwork rescaled -- the persona block, for
@@ -346,7 +354,12 @@ function Gallery({ rows, ui, onOpen }) {
   // line of its own at the full column width.
   const laidOut = ui.isDesktop
     ? rows
-    : rows.flatMap((row) => row.flatMap(leaves).map((image) => [image]))
+    : rows.flatMap((row) =>
+        row
+          .map((cell) => resolveCompact(cell, ui))
+          .flatMap(leaves)
+          .map((image) => [image])
+      )
   return (
     <div
       className="flex flex-col w-full"

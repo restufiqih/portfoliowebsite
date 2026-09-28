@@ -69,6 +69,17 @@ const at = (x, y, w, h, cell) => ({ ...cell, x, y, w, h })
 // both cards, so it comes across opaque and is a JPEG again.
 const withCompact = (cell, src, w, h) => ({ ...cell, compact: { src, w, h } })
 
+// The specimen's six pictures, named once: the wide frame and the narrow one
+// place the same images, so neither arrangement owns them.
+const visual = {
+  mark: img(visualMark, 170, 170, 'Email Action app mark'),
+  illo: img(visualIllo, 705, 705, 'Email Action empty state illustration'),
+  type: img(visualType, 705, 241, 'SF Pro Display, the interface typeface'),
+  sw1: img(visualSw1, 347.5, 170, 'The pastel green accent'),
+  sw2: img(visualSw2, 347.5, 170, 'The near-black the palette rests on'),
+  logo: img(visualLogo, 488, 488, 'The Email Action logo'),
+}
+
 export default [
   // 1038:12297
   { type: 'divider' },
@@ -437,22 +448,36 @@ export default [
     ],
   },
 
-  // 1038:13559 — the specimen. Two columns of unequal height: the left runs
-  // the full 1025, the right stops at 919.
+  // 1038:13559 at 1440, 1152:64231 at 390. The same six pictures either way,
+  // at 0.5078 of their width in the narrow frame and at identical ratios, so
+  // this is one arrangement standing in for another rather than a second set
+  // of assets. Held as a single group covering both columns — the seam between
+  // them is only a position at 1440, and at 390 there is no seam to keep.
   {
     type: 'gallery',
     rows: [
       [
-        group(705, 1025, [
-          at(535, 140, 170, 170, img(visualMark, 170, 170, 'Email Action app mark')),
-          at(0, 320, 705, 705, img(visualIllo, 705, 705, 'Email Action empty state illustration')),
-        ]),
-        group(705, 919, [
-          at(0, 0, 705, 241, img(visualType, 705, 241, 'SF Pro Display, the interface typeface')),
-          at(0, 251, 347.5, 170, img(visualSw1, 347.5, 170, 'The pastel green accent')),
-          at(358, 251, 347.5, 170, img(visualSw2, 347.5, 170, 'The near-black the palette rests on')),
-          at(0, 431, 488, 488, img(visualLogo, 488, 488, 'The Email Action logo')),
-        ]),
+        {
+          ...group(1420, 1025, [
+            at(535, 140, 170, 170, visual.mark),
+            at(0, 320, 705, 705, visual.illo),
+            at(715, 0, 705, 241, visual.type),
+            at(715, 251, 347.5, 170, visual.sw1),
+            at(1073, 251, 347.5, 170, visual.sw2),
+            at(715, 431, 488, 488, visual.logo),
+          ]),
+          // 1152:64231 — one column: the mark set to the right of nothing, the
+          // illustration under it, then the type, the two swatches side by
+          // side, and the logo last.
+          compact: group(358, 939.6357421875, [
+            at(271.67364501953125, 0, 86.32623291015625, 86.32623291015625, visual.mark),
+            at(0, 96.32623291015625, 358, 358, visual.illo),
+            at(0, 464.32623291015625, 358, 122.380157470703125, visual.type),
+            at(0, 596.706390380859375, 174, 85.1222991943359375, visual.sw1),
+            at(184, 596.706390380859375, 174, 85.1222991943359375, visual.sw2),
+            at(0, 691.8286895751953125, 247.8070831298828125, 247.8070831298828125, visual.logo),
+          ]),
+        },
       ],
     ],
   },
