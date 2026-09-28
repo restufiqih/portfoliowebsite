@@ -20,6 +20,7 @@ import features01 from '../../assets/works/email-action/features-01.jpg'
 import mockup04 from '../../assets/works/email-action/mockup-04.png'
 import mockup05 from '../../assets/works/email-action/mockup-05.jpg'
 import persona01 from '../../assets/works/email-action/persona-01.jpg'
+import persona02 from '../../assets/works/email-action/persona-02.png'
 import challenge01 from '../../assets/works/email-action/challenge-01.jpg'
 import flow01 from '../../assets/works/email-action/flow-01.png'
 import wireframe01 from '../../assets/works/email-action/wireframe-01.jpg'
@@ -136,7 +137,23 @@ export default [
     type: 'gallery',
     rows: [
       [
-        img(persona01, 1420, 1318, 'David and Sarah, the two research personas'),
+        // 1038:12779 and 1046:17131. Two cards that overlap on purpose: Sarah's
+        // photograph is set 194.78 above her own card and rises over David's,
+        // so the pair is stacked at the offsets the frame gives them rather
+        // than cut apart at the seam, which would take the top off her head.
+        //
+        // Her picture carries the transparency that overlap needs -- Figma
+        // exports the bleed filled with white, which would paint over David --
+        // so the white around her was cleared before it was saved. Marked
+        // `keep` because the overlap is the point: broken into separate rows on
+        // a phone the two would drift apart and it would read as a mistake.
+        // Each is still its own picture, and still opens on its own.
+        group(1420, 1318, [
+          at(0, 0, 1420, 943.5,
+            img(persona01, 1420, 943.5, 'David, the first research persona')),
+          at(0, 517.2177734375, 1420, 800.7822265625,
+            img(persona02, 1420, 800.7822265625, 'Sarah, the second research persona')),
+        ], true),
       ],
     ],
   },
