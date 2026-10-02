@@ -86,12 +86,21 @@ const HEADING_COLOR = '#212121'
 const DOT_STEP = 0.32
 const DOT_HOLD = 0.5
 
-// Every section sits 100 from its neighbours at 1440 and 80 at 390. The one
-// exception on both frames is a feature note and the screens it introduces:
-// those are one unit, 40 apart.
+// Every section sits 100 from its neighbours at 1440 and 80 at 390. Two kinds
+// of pair close that up, because in both the words and the pictures are one
+// thought rather than two sections:
+//
+//   - a feature note and the screens it introduces, 40 apart
+//   - a section whose body describes the pictures directly under it, 50
+//
+// The second is what Jett draws as a single frame -- Sitemap, Responsive &
+// Interaction and Visual Direction each hold their text and their images 50
+// apart (1229:30266, 1232:30351, 1246:19680) -- where a heading that only
+// opens a section, like Overview or The Challenge, keeps the full 100.
 const SECTION_GAP = 100
 const SECTION_GAP_MOBILE = 80
 const CAPTION_GAP = 40
+const DESCRIPTION_GAP = 50
 
 // Builds the ramps for a breakpoint. `L` is for anything structural, `T` for a
 // named type token, and the rest are the figures the two frames disagree on.
@@ -704,10 +713,13 @@ export default function CaseStudy({ study }) {
               <div
                 key={i}
                 style={{
-                  // A feature note and the screens under it are one unit.
+                  // A note or a description and the pictures under it are one
+                  // unit; anything else is two sections.
                   marginTop:
-                    i > 0 && story[i - 1].type === 'caption' && block.type === 'gallery'
+                    i > 0 && block.type === 'gallery' && story[i - 1].type === 'caption'
                       ? L(CAPTION_GAP)
+                      : i > 0 && block.type === 'gallery' && story[i - 1].type === 'prose'
+                      ? L(DESCRIPTION_GAP)
                       : ui.sectionGap,
                 }}
               >
