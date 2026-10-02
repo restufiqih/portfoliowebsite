@@ -122,20 +122,6 @@ export const caseStudies = [
     variant: 'light',
   },
   {
-    id: 'digiverse',
-    // Figma 823:23033 — the hero of the DigiVerse Studio detail page.
-    name: 'DigiVerse Studio',
-    tagline: 'Business Intelligence Tool',
-    headline: 'Self-Service Data Visualization Platform',
-    description:
-      'DigiVerse Studio is a business intelligence tool within the Telkom Corporate University LMS ecosystem, enabling internal teams to process and visualize data on their own without depending on the technical team.',
-    role: 'UI/UX Designer. Worked within the product team on research, interaction design, and interface systems, while also shaping the product’s visual identity and design language.',
-    services: ['Web App Design', 'Visual Branding'],
-    logo: DIGIVERSE_TILE,
-    thumbnail: digiverseThumbnail,
-    variant: 'dark',
-  },
-  {
     id: 'jett',
     // Figma 1172:18347 — the hero of the Jett Plasma detail page. The write-up
     // rewrote all of this: the title now carries the live domain, the services
@@ -151,14 +137,30 @@ export const caseStudies = [
     thumbnail: jettThumbnail,
     variant: 'light',
   },
-]
+  {
+    id: 'digiverse',
+    // Figma 823:23033 — the hero of the DigiVerse Studio detail page.
+    name: 'DigiVerse Studio',
+    tagline: 'Business Intelligence Tool',
+    headline: 'Self-Service Data Visualization Platform',
+    description:
+      'DigiVerse Studio is a business intelligence tool within the Telkom Corporate University LMS ecosystem, enabling internal teams to process and visualize data on their own without depending on the technical team.',
+    role: 'UI/UX Designer. Worked within the product team on research, interaction design, and interface systems, while also shaping the product’s visual identity and design language.',
+    services: ['Web App Design', 'Visual Branding'],
+    logo: DIGIVERSE_TILE,
+    thumbnail: digiverseThumbnail,
+    variant: 'dark',
+  },]
 
-// The work index lists every study above. The landing page carries only four,
-// because the stack is a pitch rather than a catalogue and a fifth card costs a
-// whole screen of scrolling to reach the section below it. DigiVerse is the one
-// held back: it is the oldest of the five and the only one whose write-up is
-// still unwritten, so it stays a click away on /work rather than leading with a
-// page that has nothing under its hero yet.
+// The work index lists every study above, in the order they are written here.
+// DigiVerse sits last because it is the one still unwritten: its page carries a
+// hero and nothing under it, so it closes the grid rather than interrupting the
+// four that have something to open.
+//
+// The landing page carries only four, because the stack is a pitch rather than
+// a catalogue and a fifth card costs a whole screen of scrolling to reach the
+// section below it. DigiVerse is the one held back there too, for the same
+// reason it is last here.
 //
 // Order is the landing page's own, not a slice of the list above: Email Action
 // takes the third slot DigiVerse used to hold. It is painted white rather than
