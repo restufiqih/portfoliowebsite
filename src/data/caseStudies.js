@@ -18,7 +18,7 @@ import digiverseThumbnail from '../assets/works/digiverse-thumbnail.png'
 import emailActionLogo from '../assets/works/email-action-logo.svg'
 import emailActionThumbnail from '../assets/works/email-action-thumbnail.jpg'
 import jettLogo from '../assets/works/jett-logo.svg'
-import jettThumbnail from '../assets/works/jett-thumbnail.png'
+import jettThumbnail from '../assets/works/jett-thumbnail.jpg'
 
 // Each project brings its own tile: the fill behind the mark, how much of the
 // tile the mark takes up, and whether the tile needs an outline to read. A mark
@@ -137,15 +137,16 @@ export const caseStudies = [
   },
   {
     id: 'jett',
-    // Figma 823:23183 — the hero of the JETT detail page.
-    name: 'JETT',
+    // Figma 1172:18347 — the hero of the Jett Plasma detail page. The write-up
+    // rewrote all of this: the title now carries the live domain, the services
+    // dropped from three chips to two, and the body is its own.
+    name: 'Jett Plasma – jetteyes.ca',
     tagline: 'Medical Device Website',
-    headline: 'Marketing Website for a Medical Plasma Device',
+    headline: 'Website for an Eye Care Medical Device',
     description:
-      'JETT Plasma is a plasma-based medical device for ophthalmology, dermatology, and aesthetic procedures. This website was designed to introduce the technology to medical practitioners and clinics, and convince them to adopt it.',
-    role: 'UI/UX Designer. Led the project end to end, from research and visual identity through interface design, motion, and front-end development alongside a teammate.',
-    // 823:23302. Three chips, which wrap to two rows against the 350 column.
-    services: ['Website Design', 'Visual Branding', 'Development'],
+      'Jett Plasma is a plasma pen built specifically for eye care procedures. This website introduces the technology to professionals working in ophthalmology, dermatology, and aesthetics.',
+    role: 'UI/UX Designer. Handled the project end to end, from research and information architecture through responsive design and developer handoff.',
+    services: ['Landing Page', 'Visual Branding'],
     logo: JETT_TILE,
     thumbnail: jettThumbnail,
     variant: 'light',
