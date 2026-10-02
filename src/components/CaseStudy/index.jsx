@@ -489,6 +489,34 @@ export default function CaseStudy({ study }) {
     return () => ctx.revert()
   }, [isDesktop])
 
+  // A title that names the site it built carries the link to it: the domain is
+  // underlined and opens the live page, the rest of the title is plain. Split
+  // rather than stored twice, so the two can never say different things — and
+  // if the label ever stops matching the title, this quietly returns the title
+  // whole rather than dropping a word out of it.
+  //
+  // Only the detail page does this. The cards elsewhere are themselves links to
+  // this page, and a link inside a link is not something HTML allows.
+  const titleWithSite = (s) => {
+    const at = s.site ? s.name.indexOf(s.site.label) : -1
+    if (at < 0) return s.name
+    return (
+      <>
+        {s.name.slice(0, at)}
+        <a
+          href={s.site.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline hover:opacity-70 transition-opacity"
+          style={{ textUnderlineOffset: '0.18em' }}
+        >
+          {s.site.label}
+        </a>
+        {s.name.slice(at + s.site.label.length)}
+      </>
+    )
+  }
+
   // 686:2854 / 807:816 — the mark, with the project's name beside it. The tile
   // is 56 on both frames, and the mark keeps a fixed share of it.
   const markRow = (
@@ -521,7 +549,7 @@ export default function CaseStudy({ study }) {
       </div>
       <div className="flex flex-col min-w-0 flex-1" style={{ gap: L(2) }}>
         <p className="text-black font-normal font-['Geist']" style={T('subheading')}>
-          {study.name}
+          {titleWithSite(study)}
         </p>
         <p className="text-black font-light font-['Geist']" style={T('body')}>
           {study.tagline}

@@ -127,6 +127,10 @@ export const caseStudies = [
     // rewrote all of this: the title now carries the live domain, the services
     // dropped from three chips to two, and the body is its own.
     name: 'Jett Plasma – jetteyes.ca',
+    // The title names the site that was built, so on the detail page that part
+    // of it is the link to it. `label` has to appear in `name` verbatim: the
+    // hero splits the title on it rather than storing the title twice.
+    site: { label: 'jetteyes.ca', href: 'https://jetteyes.ca' },
     tagline: 'Medical Device Website',
     headline: 'Website for an Eye Care Medical Device',
     description:
