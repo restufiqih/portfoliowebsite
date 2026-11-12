@@ -19,6 +19,7 @@ const FRICTION = 0.84                // low: the rings have weight and stop soon
                                      // after the hand does, rather than gliding on
 const WHEEL = 0.014                  // degrees per pixel of wheel
 const DRAG = 0.06                    // degrees per pixel of drag
+const LIFT = 34                      // pixels a card steps towards the viewer on hover
 
 // Shortest signed angle from `deg` to zero, in -180..180.
 function wrap(deg) {
@@ -172,6 +173,15 @@ export default function Gallery() {
     }
   }, [])
 
+  // Hover steps a card out of the ring a little. Mouse only: on a touchscreen
+  // the enter fires on the tap that opens the site and would leave it stuck out.
+  const lift = useCallback((e) => {
+    if (e.pointerType === 'mouse') e.currentTarget.style.setProperty('--lift', `${LIFT}px`)
+  }, [])
+  const drop = useCallback((e) => {
+    e.currentTarget.style.setProperty('--lift', '0px')
+  }, [])
+
   // The concept sites are static pages outside this app, so they are opened with
   // a real navigation rather than through the router.
   const open = useCallback((href) => (e) => {
@@ -217,7 +227,10 @@ export default function Gallery() {
               const common = {
                 position: 'absolute',
                 inset: 0,
-                transform: `rotateY(${i * STEP}deg) translateZ(var(--r, 0px))`,
+                // The lift is its own term, so hovering only moves the card along
+                // its own normal -- the ring's own turn is on the parent.
+                transform: `rotateY(${i * STEP}deg) translateZ(calc(var(--r, 0px) + var(--lift, 0px)))`,
+                transition: 'transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)',
                 transformStyle: 'preserve-3d',
                 borderRadius: 2,
                 overflow: 'hidden',
@@ -239,6 +252,8 @@ export default function Gallery() {
                   ref={(el) => { panelRefs.current[flat] = el }}
                   href={panel.href}
                   onClick={open(panel.href)}
+                  onPointerEnter={lift}
+                  onPointerLeave={drop}
                   aria-label={`${panel.name} — ${panel.description}`}
                   style={{ ...common, display: 'block' }}
                   draggable={false}
