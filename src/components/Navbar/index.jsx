@@ -115,9 +115,9 @@ function DesktopNavbar({ stickyVisible, onLight }) {
                 Available for Project
               </span>
             </div>
+            <NavLink label="Gallery" href="/gallery" dark={onLight} height={itemH} />
             <NavLink label="Work" href="/work" dark={onLight} height={itemH} />
             <NavLink label="Services" href="#services" dark={onLight} height={itemH} />
-            <NavLink label="KPI's" href="#kpis" dark={onLight} height={itemH} />
             <NavLink label="About" href="/about" dark={onLight} height={itemH} />
             <NavLink label="Contact Me" href="#contact" dark={onLight} height={itemH} />
           </div>
@@ -145,9 +145,9 @@ function DesktopNavbar({ stickyVisible, onLight }) {
                 Available for Project
               </span>
             </div>
+            <NavLink label="Gallery" href="/gallery" dark height={itemH} />
             <NavLink label="Work" href="/work" dark height={itemH} />
             <NavLink label="Services" href="#services" dark height={itemH} />
-            <NavLink label="KPI's" href="#kpis" dark height={itemH} />
             <NavLink label="About" href="/about" dark height={itemH} />
             <NavLink label="Contact Me" href="#contact" dark height={itemH} />
           </div>

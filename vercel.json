@@ -27,6 +27,14 @@
     {
       "source": "/gallery/saraya",
       "destination": "/gallery/saraya/index.html"
+    },
+    {
+      "source": "/gallery",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/gallery/",
+      "destination": "/index.html"
     }
   ],
   "redirects": [

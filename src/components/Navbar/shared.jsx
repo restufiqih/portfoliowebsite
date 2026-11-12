@@ -55,9 +55,9 @@ export function DrawLogo({ size = 44, color = 'white', className }) {
 }
 
 export const navLinks = [
+  { label: 'Gallery', href: '/gallery' },
   { label: 'Work', href: '/work' },
   { label: 'Services', href: '#services' },
-  { label: "KPI's", href: '#kpis' },
   // A route rather than an anchor: hrefs starting with '/' switch pages.
   { label: 'About', href: '/about' },
   { label: 'Contact Me', href: '#contact' },
@@ -65,6 +65,13 @@ export const navLinks = [
 
 export function handleNavClick(e, href) {
   e.preventDefault()
+
+  // The concept sites under /gallery are plain HTML in /public, not routes this
+  // app renders, so they are handed to the browser. /gallery itself is a route.
+  if (href.startsWith('/gallery/')) {
+    window.location.href = href
+    return
+  }
 
   // Route links move between pages and always land at the top.
   if (href.startsWith('/')) {

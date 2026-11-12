@@ -11,6 +11,7 @@ import Nebula from './components/Nebula'
 import About from './components/About'
 import CaseStudy from './components/CaseStudy'
 import WorkList from './components/WorkList'
+import Gallery from './components/Gallery'
 import LoadingScreen from './components/LoadingScreen'
 import { currentPath, ROUTE_CHANGE } from './utils/route'
 import { CASE_STUDY_BASE, getCaseStudy } from './data/caseStudies'
@@ -76,6 +77,9 @@ export default function App() {
   // Trailing slash tolerated, so /about and /about/ are the same page.
   const cleanPath = path.replace(/\/+$/, '')
   const isAbout = cleanPath === '/about'
+  // /gallery is this app's page; the concept sites it links to are static pages
+  // under /public and never reach the router.
+  const isGallery = cleanPath === '/gallery'
 
   // /work is the index; /work/<slug> a case study. An unknown slug falls
   // through to the landing page rather than rendering a half-empty detail page.
@@ -106,7 +110,14 @@ export default function App() {
   // crawlers do not run JS and still read index.html, but this fixes the browser
   // tab and what Google shows once it renders the page.
   useEffect(() => {
-    const meta = isWorkList
+    const meta = isGallery
+      ? {
+          title: 'Gallery — Akhdiyat Restu Fiqih, UI/UX Designer',
+          description:
+            'Concept websites designed and built from scratch by Akhdiyat Restu Fiqih.',
+          canonical: 'https://www.restufiqih.com/gallery',
+        }
+      : isWorkList
       ? {
           title: 'Work — Akhdiyat Restu Fiqih, UI/UX Designer',
           description:
@@ -139,7 +150,7 @@ export default function App() {
     document
       .querySelector('link[rel="canonical"]')
       ?.setAttribute('href', meta.canonical)
-  }, [isAbout, isCaseStudy, isWorkList, study])
+  }, [isAbout, isCaseStudy, isGallery, isWorkList, study])
 
   // A section link arriving from outside the app -- the 404 page's header, or a
   // pasted /#services -- lands here with a hash and nothing mounted to act on.
@@ -147,7 +158,7 @@ export default function App() {
   const jumpedRef = useRef(false)
   useEffect(() => {
     if (jumpedRef.current) return
-    if (loading && !isAbout && !isCaseStudy && !isWorkList) return
+    if (loading && !isAbout && !isCaseStudy && !isGallery && !isWorkList) return
     const id = window.location.hash.slice(1)
     if (!id) return
     jumpedRef.current = true
@@ -170,14 +181,16 @@ export default function App() {
     }
     timer = setTimeout(settle, 16)
     return () => clearTimeout(timer)
-  }, [loading, isAbout, isCaseStudy, isWorkList])
+  }, [loading, isAbout, isCaseStudy, isGallery, isWorkList])
 
   return (
     <div className="min-h-screen bg-black" style={{ overflowX: 'clip' }}>
-      {loading && !isAbout && !isCaseStudy && !isWorkList && (
+      {loading && !isAbout && !isCaseStudy && !isGallery && !isWorkList && (
         <LoadingScreen onFinish={handleFinish} lanyardReady={lanyardReady} />
       )}
-      {isWorkList ? (
+      {isGallery ? (
+        <Gallery />
+      ) : isWorkList ? (
         <WorkList />
       ) : isCaseStudy ? (
         <CaseStudy study={study} />
