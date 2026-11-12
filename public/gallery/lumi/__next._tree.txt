@@ -1,4 +1,4 @@
-:HL["/gallery/lumi/_next/static/chunks/0ziyb9riu13wo.css","style"]
+:HL["/gallery/lumi/_next/static/chunks/3gt0x_4m6ckir.css","style"]
 :HL["/gallery/lumi/_next/static/media/0033bd7eb8326324-s.p.1c_k2hi1yi2cg.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HL["/gallery/lumi/_next/static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HL["/gallery/lumi/_next/static/media/b56da5a62d895e7a-s.p.31liq74fp3j5t.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
@@ -15,11 +15,11 @@
 :HL["/gallery/lumi/logos/messenger.svg","image"]
 :HL["/gallery/lumi/logos/instagram.svg","image"]
 :HL["/gallery/lumi/logos/whatsapp.svg","image"]
-:HL["/gallery/lumi/logos/twilio.svg","image"]
 :HL["/gallery/lumi/textures/green.webp","image"]
 :HL["/gallery/lumi/logo-lumi.svg","image"]
 :HL["/gallery/lumi/news-house.webp","image"]
 :HL["/gallery/lumi/cta-house.webp","image"]
+:HL["/gallery/lumi/logos/twilio.svg","image"]
 :HL["/gallery/lumi/logos/gmail.svg","image"]
 :HL["/gallery/lumi/logos/googlecalendar.svg","image"]
 :HL["/gallery/lumi/logos/calendly.svg","image"]
@@ -37,4 +37,4 @@
 :HL["/gallery/lumi/logos/googledrive.svg","image"]
 :HL["/gallery/lumi/logos/dropbox.svg","image"]
 1:[["children",{"s":"__PAGE__","h":160}]]
-0:{"b":"ATi7ZbgXoOj-p2XrxKdOp","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
+0:{"b":"HKDon9h8qiXSLcvDq9j7p","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
