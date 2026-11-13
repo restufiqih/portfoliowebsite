@@ -141,7 +141,19 @@ export default function Gallery() {
         el.style.pointerEvents = hidden || away > 78 ? 'none' : 'auto'
         el.style.zIndex = String(360 - Math.round(away))
       })
-      if (best !== shownFront) { shownFront = best; setFront(best) }
+      if (best !== shownFront) {
+        shownFront = best
+        setFront(best)
+        // A card arriving at the front starts its clip over, so the site is
+        // always shown from its opening shot rather than from wherever the clip
+        // happened to be. Cards away from the front are left running: they are
+        // small and turned, and they will start over when their turn comes.
+        const video = panelRefs.current[best]?.querySelector('video')
+        if (video) {
+          video.currentTime = 0
+          video.play?.()?.catch(() => {})
+        }
+      }
 
       raf = requestAnimationFrame(tick)
     }
@@ -189,8 +201,11 @@ export default function Gallery() {
     window.location.href = href
   }, [])
 
+  // Below desktop only one card is really on screen at a time, so it is given a
+  // much larger share of the viewport than a desktop card, whose neighbours have
+  // to fit beside it.
   const cardWidth = isMobileView
-    ? fluidBetween(150, 215, 390, 1024)
+    ? fluidBetween(275, 330, 390, 1024)
     : fluid(200, 270)
 
   const shown = panels[front]
@@ -204,7 +219,7 @@ export default function Gallery() {
         className="absolute inset-0 flex flex-col items-center justify-center cursor-grab active:cursor-grabbing"
         style={{
           perspective: isMobileView ? '1100px' : '1600px',
-          gap: fluid(18, 30),
+          gap: isMobileView ? fluidBetween(16, 26, 390, 1024) : fluid(18, 30),
           touchAction: 'pan-y',
         }}
       >
