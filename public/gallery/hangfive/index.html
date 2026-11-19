@@ -1,0 +1,2339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>hangfive — Coffee &amp; Surf</title>
+<link rel="icon" type="image/svg+xml" href="/gallery/hangfive/assets/favicon.svg">
+<link rel="icon" type="image/png" href="/gallery/hangfive/assets/favicon.png">
+<link rel="apple-touch-icon" href="/gallery/hangfive/assets/favicon.png">
+<style>
+  :root {
+    --red: #C8102E;
+    --red-deep: #8E0A20;
+    --cream: #FBF4EA;
+    --sand: #F3E6D2;
+    --gold: #F5B83D;
+    --ink: #2A0A10;
+    --paper: #EEEEEC;
+    --black: #111111;
+    --muted: #6B6862;
+    --line: rgba(17,17,17,.10);
+    --gutter: 30px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: auto; }
+  body {
+    background: var(--paper);
+    color: var(--red);
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  .narrow { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; letter-spacing: .12em; text-transform: uppercase; }
+  .script { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 400; }
+
+  /* 3D layer sits between section backgrounds and section text */
+  #stage { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none; }
+  .front { position: relative; z-index: 2; }
+  .behind { position: relative; z-index: 0; }
+
+  /* Nav: minimal, black wordmark, no icon */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px var(--gutter);
+    color: var(--black);
+    transition: color .4s ease;
+  }
+  nav#nav { position: fixed; z-index: 20; }   /* .front would otherwise make it position:relative / z-index 2 */
+  nav.on-dark { color: var(--cream); }
+  nav { display: grid; grid-template-columns: 1fr auto 1fr; }
+  /* Promo bar: a thin red strip above the nav; slides away once you scroll, comes back at the top */
+  .promo { position: fixed; top: 0; left: 0; right: 0; z-index: 21; height: 34px; display: flex; align-items: center; justify-content: center; gap: 10px;
+    background: var(--black); color: #fff; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; text-decoration: none;
+    transition: transform .45s cubic-bezier(.2,.7,.2,1); }
+  .promo:hover { text-decoration: underline; text-underline-offset: 3px; }
+  nav#nav { top: 34px; transition: color .4s ease, top .45s cubic-bezier(.2,.7,.2,1); }
+  body.promo-off .promo { transform: translateY(-100%); }
+  body.promo-off nav#nav { top: 0; }
+  @media (max-width: 860px) { .promo { font-size: 10px; letter-spacing: .1em; } }
+  .brand { color: inherit; display: block; line-height: 0; justify-self: center; }
+  .brand .logo { height: 30px; width: auto; display: block; }
+  .links { display: flex; gap: 30px; align-items: center; }
+  .links.right { justify-self: end; gap: 22px; }
+  .links a { color: inherit; text-decoration: none; font-size: 14px; letter-spacing: -.005em; opacity: .8; transition: opacity .2s ease; }
+  .links a:hover { opacity: 1; }
+  .links .icon { display: inline-flex; position: relative; opacity: 1; }
+  .cart b { position: absolute; top: -6px; right: -9px; font-weight: 400; display: inline-grid; place-items: center; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px; background: #111; color: #fff; font-size: 10px; transition: transform .3s cubic-bezier(.3,1.6,.5,1), background-color .4s ease, color .4s ease; }
+  nav.on-dark .cart b { background: #fff; color: #111; }
+  .cart b.bump { transform: scale(1.3); }
+  /* Phone menu: a two-line button in the nav opens a full-screen list */
+  .menu-btn { display: none; position: relative; width: 22px; height: 20px; padding: 0; border: 0; background: none; color: inherit; cursor: pointer; }
+  .menu-btn i { position: absolute; left: 0; right: 0; height: 1.5px; background: currentColor; transition: transform .4s cubic-bezier(.2,.7,.2,1), top .4s cubic-bezier(.2,.7,.2,1); }
+  .menu-btn i:nth-child(1) { top: 6px; } .menu-btn i:nth-child(2) { top: 13px; }
+  body.menu-open .menu-btn i:nth-child(1) { top: 9.5px; transform: rotate(45deg); }
+  body.menu-open .menu-btn i:nth-child(2) { top: 9.5px; transform: rotate(-45deg); }
+  .mmenu { display: none; }
+  @media (max-width: 860px) {
+    .menu-btn { display: inline-block; }
+    .mmenu { display: flex; flex-direction: column; justify-content: space-between; position: fixed; inset: 0; z-index: 19; padding: 120px var(--gutter) 32px; background: var(--paper); color: var(--black);
+      opacity: 0; visibility: hidden; transition: opacity .35s ease, visibility 0s linear .35s; }
+    body.menu-open .mmenu { opacity: 1; visibility: visible; transition: opacity .35s ease; }
+    .mm-links { display: flex; flex-direction: column; }
+    .mm-links a { color: inherit; text-decoration: none; font-size: 40px; line-height: 1.12; letter-spacing: -.035em; padding: 6px 0; border-bottom: 1px solid rgba(0,0,0,.1);
+      transform: translateY(14px); opacity: 0; transition: transform .5s cubic-bezier(.2,.7,.2,1), opacity .4s ease; }
+    body.menu-open .mm-links a { transform: none; opacity: 1; }
+    body.menu-open .mm-links a:nth-child(2) { transition-delay: .04s; } body.menu-open .mm-links a:nth-child(3) { transition-delay: .08s; }
+    body.menu-open .mm-links a:nth-child(4) { transition-delay: .12s; } body.menu-open .mm-links a:nth-child(5) { transition-delay: .16s; }
+    body.menu-open .mm-links a:nth-child(6) { transition-delay: .2s; }
+    .mm-foot { display: flex; justify-content: space-between; font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+    .mm-foot a { color: var(--black); text-decoration: none; }
+    body.menu-open nav#nav { color: var(--black); background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
+    body.menu-open nav#nav .cart b { background: #111; color: #fff; }
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 12px 22px; border-radius: 0;
+    border: 1px solid currentColor; color: inherit; text-decoration: none;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; letter-spacing: .12em; text-transform: uppercase; font-size: 14px;
+    transition: background .25s ease, color .25s ease;
+  }
+  .btn.solid { background: var(--red); color: var(--cream); border-color: var(--red); }
+  .btn:hover { background: var(--red); color: var(--cream); }
+  .btn.solid:hover { background: var(--red-deep); border-color: var(--red-deep); }
+
+  /* Hero: minimal + interactive */
+  .hero { height: 100vh; min-height: 680px; position: relative; overflow: hidden; color: var(--black); }
+  .hero-copy { position: absolute; left: var(--gutter); right: var(--gutter); top: 44%; transform: translateY(-50%); text-align: center; z-index: 0; }
+  .hero-title { font-weight: 400; font-size: clamp(64px, 11vw, 210px); line-height: 1.02; letter-spacing: -.015em; text-transform: uppercase; max-width: none; margin: 0 auto; }
+  .hero-title em { font-style: normal; }
+  .hero-title .br-m { display: none; }   /* desktop: Coffee for / the session. */
+  .hero-sub { margin: 22px auto 0; max-width: 380px; font-size: 16px; line-height: 1.6; color: var(--muted); }
+  .hero-sub b { font-weight: 400; color: var(--black); }
+  .hero-foot { position: absolute; left: var(--gutter); bottom: 50px; display: flex; gap: 36px; align-items: center; font-size: 12px; color: var(--muted); letter-spacing: .01em; }
+  .hero-foot .live { font-variant-numeric: tabular-nums; color: var(--black); }
+  .scroll-cue { display: flex; align-items: center; gap: 10px; }
+  .scroll-cue i { display: block; width: 1px; height: 30px; background: currentColor; transform-origin: top; animation: cue 2.2s ease-in-out infinite; }
+  @keyframes cue { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform: scaleY(0); transform-origin: bottom; } }
+  .load { opacity: 0; transform: translateY(16px); animation: loadIn .9s cubic-bezier(.2,.7,.2,1) forwards; }
+  @keyframes loadIn { to { opacity: 1; transform: none; } }
+
+  #water { position: absolute; inset: 0; z-index: 0; background-color: #EEEEEC; background-size: cover; background-position: center; overflow: hidden; }
+  #water canvas { z-index: 0 !important; }
+  #ing-water, #foot-water { position: absolute; inset: 0; z-index: 0; background-size: cover; background-position: center; overflow: hidden; pointer-events: none; }
+  #ing-water canvas, #foot-water canvas { z-index: 0 !important; }
+  .foot > :not(#foot-water) { position: relative; z-index: 1; }
+  /* Quick-buy card (bottom right): compact, square, sharp */
+  .buy { width: 300px; padding: 12px; background: #fff; color: var(--black); box-shadow: 0 1px 2px rgba(17,17,17,.06), 0 18px 40px -18px rgba(17,17,17,.28); }
+  .hero-buy { position: absolute; right: var(--gutter); bottom: 50px; }
+  .v .buy { margin-top: 0; }
+  .v > .m:has(.buy) { padding: 48px 0 50px 48px; margin: 0 0 -50px -48px !important; }
+  .buy-head { display: flex; gap: 12px; align-items: center; }
+  .buy-thumb { width: 52px; height: 52px; background-color: var(--black); background-repeat: no-repeat; background-size: 900% auto; background-position: 50% 46%; flex: none; }
+  .buy-name { font-size: 18px; line-height: 1.1; letter-spacing: -.02em; color: var(--black); }
+  .buy-meta { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
+  .seg { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px; margin-top: 12px; padding: 2px; background: rgba(17,17,17,.06); }
+  .seg button { all: unset; cursor: pointer; text-align: center; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; padding: 7px 0; color: var(--muted); transition: background .2s ease, color .2s ease; }
+  .seg button:hover { color: var(--black); }
+  .seg button[aria-pressed="true"] { background: var(--black); color: #fff; }
+  .buy-row { display: flex; align-items: flex-end; justify-content: space-between; margin-top: 12px; }
+  .price { font-size: 22px; line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .price small { display: block; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-top: 5px; }
+  .add { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--black); padding: 2px 0; }
+  .add i { font-style: normal; display: inline-block; transition: transform .25s cubic-bezier(.2,.7,.2,1); }
+  .add:hover i { transform: translateX(4px); }
+  .add span { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size .3s ease; padding-bottom: 2px; }
+  .add:hover span { background-size: 100% 1px; }
+  .seg button:focus-visible, .add:focus-visible { outline: 1px solid var(--black); outline-offset: 3px; }
+  .add.done { color: var(--muted); }
+
+  /* Section 2: flavor showcase on a gradient that follows the can colour */
+  .s2 { height: 420vh; position: relative; background-color: #940018; }
+  .s2-bg { position: absolute; inset: 0; z-index: 0; will-change: opacity; pointer-events: none; }
+  .s2-bg.b0 { background: linear-gradient(0deg, #1F0005 0%, #940018 55%, #DC2A47 100%); }
+  .s2-bg.b1 { background: linear-gradient(0deg, #00140B 0%, #005B33 55%, #1E9A5E 100%); opacity: 0; }
+  .s2-bg.b2 { background: linear-gradient(0deg, #001520 0%, #0076A5 55%, #3AAEDC 100%); opacity: 0; }
+  .s2-sticky > :not(.s2-bg) { position: relative; z-index: 1; }
+  .s2-sticky { position: sticky; top: 0; height: 100vh; overflow: hidden; display: grid; grid-template-columns: 36fr 64fr; align-items: stretch; padding: 0 var(--gutter); color: #fff;
+    background: linear-gradient(0deg, var(--g1, #1F0005) 0%, var(--g2, #940018) 55%, var(--g3, #DC2A47) 100%); }
+  .s2-copy { grid-column: 2; position: relative; height: 100%; }
+  /* editorial grid: oversized name on top, details bottom-left, buy card bottom-right */
+  .v { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto auto auto 1fr; column-gap: 48px; padding: 17vh 0 50px; pointer-events: none; }
+  .v > .m:nth-child(1) { grid-column: 1 / -1; align-self: start; }
+  .v > .m:nth-child(2) { grid-column: 1; grid-row: 2; }
+  .v > .m:nth-child(3) { grid-column: 1; grid-row: 3; }
+  .v > .m:nth-child(4) { grid-column: 2; grid-row: 4; align-self: end; }
+  .v.on { pointer-events: auto; }
+  /* masked reveal: each block slides inside its own overflow mask (transform only, GPU composited) */
+  .v .m { overflow: hidden; padding: 8px 0; margin-bottom: -8px; }
+  .v .m > * { transform: translate3d(0, calc(100% + 64px), 0); will-change: transform; transition: transform .9s cubic-bezier(.65, 0, .35, 1); }
+  .v.past .m > * { transform: translate3d(0, calc(-100% - 64px), 0); }
+  .v.on .m > * { transform: none; transition: transform 1.4s cubic-bezier(.16, 1, .3, 1); }
+  .v.on .m:nth-child(1) > * { transition-delay: .25s; }
+  .v.on .m:nth-child(2) > * { transition-delay: .36s; }
+  .v.on .m:nth-child(3) > * { transition-delay: .45s; }
+  .v.on .m:nth-child(4) > * { transition-delay: .54s; }
+  /* title + card are scrubbed by scroll from JS (odometer roll inside each mask) */
+  .v .m > * { transition: none !important; }
+  /* description + stats swap instantly (no slide) */
+  .v .m:nth-child(2) > *, .v .m:nth-child(3) > *, .v.past .m:nth-child(2) > *, .v.past .m:nth-child(3) > *, .v.on .m:nth-child(2) > *, .v.on .m:nth-child(3) > * { transform: none; transition: none; visibility: hidden; }
+  .v.on .m:nth-child(2) > *, .v.on .m:nth-child(3) > * { visibility: visible; }
+  /* per-line title masks */
+  .v-t .ln { display: block; overflow: hidden; padding: .02em 0 .03em; margin: -.02em 0 -.03em; }
+  .v-t .ln > span { display: block; will-change: transform; }
+  /* the per-flavour cards only hold the layout slot; one fixed card sits on top and never moves */
+  .v .buy { visibility: hidden !important; }
+  .v .m > .v-t, .v .m > .buy, .v.past .m > .v-t, .v.past .m > .buy { transform: none !important; }
+  .s2-buy { position: absolute; z-index: 2; left: 0; top: 0; }
+  .s2-buy .buy-thumb { position: relative; overflow: hidden; background-image: none !important; }
+  .thumb-strip { position: absolute; inset: 0; display: flex; flex-direction: column; transition: transform .8s cubic-bezier(.65, 0, .35, 1); }
+  .thumb-strip i { flex: none; width: 100%; height: 100%; background-color: var(--black); background-repeat: no-repeat; background-size: 900% auto; background-position: 50% 46%; }
+  .s2-buy .buy-name.swap { animation: nameSwap .55s cubic-bezier(.16, 1, .3, 1); }
+  @keyframes nameSwap { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  html.lenis, html.lenis body { height: auto; }
+  .lenis.lenis-smooth { scroll-behavior: auto !important; }
+  .lenis.lenis-stopped { overflow: hidden; }
+  .v-t { font-weight: 400; font-size: clamp(64px, 11.4vw, 200px); line-height: .86; letter-spacing: -.045em; text-transform: uppercase; color: #fff; }
+  .v-p { margin-top: 36px; font-size: 15px; line-height: 1.7; letter-spacing: .01em; color: rgba(255,255,255,.72); max-width: 360px; }
+  .v-s { display: flex; gap: 40px; margin-top: 32px; }
+  .v-s div { font-size: 22px; letter-spacing: -.01em; line-height: 1; color: #fff; }
+  .v-s span { display: block; margin-top: 10px; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: rgba(255,255,255,.5); }
+
+  /* Generic split section */
+  /* the section after the flavour showcase slides up OVER the can */
+  section.split { min-height: 120vh; display: grid; grid-template-columns: 1fr 1fr; align-items: center; padding: 0 var(--gutter); }
+  .split .copy { max-width: 470px; }
+  .split.right .copy { grid-column: 2; justify-self: start; }
+  .split.left .copy { grid-column: 1; justify-self: end; margin-right: 6vw; }
+  .eyebrow { font-size: 13px; margin-bottom: 22px; color: var(--red); }
+  h2 { font-weight: 400; font-size: clamp(40px, 5.2vw, 76px); line-height: 1.02; letter-spacing: -.025em; color: var(--red); }
+  .lede { margin-top: 26px; font-size: 18px; line-height: 1.65; color: var(--ink); max-width: 420px; }
+
+  .facts { margin-top: 40px; display: grid; grid-template-columns: repeat(3, auto); gap: 34px; justify-content: start; }
+  .fact b { display: block; font-weight: 400; font-size: clamp(44px, 4.6vw, 68px); letter-spacing: -.03em; line-height: 1; color: var(--red); }
+  .fact span { display: block; margin-top: 8px; font-size: 12px; color: var(--ink); }
+
+  /* Rolling section */
+  .roll { height: 320vh; background: #1A2129; position: relative; }
+  .roll-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 60%; filter: brightness(.65) saturate(.95); }
+  .roll-sticky { position: sticky; top: 0; height: 100vh; overflow: hidden; display: grid; place-items: center; }
+  .roll-line {
+    font-weight: 400; font-size: clamp(64px, 11vw, 210px); line-height: 1.02; letter-spacing: -.015em; text-transform: uppercase;
+    color: var(--cream); white-space: nowrap; text-align: center; margin: 0;
+  }
+  .roll-caption { position: absolute; left: var(--gutter); right: var(--gutter); bottom: 30px; display: flex; justify-content: space-between; color: var(--cream); font-size: 13px; }
+
+  /* Flavors */
+  .flavors { position: relative; z-index: 0 !important; padding: 22vh var(--gutter) 18vh; background: var(--cream); }
+  .flavors-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 44px; }
+  .cafe { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); column-gap: 7vw; align-items: end; padding: 120px var(--gutter) 30px; }
+  .cafe h2 { color: var(--red); }
+  .cafe-lede { margin-top: 26px; font-size: 18px; line-height: 1.65; color: var(--ink); max-width: 420px; }
+  .cafe-meta { display: flex; gap: 40px; margin: 40px 0 34px; font-size: 15px; color: var(--ink); }
+  .cafe-meta span { display: block; margin-bottom: 8px; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+  .cafe-media { margin: 0; aspect-ratio: 4 / 5; overflow: hidden; background: var(--sand); }
+  .cafe-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  @media (max-width: 860px) {
+    .cafe { grid-template-columns: 1fr; row-gap: 40px; padding: 80px var(--gutter) 30px; }
+    .cafe-meta { flex-direction: column; gap: 18px; }
+  }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .card { border: 1px solid var(--red); border-radius: 0; padding: 26px; min-height: 340px; display: flex; flex-direction: column; justify-content: space-between; color: var(--red); background: var(--cream); }
+  .card .swatch { height: 150px; border-radius: 0; display: grid; place-items: center; }
+  .card .swatch span { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 54px; color: var(--cream); }
+  .card h3 { font-weight: 400; font-size: 28px; letter-spacing: -.02em; margin-top: 22px; }
+  .card p { font-size: 15px; line-height: 1.55; color: var(--ink); margin-top: 8px; }
+  .card .row { display: flex; justify-content: space-between; align-items: center; margin-top: 22px; }
+
+  /* CTA + footer */
+  .cta { min-height: 110vh; background: var(--red); color: var(--cream); display: grid; place-items: center; text-align: center; position: relative; overflow: hidden; }
+  .cta h2 { color: var(--cream); }
+  .cta .behind-word { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: clamp(140px, 30vw, 520px); color: var(--red-deep); white-space: nowrap; }
+  .cta-copy { max-width: 560px; padding: 0 var(--gutter); }
+  .cta-copy p { margin: 22px auto 34px; font-size: 18px; line-height: 1.6; color: var(--sand); max-width: 420px; }
+  .cta .btn { border-color: var(--cream); }
+  .cta .btn.solid { background: var(--cream); color: var(--red); }
+
+
+  /* Lineup: product carousel under the flavour showcase */
+  .lineup { position: relative; z-index: 3; background: #fff; color: var(--black); padding: 30px 0 40px var(--gutter); }
+  .lu-head { display: grid; grid-template-columns: 1fr minmax(0, 360px); align-items: end; column-gap: 48px; padding-right: var(--gutter); margin-bottom: 32px; }
+  .lu-title .eyebrow { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
+  .lu-lede { font-size: 15px; line-height: 1.6; color: var(--muted); }
+  .lu-head h2 { color: var(--black); }
+  .lu-nav { display: flex; gap: 10px; }
+  .lu-nav { gap: 4px; margin-top: 28px; padding: 0 var(--gutter); justify-content: center; }
+  .lu-nav button { all: unset; cursor: pointer; width: 40px; height: 40px; display: grid; place-items: center; color: var(--black); transition: transform .25s cubic-bezier(.2,.7,.2,1), opacity .2s ease; }
+  .lu-nav .lu-prev:hover:not(:disabled) { transform: translateX(-3px); }
+  .lu-nav .lu-next:hover:not(:disabled) { transform: translateX(3px); }
+  .lu-nav button:disabled { opacity: .2; cursor: default; }
+  .lu-nav svg { width: 24px; height: 24px; }
+  .lu-nav button:focus-visible { outline: 1px solid var(--black); outline-offset: 3px; }
+  .lu-track { display: grid; grid-auto-flow: column; grid-auto-columns: calc((100vw - 2 * var(--gutter) - 30px) / 3.35); gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-left: 0; padding-right: var(--gutter); scrollbar-width: none; overscroll-behavior-x: contain; }
+  .lu-track::-webkit-scrollbar { display: none; }
+  .pc { scroll-snap-align: start; color: var(--black); text-decoration: none; display: block; }
+  .pc-img { position: relative; aspect-ratio: 3 / 4; overflow: hidden; background: var(--bg); }
+  .pc-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .8s cubic-bezier(.2,.7,.2,1); }
+  .pc:hover .pc-img img { transform: scale(1.035); }
+  .pc-img .pc-alt { opacity: 0; transition: opacity .22s ease, transform .5s cubic-bezier(.2,.7,.2,1); }
+  .pc:hover .pc-alt, .pc:focus-visible .pc-alt { opacity: 1; }
+  @media (hover: none) { .pc-img .pc-alt { display: none; } }
+  .pc-info { padding-top: 16px; display: grid; grid-template-columns: 1fr auto; column-gap: 16px; row-gap: 6px; }
+  .pc-name { font-size: 22px; line-height: 1.1; letter-spacing: -.02em; }
+  .pc-price { font-size: 22px; line-height: 1.1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; text-align: right; padding-right: 24px; }
+  .pc-meta { font-size: 13px; line-height: 1.4; grid-column: 1 / -1; }
+  .pc-rate { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; font-size: 13px; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .pc-rate i { font-style: normal; letter-spacing: .12em; font-size: 12px; }
+
+  /* Reveal */
+  /* GSAP split-line reveals: each line rises out of its own mask (no opacity) */
+  .split-line { padding-bottom: .08em; margin-bottom: -.08em; }
+
+  @media (max-width: 860px) {
+    .links.right a:not(.icon) { display: none; }
+    section.split { grid-template-columns: 1fr; min-height: 130vh; align-items: end; padding-bottom: 14vh; }
+    .split.right .copy, .split.left .copy { grid-column: 1; justify-self: start; margin: 0; }
+    .copy { background: color-mix(in srgb, var(--cream) 88%, transparent); padding: 22px; border-radius: 0; }
+    .facts { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .cards { grid-template-columns: 1fr; }
+    .hero-copy { top: 92px; }
+    .s2-sticky { grid-template-columns: 1fr; align-items: end; padding-bottom: 12vh; }
+    .s2-copy { grid-column: 1; height: 100%; }
+    .v { grid-template-columns: 1fr; grid-template-rows: auto 1fr auto auto auto; padding: 96px 0 20px; }
+    .v > .m:nth-child(2) { grid-row: 3; } .v > .m:nth-child(3) { grid-row: 4; } .v > .m:nth-child(4) { grid-column: 1; grid-row: 5; margin-top: 20px !important; }
+    .v .buy { width: 100%; }
+    .v-t { font-size: 52px; }
+    .links.left { display: none; } nav { grid-template-columns: auto 1fr; } .brand { justify-self: start; }
+    .hero-foot { display: none; }
+    .hero-buy { left: var(--gutter); right: var(--gutter); width: auto; bottom: 16px; }
+    .flavors-head { flex-direction: column; align-items: flex-start; }
+    .lineup { padding: 30px 0 32px var(--gutter); }
+    .lu-track { grid-auto-columns: 78vw; }
+    .lu-head { grid-template-columns: 1fr; row-gap: 16px; }
+  }
+  /* ---------- Phone layout (desktop untouched) ---------- */
+  @media (max-width: 860px) {
+    :root { --gutter: 16px; }   /* 16px side padding on every section */
+    nav { padding: 14px var(--gutter); background: color-mix(in srgb, var(--paper) 86%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); transition: color .4s ease, background-color .4s ease, top .45s cubic-bezier(.2,.7,.2,1); }
+    nav.on-dark { background: rgba(0,0,0,.22); }
+    /* menu button left, logo centred, account + cart right */
+    nav#nav { grid-template-columns: 1fr auto 1fr; }
+    nav#nav .brand { grid-column: 2; justify-self: center; }
+    nav#nav .links.right { grid-column: 3; }
+    nav#nav .menu-btn { position: absolute; left: var(--gutter); top: 50%; margin-top: -10px; }
+    /* hides on the way down, slides back on the way up */
+    nav#nav { transition: color .4s ease, background-color .4s ease, top .45s cubic-bezier(.2,.7,.2,1), transform .5s cubic-bezier(.2,.7,.2,1); will-change: transform; }
+    body.nav-hide:not(.menu-open) nav#nav { transform: translateY(-100%); }
+    .brand .logo { height: 24px; }
+    .hero-copy { top: calc(43px + 25.4vh); transform: translateY(-50%); }   /* midway between the nav (86px incl. promo) and the can lid (~51vh) */
+    .hero-title { font-size: 13.4vw; line-height: 1; }
+    .hero-title .br-m { display: inline; } .hero-title .br-d { display: none; }   /* phone: Coffee / for the / session. */
+    .v-t { font-size: 40px; }
+    /* flavor section: copy hugs the top and bottom so the can gets the whole middle */
+    .s2-sticky { padding-bottom: 0; }
+    .v { padding: 84px 0 16px; }
+    .v-p { margin-top: 0; font-size: 13px; line-height: 1.55; }
+    .v-s { margin-top: 14px; gap: 32px; }
+    .v-s div { font-size: 18px; } .v-s span { margin-top: 6px; }
+    .v > .m:nth-child(4) { margin-top: -24px !important; }   /* card sits ~24px under the stats */
+    .roll-caption { flex-direction: column; gap: 4px; font-size: 11px; bottom: 24px; }
+    .ing-c h3 { font-size: 18px; }
+    .ing-c p { font-size: 13px; }
+    .jc h3 { font-size: 19px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-cue i { animation: none; }
+    .v .m > * { transition-duration: .01s !important; transition-delay: 0s !important; }
+  }
+  /* "View Product" cursor follower over the flavor story */
+  .vp-cursor { position: fixed; left: 0; top: 0; z-index: 30; width: 104px; height: 104px; margin: -52px 0 0 -52px;
+    pointer-events: none; transform: translate3d(var(--x, -200px), var(--y, -200px), 0); will-change: transform; }
+  .vp-cursor span { position: absolute; inset: 0; border-radius: 50%; display: grid; place-items: center; text-align: center;
+    background: rgba(17,17,17,.35); color: #fff;
+    font-size: 11px; letter-spacing: .14em; text-transform: uppercase; line-height: 1.3;
+    transform: scale(0); transition: transform .3s cubic-bezier(.2,.7,.2,1); }
+  .vp-cursor.on span { transform: scale(1); }
+  @media (hover: none) { .vp-cursor { display: none; } }
+
+  /* Ingredients: hero-style stage. Big title behind the 3D can, four ingredients pinned to the corners */
+  .ing { position: relative; z-index: 3; height: 56vh; min-height: 440px; color: #fff; overflow: hidden;   /* z-index 3: covers the can as it rolls out */
+    background-color: #000;
+    background-image: linear-gradient(180deg, #2A170B 0%, #000000 65%, #000000 100%); }
+  .ing-title { position: absolute; left: var(--gutter); right: var(--gutter); top: 50%; transform: translateY(-50%); margin: 0; text-align: center; z-index: 0;
+    font-weight: 400; font-size: clamp(64px, 11vw, 210px); line-height: 1.02; letter-spacing: -.015em; text-transform: uppercase; color: #fff; }
+  .ing-hero { position: absolute; left: 50%; top: max(30px, 9vh); transform: translateX(-50%); margin: 0; z-index: 1; width: min(36vw, 62vh * .82); aspect-ratio: .82; }
+  .ing-can { position: absolute; left: 0; top: 0; width: 68%; height: 100%; display: block; }
+  .ing-glass { position: absolute; right: -8%; bottom: -7%; width: 66%; height: auto; display: block; filter: drop-shadow(-18px 30px 40px rgba(0,0,0,.6)); }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .ing-c { position: absolute; z-index: 2; width: 260px; }
+  .ing-c.tl { left: var(--gutter); top: 30px; }
+  .ing-c.tr { right: var(--gutter); top: 30px; text-align: right; }
+  .ing-c.bl { left: var(--gutter); bottom: 30px; }
+  .ing-c.br { right: var(--gutter); bottom: 30px; text-align: right; }
+  .ing-c h3 { font-weight: 400; font-size: 22px; line-height: 1.1; letter-spacing: -.01em; }
+  .ing-c p { margin-top: 8px; font-size: 14px; line-height: 1.6; color: rgba(255,255,255,.6); }
+  @media (max-width: 860px) {
+    /* text first, can + glass underneath; the section edge crops their bottoms like on desktop */
+    .ing { height: auto; min-height: 0; padding: 34px var(--gutter) 0; display: flex; flex-direction: column; }
+    .ing-cs { order: 1; }
+    .ing-hero { order: 2; position: relative; left: auto; top: auto; transform: none; width: min(72vw, 340px); margin: 40px auto -20%; flex: none; }
+    .ing-cs { display: grid; grid-template-columns: 1fr 1fr; gap: 36px 20px; }
+    .ing-c { position: static; width: auto; text-align: left !important; }
+  }
+  /* Why hangfive: editorial and quiet, one accent (the hairline progress) */
+  .why { position: relative; z-index: 3; background: #fff; color: var(--black); padding: 40px var(--gutter) 30px; }
+  .why-title { margin-top: 0; color: var(--black); }
+  .why-body { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); column-gap: 7vw; margin-top: 56px; align-items: stretch; }
+  .why-media { position: relative; margin: 0; display: flex; flex-direction: column; }
+  .why-frames { position: relative; flex: 1; min-height: 0; overflow: hidden; background: var(--paper); }
+  .why-frames img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; clip-path: inset(100% 0 0 0); transform: scale(1.08); z-index: 0;
+    transition: clip-path 1.1s cubic-bezier(.77,0,.18,1), transform 1.6s cubic-bezier(.2,.7,.2,1); }
+  .why-frames img.prev { clip-path: inset(0); transform: scale(1); z-index: 1; transition: none; }
+  .why-frames img.on { clip-path: inset(0); transform: scale(1); z-index: 2; }
+  .why-frames .why-mark { position: absolute; inset: auto; left: 50%; top: 50%; z-index: 3; width: 60px; height: auto; object-fit: contain; clip-path: none; transform: translate(-50%, -50%); transition: none; pointer-events: none; filter: drop-shadow(0 2px 10px rgba(0,0,0,.25)); }
+  /* Journal: three article cards, same quiet card language as the lineup */
+  .journal { position: relative; z-index: 3; background: var(--paper); color: var(--black); padding: 30px var(--gutter) 40px; }
+  .journal-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 32px; }
+  .journal-head h2 { color: var(--black); }
+  .journal-head a { font-size: 14px; color: var(--black); text-decoration: none; border-bottom: 1px solid currentColor; padding-bottom: 2px; white-space: nowrap; }
+  .journal-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .jc { display: block; color: inherit; text-decoration: none; }
+  .jc-img { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: #1a1410; }
+  .jc-img::after { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,.38); pointer-events: none; z-index: 1; }
+  .jc-img .jc-mark { position: absolute; left: 50%; top: 50%; z-index: 2; width: 56px; height: auto; transform: translate(-50%, -50%); pointer-events: none; transition: none; }
+  .jc:hover .jc-img .jc-mark { transform: translate(-50%, -50%); }
+  .jc-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 1.1s cubic-bezier(.2,.7,.2,1); }
+  .jc:hover .jc-img img { transform: scale(1.04); }
+  .jc-meta { display: flex; gap: 14px; margin-top: 16px; font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+  .jc h3 { margin-top: 10px; font-weight: 400; font-size: 22px; line-height: 1.2; letter-spacing: -.01em; max-width: 26ch; }
+  .jc p { margin-top: 10px; font-size: 14px; line-height: 1.6; color: var(--muted); max-width: 40ch; }
+  .jc-more { display: inline-block; margin-top: 14px; font-size: 13px; border-bottom: 1px solid transparent; transition: border-color .2s ease; }
+  .jc:hover .jc-more { border-color: currentColor; }
+  @media (max-width: 860px) {
+    .journal-head { flex-direction: column; align-items: flex-start; }
+    .journal-grid { grid-auto-flow: column; grid-template-columns: none; grid-auto-columns: 80vw; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin-right: calc(-1 * var(--gutter)); padding-right: var(--gutter); }
+    .journal-grid::-webkit-scrollbar { display: none; }
+    .jc { scroll-snap-align: start; }
+  }
+  /* Footer: brewed-liquid background. Menus sit left of the can, subscribe sits right of it;
+     the can's lid rises into the testimonials above */
+  .foot { position: relative; z-index: 0; background: #000; color: #fff; min-height: 290px; padding: 48px var(--gutter) 24px; overflow: hidden; display: flex; flex-direction: column; }
+  .foot-canimg { display: none; }
+  .foot-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) clamp(280px, 26vw, 360px) minmax(0, 2fr); gap: 30px; }
+  .foot h3 { font-weight: 400; font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: rgba(255,255,255,.5); margin-bottom: 14px; }
+  .foot-col a { display: block; font-size: 15px; line-height: 1.9; color: #fff; text-decoration: none; transition: color .2s ease; }
+  .foot-col a:hover { color: var(--gold); }
+  .foot-sub p { font-size: 14px; line-height: 1.6; color: rgba(255,255,255,.6); max-width: 360px; }
+  .foot-field { display: flex; margin-top: 18px; border-bottom: 1px solid rgba(255,255,255,.5); }
+  .foot-field input { flex: 1; min-width: 0; background: transparent; border: 0; outline: 0; color: #fff; font: inherit; font-size: 15px; padding: 12px 0; }
+  .foot-field input::placeholder { color: rgba(255,255,255,.45); }
+  .foot-field button { all: unset; cursor: pointer; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; padding: 12px 0 12px 16px; color: #fff; }
+  .foot-field button:hover { color: var(--gold); }
+  .foot-field:focus-within { border-color: #fff; }
+  .foot-sub.done .foot-field { border-color: var(--gold); }
+  .foot-social { display: flex; gap: 22px; margin-top: 26px; }
+  .foot-social a { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: #fff; text-decoration: none; }
+  .foot-social a:hover { color: var(--gold); }
+  .foot-base { display: flex; justify-content: space-between; gap: 16px; margin-top: auto; padding-top: 32px; font-size: 12px; color: rgba(255,255,255,.5); }
+  @media (max-width: 860px) {
+    /* phone: a still render of the can sits in the page flow, so it scrolls with the page instead of being
+       re-placed on every address-bar resize; its lid pokes ~100px up into the testimonial heads */
+    .foot { padding-top: 48px; overflow: visible; }
+    .foot-canimg { display: block; width: 44vw; max-width: 220px; height: auto; margin: -178px auto 40px; position: relative; z-index: 1; pointer-events: none; visibility: hidden; }
+    .foot-canimg.on { visibility: visible; }
+    .foot-grid { grid-template-columns: 1fr 1fr; row-gap: 36px; }
+    .foot-can { display: none; }
+    .foot-sub { grid-column: 1 / -1; }
+    .foot-base { flex-direction: column; gap: 6px; }
+  }
+  /* Testimonials: "word of mouth". A huge pale title sits behind three heads on a tight arc;
+     the arc rolls one head at a time and the head on top speaks */
+  .testi { position: relative; z-index: 3; background: transparent; color: var(--black); padding: 30px 0; overflow: hidden; }
+  .testi-stage { position: relative; height: 395px; margin-top: 8px; }
+  .testi-rail { position: absolute; left: 50%; bottom: 20px; translate: -50% 0; width: min(640px, 100%); height: 200px; z-index: 15; cursor: grab; touch-action: pan-y; }
+  .testi-rail.drag { cursor: grabbing; }
+  .tq { margin: 0; }
+  .tq-card { position: absolute; left: 50%; bottom: 247px; width: min(360px, calc(100vw - 2 * var(--gutter))); translate: -50% 0; z-index: 20;
+    background: var(--black); color: #fff; padding: 16px 18px 18px; margin: 0; pointer-events: none;
+    transform-origin: 50% calc(100% + 60px); transform: translateY(14px) scale(.9); opacity: 0;
+    transition: transform .35s cubic-bezier(.4,0,1,1), opacity .25s ease; }
+  .tq-card::after { content: ""; position: absolute; left: 50%; bottom: -16px; margin-left: -10px; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 16px solid var(--black); }
+  .tq.on .tq-card { transform: none; opacity: 1; pointer-events: auto; transition: transform .6s cubic-bezier(.16,1,.3,1), opacity .35s ease; }
+  .tq-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; font-size: 12px; }
+  .tq-stars { letter-spacing: .12em; font-size: 11px; }
+  .tq-card p { margin-top: 10px; font-size: 14px; line-height: 1.6; color: rgba(255,255,255,.8); }
+  .tq-who { position: absolute; left: 50%; bottom: 115px; margin-left: -60px; width: 120px; display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); will-change: transform, opacity; }
+  .tq-av { width: 96px; height: 96px; object-fit: contain; display: block; }
+  .tq-role { display: block; margin-top: 10px; font-style: normal; font-size: 12px; color: rgba(255,255,255,.5); }
+  @media (max-width: 860px) { .testi-stage { height: 385px; } .tq-av { width: 78px; height: 78px; } .tq-card { bottom: 229px; width: calc(100vw - 2 * var(--gutter)); } }
+  @media (prefers-reduced-motion: reduce) { .tq-card, .tq-who span { transition: none !important; } }
+  .why-list { list-style: none; }
+  .why-list.measure .why-more, .why-list.measure .why-more p, .why-list.measure .why-stat { transition: none !important; }
+  @property --rule { syntax: "<number>"; inherits: false; initial-value: 1; }
+  .why-item { position: relative; display: grid; grid-template-columns: 56px 1fr; padding: 30px 0; cursor: pointer; outline: none; --rule: 1;
+    background: linear-gradient(var(--line), var(--line)) 0 0 / calc(var(--rule) * 100%) 1px no-repeat; }
+  .why-item::before { content: ""; position: absolute; left: 0; right: 0; top: -1px; height: 1px; background: var(--black); transform: scaleX(0); transform-origin: 0 50%; }
+  .why-item.on::before { transform: scaleX(1); transition: transform .6s cubic-bezier(.2,.7,.2,1); }
+  .why.run .why-item.on::before { transition: none; animation: whyProg 4s linear both; }
+  .why.run.hold .why-item.on::before { animation: none; transform: scaleX(1); }
+  @keyframes whyProg { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  .why-n { font-size: 11px; letter-spacing: .22em; color: var(--muted); padding-top: .9em; transition: color .5s ease; }
+  .why-item h3 { font-weight: 400; font-size: clamp(30px, 3.3vw, 52px); line-height: 1; letter-spacing: -.035em; color: #BDBBB6; transition: color .5s ease; }
+  .why-item.on h3, .why-item.on .why-n { color: var(--black); }
+  .why-item:not(.on):hover h3 { color: #8E8C87; }
+  .why-more { grid-column: 2; display: grid; grid-template-rows: 0fr; transition: grid-template-rows .7s cubic-bezier(.2,.7,.2,1); }
+  .why-more > div { overflow: hidden; }
+  .why-item.on .why-more { grid-template-rows: 1fr; }
+  .why-more p { padding-top: 20px; font-size: 15px; line-height: 1.7; color: var(--muted); max-width: 400px; opacity: 0; transform: translateY(8px); transition: opacity .5s ease, transform .7s cubic-bezier(.2,.7,.2,1); }
+  .why-stat { display: block; margin-top: 18px; font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--black); opacity: 0; transition: opacity .5s ease; }
+  .why-item.on .why-more p { opacity: 1; transform: none; transition-delay: .15s; }
+  .why-item.on .why-stat { opacity: 1; transition-delay: .3s; }
+  .why-item:focus-visible h3 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 8px; }
+  @media (max-width: 860px) {
+    .why { padding: 32px var(--gutter) 30px; }
+    .why-body { grid-template-columns: 1fr; margin-top: 32px; row-gap: 32px; }
+    .why-frames { flex: none; aspect-ratio: 4 / 3; }
+    .why-more .why-media { margin-top: 18px; }   /* phone: the photo sits inside the open row, right under its text */
+    .why-frames .why-mark { width: 44px; }
+    .why-item { grid-template-columns: 40px 1fr; padding: 24px 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .why-frames img, .why-more, .why-more p, .why-stat { transition: none !important; }
+    .why.run .why-item.on::before { animation: none; transform: scaleX(1); }
+  }
+</style>
+</head>
+<body>
+<canvas id="stage"></canvas>
+
+<a class="promo" href="#lineup">Free shipping on 2 packs or more &nbsp;•&nbsp; Shop now</a>
+<nav id="nav" class="front">
+  <div class="links left">
+    <a href="#lineup">Shop</a>
+    <a href="#why">Our story</a>
+    <a href="#subscribe">Subscribe</a>
+  </div>
+  <a class="brand" href="#top" aria-label="hangfive home"><svg class="logo" role="img" aria-label="hangfive" viewBox="0 0 686 193" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 42.4222C0 35.5738 4.4388 32.1496 13.3164 32.1496C14.8383 32.1496 16.1699 32.5618 17.3113 33.3861C18.4527 34.2105 19.1185 35.3519 19.3088 36.8103C19.8795 40.6784 20.3868 44.5148 20.8307 48.3195C21.2745 52.1242 21.6867 56.4045 22.0672 61.1603C22.5111 65.8528 22.9232 71.3061 23.3037 77.5205C23.7476 83.6714 24.2232 91.0271 24.7305 99.5876C24.7305 100.475 24.8573 101.11 25.1109 101.49C25.428 101.87 25.7767 102.061 26.1572 102.061C26.7279 102.061 27.2986 101.49 27.8693 100.349C30.0253 95.5927 32.4349 91.3441 35.0982 87.6029C37.7615 83.7982 40.615 80.5959 43.6588 77.996C46.7025 75.3328 49.9048 73.3353 53.2656 72.0037C56.6898 70.6086 60.1774 69.9111 63.7285 69.9111C68.4209 69.9111 72.6695 71.2427 76.4742 73.906C80.2789 76.5693 83.5128 80.3423 86.1761 85.2249C88.8394 90.1076 90.9003 96.0366 92.3587 103.012C93.8172 109.924 94.5464 117.66 94.5464 126.22C94.5464 128.567 94.3562 130.501 93.9757 132.023C93.6587 133.481 93.088 134.654 92.2636 135.542C91.4393 136.43 90.2979 137.032 88.8394 137.349C87.3809 137.73 85.5737 137.92 83.4177 137.92C80.4374 137.92 78.2814 137.349 76.9498 136.208C75.6815 135.066 75.0474 133.291 75.0474 130.881C75.0474 124.92 74.6352 119.309 73.8109 114.045C73.0499 108.719 71.972 104.058 70.5769 100.063C69.1819 96.0683 67.5332 92.8977 65.6308 90.5515C63.7919 88.2053 61.7944 87.0322 59.6384 87.0322C54.7558 87.0322 49.8731 90.9954 44.9904 98.9218C40.1711 106.848 35.1299 118.801 29.8668 134.781C29.3595 136.239 28.7888 137.444 28.1547 138.395C27.5206 139.347 26.7596 140.108 25.8719 140.678C25.0475 141.249 24.0329 141.629 22.8281 141.82C21.6233 142.073 20.1965 142.2 18.5478 142.2C15.187 142.2 12.7774 141.566 11.3189 140.298C9.92389 139.03 9.16295 136.937 9.03613 134.02C8.65566 122.986 7.95813 112.46 6.94355 102.441C5.99238 92.3587 4.9778 83.2592 3.8998 75.1425C2.88522 66.9625 1.96575 60.0506 1.14141 54.407C0.380469 48.7 0 44.7051 0 42.4222Z" fill="currentColor"/>
+<path d="M165.078 50.8877C168.565 50.8877 171.926 51.4267 175.16 52.5047C178.394 53.5826 181.248 55.0728 183.721 56.9752C186.194 58.8775 188.159 61.1603 189.618 63.8236C191.14 66.4869 191.901 69.4355 191.901 72.6695C191.901 74.0011 191.584 75.3011 190.95 76.5693C190.379 77.7741 189.586 78.8521 188.572 79.8033C187.557 80.691 186.384 81.4203 185.052 81.991C183.784 82.4983 182.452 82.7519 181.057 82.7519C180.931 82.7519 180.804 82.7836 180.677 82.847C180.613 82.847 180.518 82.847 180.392 82.847C180.265 82.9104 180.138 82.9421 180.011 82.9421L180.392 90.5515C180.645 99.6193 181.913 106.246 184.196 110.431C186.542 114.616 189.586 116.709 193.327 116.709C194.659 116.709 195.832 116.582 196.847 116.328C197.925 116.075 198.908 115.789 199.795 115.472C200.747 115.092 201.634 114.775 202.459 114.521C203.283 114.267 204.107 114.141 204.932 114.141C206.39 114.141 207.658 114.775 208.736 116.043C209.878 117.311 210.449 118.833 210.449 120.609C210.449 122.384 209.751 124.16 208.356 125.935C207.024 127.711 205.249 129.328 203.029 130.786C200.81 132.181 198.305 133.323 195.515 134.21C192.725 135.098 189.903 135.542 187.05 135.542C182.104 135.542 177.76 133.513 174.019 129.454C170.277 125.333 167.614 119.309 166.029 111.382C165.648 110.114 165.141 109.48 164.507 109.48C163.746 109.48 163.08 109.86 162.51 110.621C156.232 118.548 149.542 124.508 142.44 128.503C135.338 132.435 128.331 134.4 121.419 134.4C118.185 134.4 115.268 133.925 112.668 132.974C110.068 132.023 107.849 130.691 106.01 128.979C104.234 127.203 102.839 125.079 101.825 122.606C100.874 120.07 100.398 117.248 100.398 114.141C100.398 109.765 101.349 105.168 103.252 100.349C105.217 95.5293 107.849 90.7734 111.146 86.081C114.444 81.3886 118.248 76.9181 122.56 72.6695C126.936 68.4209 131.501 64.6796 136.257 61.4457C141.076 58.2117 145.959 55.6435 150.905 53.7412C155.851 51.8388 160.575 50.8877 165.078 50.8877ZM161.939 83.7982C163.08 81.6422 164.127 80.0886 165.078 79.1375C166.029 78.1229 167.392 77.457 169.168 77.14C170.563 76.9498 171.26 76.5059 171.26 75.8083C171.26 75.3011 171.07 74.7621 170.69 74.1914C169.485 72.5427 168.217 71.1159 166.885 69.9111C165.553 68.6429 163.778 68.0088 161.558 68.0088C159.149 68.0088 156.454 68.7063 153.473 70.1013C150.493 71.4964 147.449 73.367 144.342 75.7132C141.298 77.996 138.286 80.6276 135.306 83.608C132.389 86.5249 129.789 89.5369 127.506 92.6441C125.224 95.7512 123.385 98.8267 121.99 101.87C120.595 104.914 119.897 107.641 119.897 110.051C119.897 112.207 120.468 113.887 121.609 115.092C122.814 116.297 124.431 116.899 126.46 116.899C131.66 116.899 137.335 114.141 143.486 108.624C149.637 103.107 155.788 94.8318 161.939 83.7982Z" fill="currentColor"/>
+<path d="M213.256 57.2605C213.256 56.3093 213.669 55.3899 214.493 54.5021C215.317 53.5509 216.395 52.7266 217.727 52.0291C219.059 51.2681 220.549 50.6657 222.197 50.2218C223.91 49.7146 225.622 49.4609 227.334 49.4609C228.285 49.4609 229.078 49.7146 229.712 50.2218C230.409 50.7291 231.012 51.712 231.519 53.1705C232.026 54.5655 232.47 56.563 232.851 59.1629C233.294 61.6993 233.707 65.0284 234.087 69.1502C234.341 70.4184 234.563 71.4013 234.753 72.0988C235.007 72.7329 235.324 73.05 235.704 73.05C236.275 73.05 236.845 72.0671 237.416 70.1013C242.045 56.7215 248.735 50.0316 257.486 50.0316C261.544 50.0316 265.222 51.2998 268.519 53.8363C271.88 56.3728 274.987 60.5262 277.841 66.2966C280.758 72.0037 283.516 79.5496 286.116 88.9345C288.716 98.256 291.316 109.765 293.916 123.462C294.043 124.16 294.138 124.794 294.201 125.364C294.264 125.935 294.296 126.474 294.296 126.981C294.296 128.44 293.947 129.708 293.25 130.786C292.616 131.801 291.76 132.657 290.682 133.354C289.604 133.988 288.399 134.464 287.067 134.781C285.736 135.161 284.404 135.352 283.072 135.352C280.409 135.352 278.475 135.066 277.27 134.496C276.129 133.925 275.4 132.847 275.083 131.262C273.244 121.623 271.436 113.063 269.661 105.58C267.949 98.0975 266.237 91.8197 264.525 86.7468C262.876 81.6105 261.227 77.7107 259.578 75.0474C257.93 72.3841 256.281 71.0525 254.632 71.0525C252.984 71.0525 251.43 72.0988 249.972 74.1914C248.577 76.2205 247.213 79.4228 245.882 83.7982C244.55 88.1736 243.25 93.7221 241.982 100.444C240.777 107.165 239.604 115.187 238.462 124.508C238.145 127.045 236.877 129.074 234.658 130.596C232.438 132.118 229.617 132.879 226.192 132.879C223.91 132.879 222.166 132.403 220.961 131.452C219.756 130.501 219.09 129.201 218.963 127.552C218.393 114.362 217.759 103.519 217.061 95.022C216.427 86.4615 215.825 79.613 215.254 74.4767C214.683 69.277 214.208 65.4089 213.827 62.8724C213.447 60.336 213.256 58.4653 213.256 57.2605Z" fill="currentColor"/>
+<path d="M352.652 59.8287C355.696 59.8287 358.581 60.0823 361.308 60.5896C364.035 61.0335 366.508 61.5408 368.727 62.1115C370.947 62.6188 372.849 63.1261 374.434 63.6334C376.02 64.0772 377.161 64.2992 377.858 64.2992C378.429 64.2992 378.968 64.0138 379.475 63.4431C379.983 62.809 380.617 62.1432 381.378 61.4457C382.139 60.7481 383.153 60.114 384.422 59.5433C385.69 58.9092 387.37 58.5922 389.463 58.5922C391.872 58.5922 393.775 59.2263 395.17 60.4945C396.565 61.6993 397.262 63.2212 397.262 65.0601C397.262 88.2687 396.47 107.99 394.884 124.223C393.299 140.393 390.731 153.551 387.18 163.697C383.629 173.842 379.032 181.198 373.388 185.764C367.744 190.329 360.896 192.612 352.843 192.612C349.165 192.612 345.328 191.788 341.334 190.139C337.402 188.49 333.788 186.366 330.49 183.766C327.193 181.23 324.466 178.408 322.31 175.301C320.217 172.194 319.171 169.213 319.171 166.36C319.171 165.409 319.678 164.299 320.693 163.031C321.708 161.763 322.944 160.526 324.403 159.321C325.861 158.116 327.383 157.102 328.968 156.277C330.554 155.453 331.917 155.041 333.058 155.041C334.263 155.041 335.278 155.517 336.102 156.468C336.926 157.482 337.687 158.719 338.385 160.177C339.146 161.636 339.907 163.221 340.668 164.933C341.429 166.709 342.38 168.326 343.521 169.784C344.663 171.243 346.058 172.447 347.706 173.399C349.355 174.413 351.416 174.92 353.889 174.92C367.713 174.92 375.829 153.804 378.239 111.572C378.239 109.67 377.7 108.719 376.622 108.719C375.734 108.719 375.037 109.163 374.529 110.051C368.569 118.104 361.593 124.16 353.604 128.218C345.677 132.213 336.863 134.21 327.161 134.21C322.659 134.21 318.505 133.544 314.701 132.213C310.896 130.818 307.599 128.915 304.809 126.506C302.082 124.033 299.958 121.116 298.436 117.755C296.914 114.331 296.153 110.59 296.153 106.531C296.153 102.536 296.85 98.6048 298.245 94.7367C299.704 90.8052 301.701 87.1273 304.238 83.7031C306.838 80.2154 309.913 77.0132 313.464 74.0962C317.015 71.1793 320.883 68.6746 325.068 66.582C329.254 64.426 333.661 62.7773 338.29 61.6359C342.982 60.4311 347.77 59.8287 352.652 59.8287ZM330.11 116.709C338.797 116.709 346.755 113.982 353.984 108.529C361.213 103.012 367.396 95.022 372.532 84.5591C372.659 84.1787 372.754 83.8933 372.817 83.7031C372.881 83.4494 372.912 83.1958 372.912 82.9421C372.912 82.308 372.247 81.6422 370.915 80.9447C369.583 80.2472 367.839 79.6447 365.684 79.1375C363.528 78.6302 361.054 78.218 358.264 77.9009C355.538 77.5205 352.779 77.3302 349.989 77.3302C345.487 77.3302 341.143 78.0912 336.958 79.613C332.773 81.1349 329.063 83.1641 325.829 85.7005C322.595 88.237 319.996 91.1222 318.03 94.3562C316.064 97.5902 315.081 100.951 315.081 104.439C315.081 108.18 316.445 111.16 319.171 113.38C321.961 115.599 325.607 116.709 330.11 116.709Z" fill="currentColor"/>
+<path d="M403.209 81.6105C401.751 81.4837 400.578 80.5325 399.69 78.757C398.802 76.9815 398.358 75.0157 398.358 72.8597C398.358 71.8451 398.453 70.8623 398.643 69.9111C398.77 68.8965 399.024 68.0088 399.404 67.2478C399.785 66.4869 400.26 65.8845 400.831 65.4406C401.402 64.9333 402.068 64.6796 402.829 64.6796C405.175 64.6796 407.87 64.6162 410.914 64.4894C413.957 64.2992 417.223 64.1089 420.711 63.9187C422.486 63.7285 423.469 62.6822 423.659 60.7798C424.23 51.5852 425.023 43.6588 426.037 37.0006C427.052 30.3424 428.288 24.7305 429.747 20.1648C431.205 15.5358 432.854 11.7945 434.693 8.94101C436.595 6.0875 438.688 3.8998 440.971 2.37793C441.668 1.87064 442.492 1.36335 443.444 0.856054C444.395 0.285351 445.283 0 446.107 0C447.692 0 449.341 0.412174 451.053 1.23652C452.829 1.99746 454.446 3.01204 455.904 4.28027C457.426 5.48509 458.662 6.88014 459.614 8.46542C460.565 9.9873 461.04 11.5092 461.04 13.031C461.04 13.6017 460.914 14.0773 460.66 14.4578C460.406 14.7749 460.089 15.0919 459.709 15.409C457.236 17.2479 455.048 19.3088 453.146 21.5916C451.243 23.8744 449.626 26.6645 448.295 29.9619C446.963 33.2593 445.853 37.2225 444.966 41.8515C444.078 46.4806 443.412 52.0608 442.968 58.5922C442.968 59.6067 443.127 60.3677 443.444 60.875C443.824 61.3188 444.49 61.5408 445.441 61.5408C447.914 61.5408 450.387 61.3506 452.86 60.9701C455.397 60.5896 457.806 60.2091 460.089 59.8287C462.372 59.3848 464.528 58.9726 466.557 58.5922C468.586 58.2117 470.394 58.0215 471.979 58.0215C473.12 58.0215 473.945 58.719 474.452 60.114C475.023 61.4457 475.308 63.0944 475.308 65.0601C475.308 66.2015 475.213 67.3746 475.023 68.5795C474.832 69.7843 474.515 70.8623 474.071 71.8134C473.691 72.7646 473.184 73.589 472.549 74.2865C471.915 74.9206 471.123 75.3011 470.172 75.4279L444.87 78.0912C443.539 78.2814 442.714 78.8204 442.397 79.7082C442.144 80.5959 442.017 81.8324 442.017 83.4177C442.017 97.4316 442.366 109.48 443.063 119.562C443.761 129.645 444.522 138.11 445.346 144.959C446.234 151.87 447.026 157.292 447.724 161.224C448.421 165.218 448.77 168.104 448.77 169.879C448.77 171.211 448.231 172.416 447.153 173.494C446.139 174.572 444.807 175.491 443.158 176.252C441.573 177.013 439.829 177.584 437.927 177.964C436.025 178.408 434.249 178.63 432.6 178.63C431.015 178.63 429.588 178.345 428.32 177.774C427.115 177.267 426.418 176.379 426.227 175.111C425.593 170.672 425.054 165.789 424.61 160.463C424.167 155.199 423.786 149.334 423.469 142.866C423.215 136.461 423.025 129.454 422.898 121.845C422.772 114.172 422.708 105.77 422.708 96.639C422.708 94.2928 422.708 92.01 422.708 89.7906C422.708 87.5712 422.772 85.3518 422.898 83.1324C422.898 81.23 421.852 80.2789 419.759 80.2789L403.209 81.6105Z" fill="currentColor"/>
+<path d="M481.399 37.0006C479.56 37.0006 477.816 36.7469 476.168 36.2396C474.582 35.6689 473.187 34.908 471.983 33.9568C470.841 32.9422 469.922 31.7691 469.224 30.4375C468.527 29.1058 468.178 27.6474 468.178 26.0621C468.178 23.3988 469.224 21.2428 471.317 19.5941C473.473 17.9454 476.326 17.1211 479.877 17.1211C481.526 17.1211 483.111 17.4381 484.633 18.0723C486.155 18.643 487.487 19.4356 488.628 20.4502C489.833 21.4648 490.784 22.6696 491.482 24.0646C492.179 25.3963 492.528 26.7913 492.528 28.2498C492.528 30.9765 491.513 33.1325 489.484 34.7178C487.518 36.2396 484.823 37.0006 481.399 37.0006ZM468.368 66.0113C468.368 63.7919 469.319 61.9847 471.222 60.5896C473.187 59.1311 475.756 58.4019 478.926 58.4019C484.633 58.4019 487.677 60.3677 488.057 64.2992C488.311 67.0259 488.565 70.1013 488.818 73.5255C489.135 76.9498 489.421 80.5959 489.674 84.464C489.991 88.2687 490.245 92.2319 490.435 96.3537C490.689 100.412 490.911 104.439 491.101 108.434C491.291 112.365 491.45 116.17 491.577 119.848C491.704 123.525 491.767 126.886 491.767 129.93C491.767 133.101 490.626 135.479 488.343 137.064C486.123 138.649 482.858 139.442 478.546 139.442C476.58 139.442 475.026 138.966 473.885 138.015C472.807 137.127 472.268 135.796 472.268 134.02C472.268 125.269 472.046 117.089 471.602 109.48C471.222 101.807 470.778 94.9903 470.271 89.0296C469.827 83.069 469.383 78.1229 468.939 74.1914C468.558 70.1964 468.368 67.4698 468.368 66.0113Z" fill="currentColor"/>
+<path d="M558.303 60.5896C558.494 58.8141 558.715 57.3556 558.969 56.2142C559.286 55.0094 559.73 54.0582 560.301 53.3607C560.935 52.5998 561.728 52.0608 562.679 51.7437C563.63 51.4267 564.835 51.2681 566.293 51.2681C570.922 51.2681 574.315 51.9657 576.471 53.3607C578.69 54.6923 579.8 56.8483 579.8 59.8287C579.8 60.3994 579.673 61.6676 579.419 63.6334C579.229 65.5357 578.944 67.9136 578.563 70.7671C578.183 73.5572 577.739 76.6644 577.232 80.0886C576.788 83.4494 576.344 86.8736 575.9 90.3613C574.759 98.4779 573.459 107.577 572 117.66C571.112 123.621 569.337 127.901 566.674 130.501C564.074 133.101 560.206 134.4 555.069 134.4C551.201 134.4 547.206 133.418 543.085 131.452C538.963 129.486 534.968 126.823 531.1 123.462C527.232 120.101 523.554 116.201 520.066 111.763C516.642 107.26 513.63 102.505 511.03 97.4951C508.43 92.4221 506.369 87.2541 504.847 81.991C503.389 76.7278 502.66 71.5915 502.66 66.582C502.66 60.9384 503.452 56.7215 505.038 53.9314C506.686 51.0779 509.508 49.6511 513.503 49.6511C516.293 49.6511 518.608 49.8414 520.447 50.2218C522.286 50.5389 523.744 51.1413 524.822 52.0291C525.964 52.8534 526.756 53.9631 527.2 55.3582C527.707 56.7532 527.961 58.497 527.961 60.5896C527.961 61.9847 527.898 63.3797 527.771 64.7748C527.644 66.1698 527.58 67.5649 527.58 68.9599C527.58 72.1939 527.898 75.5864 528.532 79.1375C529.229 82.6251 530.149 86.0493 531.29 89.4101C532.431 92.7709 533.763 95.9732 535.285 99.0169C536.807 101.997 538.424 104.629 540.136 106.912C541.848 109.194 543.56 111.002 545.272 112.333C547.048 113.665 548.76 114.331 550.409 114.331C551.55 114.331 552.406 113.95 552.977 113.189C553.611 112.428 554.023 111.129 554.213 109.29L558.303 60.5896Z" fill="currentColor"/>
+<path d="M672.398 113.189C674.237 111.604 676.044 110.811 677.82 110.811C678.834 110.811 679.754 111.065 680.578 111.572C681.403 112.08 682.322 112.872 683.337 113.95C684.288 115.409 684.954 116.614 685.334 117.565C685.778 118.453 686 119.34 686 120.228C686 122.13 685.049 123.938 683.146 125.65C680.103 128.186 676.805 130.469 673.254 132.498C669.703 134.464 665.994 136.144 662.126 137.539C658.257 138.934 654.263 139.981 650.141 140.678C646.019 141.439 641.929 141.82 637.871 141.82C632.734 141.82 627.915 141.154 623.413 139.822C618.911 138.554 614.884 136.715 611.333 134.305C607.845 131.896 604.897 129.011 602.487 125.65C600.077 122.226 598.365 118.389 597.351 114.141C596.78 112.365 596.241 111.224 595.734 110.716C595.29 110.146 594.529 109.86 593.451 109.86C591.105 109.86 589.298 109.29 588.029 108.148C586.761 107.007 586.127 105.358 586.127 103.202C586.127 102.314 586.19 101.744 586.317 101.49L586.507 99.5876C586.824 97.3048 587.427 95.6561 588.315 94.6415C589.266 93.627 590.724 93.1197 592.69 93.1197H594.117C596.78 93.1197 598.651 91.8831 599.729 89.4101C601.694 85.0347 604.199 81.0398 607.243 77.4253C610.287 73.8109 613.711 70.7354 617.516 68.199C621.32 65.5991 625.379 63.6017 629.691 62.2066C634.066 60.7481 638.505 60.0189 643.007 60.0189C647.699 60.0189 652.075 60.7164 656.133 62.1115C660.255 63.4431 663.838 65.3138 666.881 67.7234C669.925 70.133 672.303 72.9548 674.015 76.1888C675.791 79.4228 676.678 82.9104 676.678 86.6517C676.678 89.2516 676.171 91.6295 675.157 93.7855C674.142 95.9415 672.684 97.8438 670.781 99.4925C668.879 101.078 666.564 102.378 663.838 103.392C661.174 104.407 658.131 105.073 654.706 105.39L621.701 108.719C620.432 108.719 619.386 109.036 618.562 109.67C617.801 110.304 617.42 111.16 617.42 112.238C617.42 113.887 618.023 115.472 619.228 116.994C620.496 118.516 622.145 119.879 624.174 121.084C626.266 122.226 628.644 123.145 631.308 123.842C634.034 124.54 636.824 124.889 639.678 124.889C642.405 124.889 645.195 124.635 648.048 124.128C650.965 123.557 653.819 122.765 656.609 121.75C659.462 120.735 662.221 119.531 664.884 118.135C667.547 116.677 670.052 115.028 672.398 113.189ZM651.187 88.6492C652.138 88.4589 652.963 88.0151 653.66 87.3175C654.358 86.5566 654.706 85.6371 654.706 84.5591C654.706 83.608 654.358 82.7202 653.66 81.8959C652.963 81.0715 652.011 80.3423 650.807 79.7082C649.602 79.0106 648.207 78.4716 646.621 78.0912C645.036 77.7107 643.356 77.5205 641.58 77.5205C638.98 77.5205 636.317 77.9009 633.59 78.6619C630.864 79.4228 628.391 80.4374 626.171 81.7056C623.952 82.9104 622.145 84.2738 620.75 85.7957C619.354 87.2541 618.657 88.7126 618.657 90.171C618.657 91.6295 619.545 92.3587 621.32 92.3587C622.398 92.3587 624.142 92.2319 626.552 91.9783C628.961 91.7246 631.625 91.4393 634.542 91.1222C637.458 90.7417 640.407 90.3296 643.387 89.8857C646.368 89.4418 648.968 89.0296 651.187 88.6492Z" fill="currentColor"/>
+</svg></a>
+  <div class="links right">
+    <a class="icon" href="#account" aria-label="Account"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="8.5" r="3.75"/><path d="M4.5 20c1.2-3.6 4-5.5 7.5-5.5s6.3 1.9 7.5 5.5"/></svg></a>
+    <a class="icon cart" href="#shop" aria-label="Cart"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 8h14l-1.2 11.2a1 1 0 0 1-1 .8H7.2a1 1 0 0 1-1-.8L5 8Z"/><path d="M9 10V6.5a3 3 0 0 1 6 0V10"/></svg><b id="cartCount">0</b></a>
+    <button class="menu-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="mmenu"><i></i><i></i></button>
+  </div>
+</nav>
+<div class="mmenu" id="mmenu" aria-hidden="true">
+  <div class="mm-links">
+    <a href="#lineup">Shop</a>
+    <a href="#why">Our story</a>
+    <a href="#ingredients">Ingredients</a>
+    <a href="#journal">Journal</a>
+    <a href="#reviews">Reviews</a>
+    <a href="#subscribe">Subscribe</a>
+  </div>
+  <div class="mm-foot"><a href="https://www.instagram.com/hangfivecoffeeandsurf/" target="_blank" rel="noopener">Instagram</a><span>Batukaras, West Java</span></div>
+</div>
+
+<main id="top">
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <div id="water" aria-hidden="true"></div>
+    <div class="hero-copy">
+      <h1 class="hero-title load" style="animation-delay:.15s">Coffee <br class="br-m">for <br class="br-d">the <br class="br-m">session.</h1>
+    </div>
+
+    <aside class="buy hero-buy front load" style="animation-delay:.55s" aria-label="Quick buy" data-wrap="CAN_WRAP">
+      <div class="buy-head">
+        <div class="buy-thumb" aria-hidden="true"></div>
+        <div>
+          <div class="buy-name">Bali Package</div>
+          <div class="buy-meta" data-suffix=" · mixed flavors">12 cans · mixed flavors</div>
+        </div>
+      </div>
+      <div class="seg" role="group" aria-label="Pack size">
+        <button type="button" data-pack="4" data-price="14" data-name="Batukaras Package" aria-pressed="false">4 cans</button>
+        <button type="button" data-pack="12" data-price="36" data-name="Bali Package" aria-pressed="true">12 cans</button>
+        <button type="button" data-pack="24" data-price="66" data-name="Mentawai Package" aria-pressed="false">24 cans</button>
+      </div>
+      <div class="buy-row">
+        <div class="price">$36<small>$3.00 per can</small></div>
+        <button type="button" class="add"><span>Buy now</span></button>
+      </div>
+    </aside>
+  </section>
+
+  <!-- FLAVORS SHOWCASE (section 2) -->
+  <section class="s2" id="story" aria-label="Flavors">
+    <div class="s2-sticky">
+      <div class="s2-bg b0" aria-hidden="true"></div><div class="s2-bg b1" aria-hidden="true"></div><div class="s2-bg b2" aria-hidden="true"></div>
+      <div class="s2-copy front">
+        <div class="v on" data-v="0">
+          <h2 class="v-t"><span class="ln"><span>Sunrise</span></span><span class="ln"><span>Blend</span></span></h2>
+          <p class="v-p">Our signature black cold brew. Bright, smooth and low in acid, steeped cold for 18 hours.</p>
+          <div class="v-s"><div>180<span>mg caffeine</span></div><div>0<span>g sugar</span></div><div>18<span>hour steep</span></div></div>
+          <aside class="buy" data-wrap="CAN_WRAP" aria-label="Buy Sunrise Blend">
+            <div class="buy-head">
+              <div class="buy-thumb" aria-hidden="true"></div>
+              <div>
+                <div class="buy-name">Sunrise Blend</div>
+                <div class="buy-meta" data-suffix=" · single flavor">12 cans · single flavor</div>
+              </div>
+            </div>
+            <div class="seg" role="group" aria-label="Pack size">
+              <button type="button" data-pack="4" data-price="14" data-name="Sunrise Blend" aria-pressed="false">4 cans</button>
+              <button type="button" data-pack="12" data-price="36" data-name="Sunrise Blend" aria-pressed="true">12 cans</button>
+              <button type="button" data-pack="24" data-price="66" data-name="Sunrise Blend" aria-pressed="false">24 cans</button>
+            </div>
+            <div class="buy-row">
+              <div class="price">$36<small>$3.00 per can</small></div>
+              <button type="button" class="add"><span>Buy now</span></button>
+            </div>
+          </aside>
+        </div>
+        <div class="v" data-v="1">
+          <h2 class="v-t"><span class="ln"><span>Coconut</span></span><span class="ln"><span>Grove</span></span></h2>
+          <p class="v-p">Cold brew with toasted coconut. A creamy finish with no dairy and no added sugar.</p>
+          <div class="v-s"><div>150<span>mg caffeine</span></div><div>0<span>g sugar</span></div><div>18<span>hour steep</span></div></div>
+          <aside class="buy" data-wrap="CAN_WRAP_GREEN" aria-label="Buy Coconut Grove">
+            <div class="buy-head">
+              <div class="buy-thumb" aria-hidden="true"></div>
+              <div>
+                <div class="buy-name">Coconut Grove</div>
+                <div class="buy-meta" data-suffix=" · single flavor">12 cans · single flavor</div>
+              </div>
+            </div>
+            <div class="seg" role="group" aria-label="Pack size">
+              <button type="button" data-pack="4" data-price="14" data-name="Coconut Grove" aria-pressed="false">4 cans</button>
+              <button type="button" data-pack="12" data-price="36" data-name="Coconut Grove" aria-pressed="true">12 cans</button>
+              <button type="button" data-pack="24" data-price="66" data-name="Coconut Grove" aria-pressed="false">24 cans</button>
+            </div>
+            <div class="buy-row">
+              <div class="price">$36<small>$3.00 per can</small></div>
+              <button type="button" class="add"><span>Buy now</span></button>
+            </div>
+          </aside>
+        </div>
+        <div class="v" data-v="2">
+          <h2 class="v-t"><span class="ln"><span>Low Tide</span></span><span class="ln"><span>Vanilla</span></span></h2>
+          <p class="v-p">Cold brew with a soft touch of vanilla. Smooth all the way down, for the slow sessions.</p>
+          <div class="v-s"><div>160<span>mg caffeine</span></div><div>0<span>g sugar</span></div><div>18<span>hour steep</span></div></div>
+          <aside class="buy" data-wrap="CAN_WRAP_BLUE" aria-label="Buy Low Tide Vanilla">
+            <div class="buy-head">
+              <div class="buy-thumb" aria-hidden="true"></div>
+              <div>
+                <div class="buy-name">Low Tide Vanilla</div>
+                <div class="buy-meta" data-suffix=" · single flavor">12 cans · single flavor</div>
+              </div>
+            </div>
+            <div class="seg" role="group" aria-label="Pack size">
+              <button type="button" data-pack="4" data-price="14" data-name="Low Tide Vanilla" aria-pressed="false">4 cans</button>
+              <button type="button" data-pack="12" data-price="36" data-name="Low Tide Vanilla" aria-pressed="true">12 cans</button>
+              <button type="button" data-pack="24" data-price="66" data-name="Low Tide Vanilla" aria-pressed="false">24 cans</button>
+            </div>
+            <div class="buy-row">
+              <div class="price">$36<small>$3.00 per can</small></div>
+              <button type="button" class="add"><span>Buy now</span></button>
+            </div>
+          </aside>
+        </div>
+        <aside class="buy s2-buy" data-wrap="CAN_WRAP" aria-label="Buy Sunrise Blend">
+          <div class="buy-head">
+            <div class="buy-thumb" aria-hidden="true"><div class="thumb-strip"><i></i><i></i><i></i></div></div>
+            <div>
+              <div class="buy-name">Sunrise Blend</div>
+              <div class="buy-meta" data-suffix=" · single flavor">12 cans · single flavor</div>
+            </div>
+          </div>
+          <div class="seg" role="group" aria-label="Pack size">
+            <button type="button" data-pack="4" data-price="14" data-name="Sunrise Blend" aria-pressed="false">4 cans</button>
+            <button type="button" data-pack="12" data-price="36" data-name="Sunrise Blend" aria-pressed="true">12 cans</button>
+            <button type="button" data-pack="24" data-price="66" data-name="Sunrise Blend" aria-pressed="false">24 cans</button>
+          </div>
+          <div class="buy-row">
+            <div class="price">$36<small>$3.00 per can</small></div>
+            <button type="button" class="add"><span>Buy now</span></button>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- LINEUP -->
+  <section class="lineup" id="lineup" aria-label="Shop the lineup">
+    <div class="lu-head">
+      <div class="lu-title">
+        <h2 data-split>Shop the lineup.</h2>
+      </div>
+      <p class="lu-lede" data-split="p">Three cold brews by the flavor, plus mixed packages for the whole crew.</p>
+    </div>
+    <div class="lu-track">
+      <a class="pc" href="#shop" data-shot="0" style="--bg:#EEEEEC">
+        <div class="pc-img"><img alt="Sunrise Blend" decoding="async"><img class="pc-alt" src="/gallery/hangfive/assets/sunrise-lifestyle.jpg?v=2" alt="" aria-hidden="true" loading="lazy" decoding="async"></div>
+        <div class="pc-info">
+          <div class="pc-name">Sunrise Blend</div>
+          <div class="pc-price">$36</div>
+          <div class="pc-meta">Black cold brew · 12 cans · single flavor</div>
+          <div class="pc-rate"><i aria-hidden="true">★★★★★</i><span>4.9 · 212 reviews</span></div>
+        </div>
+      </a>
+      <a class="pc" href="#shop" data-shot="1" style="--bg:#EEEEEC">
+        <div class="pc-img"><img alt="Coconut Grove" decoding="async"><img class="pc-alt" src="/gallery/hangfive/assets/coconut-lifestyle.jpg?v=1" alt="" aria-hidden="true" loading="lazy" decoding="async"></div>
+        <div class="pc-info">
+          <div class="pc-name">Coconut Grove</div>
+          <div class="pc-price">$36</div>
+          <div class="pc-meta">Toasted coconut · 12 cans · single flavor</div>
+          <div class="pc-rate"><i aria-hidden="true">★★★★★</i><span>4.8 · 164 reviews</span></div>
+        </div>
+      </a>
+      <a class="pc" href="#shop" data-shot="2" style="--bg:#EEEEEC">
+        <div class="pc-img"><img alt="Low Tide Vanilla" decoding="async"><img class="pc-alt" src="/gallery/hangfive/assets/vanilla-lifestyle.jpg?v=1" alt="" aria-hidden="true" loading="lazy" decoding="async"></div>
+        <div class="pc-info">
+          <div class="pc-name">Low Tide Vanilla</div>
+          <div class="pc-price">$36</div>
+          <div class="pc-meta">Soft vanilla · 12 cans · single flavor</div>
+          <div class="pc-rate"><i aria-hidden="true">★★★★★</i><span>4.9 · 98 reviews</span></div>
+        </div>
+      </a>
+      <a class="pc" href="#shop" data-shot="pack" style="--bg:#EEEEEC">
+        <div class="pc-img"><img alt="The Packages" decoding="async"><img class="pc-alt" src="/gallery/hangfive/assets/packages-lifestyle.jpg?v=1" alt="" aria-hidden="true" loading="lazy" decoding="async"></div>
+        <div class="pc-info">
+          <div class="pc-name">The Packages</div>
+          <div class="pc-price">From $14</div>
+          <div class="pc-meta">Batukaras, Bali or Mentawai · 4, 12 or 24 cans · mixed flavors</div>
+          <div class="pc-rate"><i aria-hidden="true">★★★★★</i><span>4.9 · 320 reviews</span></div>
+        </div>
+      </a>
+    </div>
+    <div class="lu-nav">
+        <button type="button" class="lu-prev" aria-label="Previous"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path vector-effect="non-scaling-stroke" d="M15 9H3M8 4 3 9l5 5"/></svg></button>
+        <button type="button" class="lu-next" aria-label="Next"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path vector-effect="non-scaling-stroke" d="M3 9h12M10 4l5 5-5 5"/></svg></button>
+      </div>
+  </section>
+
+  <!-- INSIDE -->
+  <section class="why" id="why" aria-label="Why hangfive">
+    <h2 class="why-title" data-split>Coffee by day.<br>Surf at dawn.</h2>
+    <div class="why-body">
+      <figure class="why-media" aria-hidden="true">
+        <div class="why-frames">
+          <img class="on" src="/gallery/hangfive/assets/cafe-interior.jpg?v=1" alt="" loading="eager" decoding="async" style="object-position:50% 60%">
+          <img src="/gallery/hangfive/assets/pour-carafe.jpg?v=1" alt="" style="object-position:50% 52%" loading="eager" decoding="async">
+          <img src="/gallery/hangfive/assets/roastery.jpg?v=2" alt="" style="object-position:50% 55%" loading="eager" decoding="async">
+          <img src="/gallery/hangfive/assets/surf-run.jpg?v=1" alt="" style="object-position:50% 60%" loading="eager" decoding="async">
+          <img class="why-mark" src="/gallery/hangfive/assets/palm-white.svg?v=1" alt="">
+        </div>
+      </figure>
+      <ol class="why-list">
+        <li class="why-item on" tabindex="0">
+          <span class="why-n">01</span>
+          <h3>Born at the break.</h3>
+          <div class="why-more"><div><p>Hangfive started as a little café on the sand in Batukaras, a few steps from the surf. Come by between sets, the cooler is always full.</p><span class="why-stat">Our café · Batukaras, West Java</span></div></div>
+        </li>
+        <li class="why-item" tabindex="0">
+          <span class="why-n">02</span>
+          <h3>Steeped 18 hours.</h3>
+          <div class="why-more"><div><p>Slow and cold, never heated. The result is a smooth, low-acid cup without the bitterness.</p><span class="why-stat">18 hour cold steep</span></div></div>
+        </li>
+        <li class="why-item" tabindex="0">
+          <span class="why-n">03</span>
+          <h3>Nothing extra.</h3>
+          <div class="why-more"><div><p>Arabica and filtered water. No added sugar, no syrups, no crash.</p><span class="why-stat">0 g added sugar · up to 180 mg caffeine</span></div></div>
+        </li>
+        <li class="why-item" tabindex="0">
+          <span class="why-n">04</span>
+          <h3>Built for the session.</h3>
+          <div class="why-more"><div><p>A 12 fl oz can that fits the cooler, the board bag and the dashboard. Keep cold, shake well.</p><span class="why-stat">12 fl oz · keep cold</span></div></div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ROLL -->
+  <section class="roll" id="roll">
+    <div class="roll-sticky">
+      <img class="roll-bg" src="/gallery/hangfive/assets/cove-lifestyle.jpg?v=2" alt="" aria-hidden="true" loading="lazy" decoding="async">
+      <div class="roll-line behind">Last wave.<br>First can.</div>
+      <div class="roll-caption narrow front"><span>Our café · Batukaras, West Java</span><span>Keep cold · Shake well</span></div>
+    </div>
+  </section>
+
+  <!-- INGREDIENTS -->
+  <section class="ing" id="ingredients" aria-label="Ingredients">
+    <div id="ing-water" aria-hidden="true"></div>
+    <h2 class="sr-only">Short list. On purpose.</h2>
+    <figure class="ing-hero" role="img" aria-label="A can of hangfive Low Tide Vanilla next to a glass of iced cold brew">
+      <canvas class="ing-can" id="ing-can" aria-hidden="true"></canvas>
+      <img class="ing-glass" src="/gallery/hangfive/assets/glass.webp?v=2" alt="" loading="lazy" decoding="async">
+    </figure>
+    <div class="ing-cs">
+      <div class="ing-c tl"><h3>100% Arabica</h3><p>Single origin beans from the highlands of West Java.</p></div>
+      <div class="ing-c tr"><h3>Grown at altitude</h3><p>Shade grown above 1,200 m. Slower cherries, sweeter beans.</p></div>
+      <div class="ing-c bl"><h3>Washed process</h3><p>Hand picked when ripe, washed and sun dried.</p></div>
+      <div class="ing-c br"><h3>Medium roast</h3><p>Roasted in small batches, ground coarse for a cold steep.</p></div>
+    </div>
+  </section>
+
+  <!-- JOURNAL -->
+  <section class="journal" id="journal" aria-label="Journal">
+    <div class="journal-head">
+      <h2 data-split>From the journal.</h2>
+      <a href="#journal">All stories</a>
+    </div>
+    <div class="journal-grid">
+      <a class="jc" href="#journal">
+        <div class="jc-img"><img class="jc-mark" src="/gallery/hangfive/assets/palm-white.svg?v=1" alt=""><img src="/gallery/hangfive/assets/journal-roast.jpg?v=1" alt="" style="object-position:50% 48%" loading="lazy" decoding="async"></div>
+        <div class="jc-meta"><span>Brewing</span><span>4 min read</span></div>
+        <h3>Why we steep cold for 18 hours</h3>
+        <p>Time does the work heat usually does. What happens in the tank, and why the cup comes out smooth.</p>
+        <span class="jc-more">Read more</span>
+      </a>
+      <a class="jc" href="#journal">
+        <div class="jc-img"><img class="jc-mark" src="/gallery/hangfive/assets/palm-white.svg?v=1" alt=""><img src="/gallery/hangfive/assets/journal-surf.jpg?v=1" alt="" style="object-position:50% 62%" loading="lazy" decoding="async"></div>
+        <div class="jc-meta"><span>Surf</span><span>6 min read</span></div>
+        <h3>A local's guide to the Batukaras break</h3>
+        <p>When it works, where to paddle out, and where to grab a can after the session.</p>
+        <span class="jc-more">Read more</span>
+      </a>
+      <a class="jc" href="#journal">
+        <div class="jc-img"><img class="jc-mark" src="/gallery/hangfive/assets/palm-white.svg?v=1" alt=""><img src="/gallery/hangfive/assets/cafe-interior.jpg?v=1" alt="" loading="lazy" decoding="async"></div>
+        <div class="jc-meta"><span>Café</span><span>3 min read</span></div>
+        <h3>Inside the café on the sand</h3>
+        <p>Boards on the wall, ice in the cooler. A morning at the little café where hangfive started.</p>
+        <span class="jc-more">Read more</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="testi" id="reviews" aria-label="Reviews">
+    <div class="testi-stage" aria-live="polite">
+      <div class="testi-rail" data-lenis-prevent aria-hidden="true"></div>
+      <figure class="tq">
+        <blockquote class="tq-card"><div class="tq-top"><span class="tq-stars" aria-label="5 out of 5">★★★★★</span><span>Dewi Lestari</span></div><p>Grabbed one after a dawn session and now there is always a six pack in my board bag. Smooth, no bitterness, no crash.</p><cite class="tq-role">Surfer, Batukaras</cite></blockquote>
+        <figcaption class="tq-who"><img class="tq-av" src="/gallery/hangfive/assets/reviews/face1.png" alt="" loading="lazy" decoding="async"></figcaption>
+      </figure>
+      <figure class="tq">
+        <blockquote class="tq-card"><div class="tq-top"><span class="tq-stars" aria-label="5 out of 5">★★★★★</span><span>Marco Hale</span></div><p>Best cold brew I had on the whole trip. I took a crate home in my checked bag, no regrets.</p><cite class="tq-role">Visiting from Perth</cite></blockquote>
+        <figcaption class="tq-who"><img class="tq-av" src="/gallery/hangfive/assets/reviews/face2.png" alt="" loading="lazy" decoding="async"></figcaption>
+      </figure>
+      <figure class="tq">
+        <blockquote class="tq-card"><div class="tq-top"><span class="tq-stars" aria-label="5 out of 5">★★★★★</span><span>Rizky Pratama</span></div><p>Clean and chocolatey, and it actually tastes like coffee. Hard to believe it comes out of a can.</p><cite class="tq-role">Barista, Bandung</cite></blockquote>
+        <figcaption class="tq-who"><img class="tq-av" src="/gallery/hangfive/assets/reviews/face3.png" alt="" loading="lazy" decoding="async"></figcaption>
+      </figure>
+      <figure class="tq">
+        <blockquote class="tq-card"><div class="tq-top"><span class="tq-stars" aria-label="5 out of 5">★★★★★</span><span>Sarah Lim</span></div><p>Low Tide Vanilla is my after-surf ritual. Sweet enough without any added sugar.</p><cite class="tq-role">Weekend surfer</cite></blockquote>
+        <figcaption class="tq-who"><img class="tq-av" src="/gallery/hangfive/assets/reviews/face4.png" alt="" loading="lazy" decoding="async"></figcaption>
+      </figure>
+      <figure class="tq">
+        <blockquote class="tq-card"><div class="tq-top"><span class="tq-stars" aria-label="5 out of 5">★★★★★</span><span>Ayu Wardani</span></div><p>I come for the waves and stay for the cooler. The staff always know my order.</p><cite class="tq-role">Café regular</cite></blockquote>
+        <figcaption class="tq-who"><img class="tq-av" src="/gallery/hangfive/assets/reviews/face5.png" alt="" loading="lazy" decoding="async"></figcaption>
+      </figure>
+      <figure class="tq">
+        <blockquote class="tq-card"><div class="tq-top"><span class="tq-stars" aria-label="5 out of 5">★★★★★</span><span>Jonas Berg</span></div><p>I hand these out to my students after lessons. Everyone asks where to buy more.</p><cite class="tq-role">Surf coach</cite></blockquote>
+        <figcaption class="tq-who"><img class="tq-av" src="/gallery/hangfive/assets/reviews/face6.png" alt="" loading="lazy" decoding="async"></figcaption>
+      </figure>
+    </div>
+  </section>
+
+
+</main>
+<footer class="foot" id="shop">
+  <div id="foot-water" aria-hidden="true"></div>
+  <img class="foot-canimg" alt="" aria-hidden="true">
+  <div class="foot-grid">
+    <div class="foot-col">
+      <h3>Shop</h3>
+      <a href="#lineup">Sunrise Blend</a><a href="#lineup">Coconut Grove</a><a href="#lineup">Low Tide Vanilla</a><a href="#lineup">The Packages</a>
+    </div>
+    <div class="foot-col">
+      <h3>hangfive</h3>
+      <a href="#why">Our story</a><a href="#ingredients">Ingredients</a><a href="#reviews">Reviews</a><a href="mailto:hello@hangfive.example">Contact</a>
+    </div>
+    <div class="foot-can" aria-hidden="true"></div>
+    <form class="foot-sub" id="subscribe" onsubmit="event.preventDefault(); this.classList.add('done'); this.querySelector('button').textContent = 'Subscribed';">
+      <h3>Stay in the lineup</h3>
+      <p>New flavors, café nights and swell reports. One email a month.</p>
+      <div class="foot-field">
+        <label class="sr-only" for="foot-email">Email address</label>
+        <input id="foot-email" type="email" required placeholder="Your email" autocomplete="email">
+        <button type="submit">Subscribe</button>
+      </div>
+      <div class="foot-social">
+        <a href="https://www.instagram.com/hangfivecoffeeandsurf/" target="_blank" rel="noopener" aria-label="Instagram"><span>Instagram</span></a>
+        <a href="#" aria-label="TikTok"><span>TikTok</span></a>
+        <a href="#" aria-label="Spotify"><span>Spotify</span></a>
+      </div>
+    </form>
+  </div>
+  <div class="foot-base"><span>© hangfive Coffee Co. · Batukaras, West Java</span><span>Coffee &amp; surf</span></div>
+</footer>
+
+<script src="/gallery/hangfive/assets/can-wrap.js?v=9"></script>
+<script src="/gallery/hangfive/assets/can-wraps.js?v=5"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script>
+  // inertial smooth scroll
+  window.lenis = null;
+  if (window.Lenis && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    window.lenis = new Lenis({ lerp: 0.12, wheelMultiplier: 1, touchMultiplier: 1.2 });
+    (function raf(t) { window.lenis.raf(t); requestAnimationFrame(raf); })(performance.now());
+    document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener("click", e => {
+      const id = a.getAttribute("href"); if (id.length < 2) return; const t = document.querySelector(id); if (!t) return;
+      e.preventDefault(); window.lenis.scrollTo(t, { duration: 1.4 });
+    }));
+  }
+</script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="/gallery/hangfive/assets/jquery.ripples.js?v=1"></script>
+<script>
+  // quick-buy cards (hero + one per flavour in section 2)
+  (function () {
+    const usd = n => "$" + (Number.isInteger(n) ? n : n.toFixed(2));
+    const count = document.getElementById("cartCount");
+    document.querySelectorAll(".buy").forEach(card => {
+      const btns = card.querySelectorAll(".seg button"), price = card.querySelector(".price"), per = price.querySelector("small");
+      const title = card.querySelector(".buy-name"), meta = card.querySelector(".buy-meta"), suffix = meta.dataset.suffix || "";
+      const wrap = window[card.dataset.wrap] || window.CAN_WRAP;
+      if (wrap) card.querySelector(".buy-thumb").style.backgroundImage = `url(${wrap})`;
+      let pack = 12;
+      btns.forEach(b => b.addEventListener("click", () => {
+        btns.forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
+        pack = +b.dataset.pack; const p = +b.dataset.price;
+        meta.textContent = pack + " cans" + suffix; title.textContent = b.dataset.name;
+        price.firstChild.nodeValue = usd(p); per.textContent = "$" + (p / pack).toFixed(2) + " per can";
+      }));
+      const add = card.querySelector(".add"), label = add.querySelector("span");
+      add.addEventListener("click", () => {
+        count.textContent = +count.textContent + pack;
+        count.classList.add("bump"); setTimeout(() => count.classList.remove("bump"), 300);
+        add.classList.add("done"); label.textContent = "Added";
+        setTimeout(() => { add.classList.remove("done"); label.textContent = "Buy now"; }, 1600);
+      });
+    });
+  })();
+</script>
+<script>
+// Hero background: real water simulation via jQuery Ripples (WebGL height-field).
+// The cursor stirs the surface with a soft, continuous trail; gentle drops fall until the cursor arrives.
+(function () {
+  const el = document.getElementById("water");
+  const $ = window.jQuery;
+  if (!el || !$ || !$.fn.ripples) return;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // A barely-there light texture on #EEEEEC, so the refraction has something to bend.
+  const tc = document.createElement("canvas"); tc.width = 1024; tc.height = 640;
+  const c = tc.getContext("2d");
+  c.fillStyle = "#EEEEEC"; c.fillRect(0, 0, 1024, 640);
+  let g = c.createRadialGradient(380, 180, 0, 380, 180, 620);
+  g.addColorStop(0, "rgba(255,255,255,.55)"); g.addColorStop(1, "rgba(255,255,255,0)");
+  c.fillStyle = g; c.fillRect(0, 0, 1024, 640);
+  g = c.createLinearGradient(0, 0, 1024, 640);
+  for (let i = 0; i <= 12; i++) g.addColorStop(i / 12, i % 2 ? "rgba(214,214,210,.10)" : "rgba(255,255,255,.10)");
+  c.fillStyle = g; c.fillRect(0, 0, 1024, 640);
+  g = c.createRadialGradient(512, 300, 200, 512, 300, 760);
+  g.addColorStop(0, "rgba(0,0,0,0)"); g.addColorStop(1, "rgba(0,0,0,.05)");
+  c.fillStyle = g; c.fillRect(0, 0, 1024, 640);
+  el.style.backgroundImage = `url(${tc.toDataURL("image/png")})`;
+  if (reduce) return;
+
+  try {
+    $(el).ripples({ resolution: 512, dropRadius: 26, perturbance: 0.035, interactive: false });
+  } catch (e) { return; }
+  const R = (x, y, r, s) => { try { $(el).ripples("drop", x, y, r, s); } catch (e) {} };
+
+  // continuous, evenly spaced trail along the cursor path (no separate splashes)
+  let last = null;
+  function onMove(e) {
+    const r = el.getBoundingClientRect();
+    const x = e.clientX - r.left, y = e.clientY - r.top;
+    if (x < 0 || y < 0 || x > r.width || y > r.height) { last = null; return; }
+    if (!last) { R(x, y, 60, 0.06); last = { x, y }; return; }
+    const d = Math.hypot(x - last.x, y - last.y), STEP = 14;
+    if (d < STEP) return;
+    const n = Math.floor(d / STEP), s = Math.min(0.03, 0.008 + d * 0.0004);
+    for (let i = 1; i <= n; i++) R(last.x + (x - last.x) * i / n, last.y + (y - last.y) * i / n, 34, s);
+    last = { x, y };
+  }
+  addEventListener("pointermove", onMove);
+  addEventListener("pointerover", onMove);
+  document.addEventListener("mouseleave", () => { last = null; });
+  addEventListener("pointerdown", e => {
+    const r = el.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+    if (x >= 0 && y >= 0 && x <= r.width && y <= r.height) R(x, y, 72, 0.12);
+  });
+
+  // always-on gentle swell: a few slow, drifting wave-makers that bob up and down,
+  // so the surface keeps rolling on its own; the cursor trail adds on top of it
+  const makers = [
+    { ax: .30, ay: .22, fx: .043, fy: .031, p: 0.0, w: 1.10 },
+    { ax: .28, ay: .25, fx: .029, fy: .047, p: 2.1, w: 0.85 },
+    { ax: .34, ay: .20, fx: .037, fy: .023, p: 4.2, w: 0.70 },
+  ];
+  const t0 = performance.now();
+  setInterval(() => {
+    if (document.hidden) return;
+    const t = (performance.now() - t0) / 1000, W = el.clientWidth, H = el.clientHeight;
+    makers.forEach(m => {
+      const x = W * (.5 + m.ax * Math.sin(t * m.fx * 6.283 + m.p));
+      const y = H * (.45 + m.ay * Math.sin(t * m.fy * 6.283 + m.p * 1.7));
+      R(x, y, 90, 0.010 * Math.sin(t * m.w * 6.283 * .5 + m.p));   // oscillating source = rolling rings
+    });
+  }, 60);
+
+  // pause the simulation when the hero is off-screen
+  new IntersectionObserver(([en]) => $(el).ripples(en.isIntersecting ? "play" : "pause")).observe(el);
+})();
+</script>
+<script>
+// Ingredients: the same water surface as the hero, on a dark brown-to-black texture.
+function brewWater(el) {
+  const $ = window.jQuery;
+  if (!el || !$ || !$.fn.ripples) return;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const tc = document.createElement("canvas"); tc.width = 1024; tc.height = 640;
+  const c = tc.getContext("2d");
+  let g = c.createLinearGradient(0, 0, 0, 640);
+  g.addColorStop(0, "#2A170B"); g.addColorStop(.65, "#000000"); g.addColorStop(1, "#000000");
+  c.fillStyle = g; c.fillRect(0, 0, 1024, 640);
+  // faint diagonal sheen bands so the refraction has something to bend
+  g = c.createLinearGradient(0, 0, 1024, 640);
+  for (let i = 0; i <= 14; i++) g.addColorStop(i / 14, i % 2 ? "rgba(120,70,35,.07)" : "rgba(0,0,0,0)");
+  c.fillStyle = g; c.fillRect(0, 0, 1024, 640);
+  g = c.createRadialGradient(300, 120, 0, 300, 120, 520);
+  g.addColorStop(0, "rgba(150,90,45,.10)"); g.addColorStop(1, "rgba(0,0,0,0)");
+  c.fillStyle = g; c.fillRect(0, 0, 1024, 640);
+  el.style.backgroundImage = `url(${tc.toDataURL("image/png")})`;
+  if (reduce) return;
+  try { $(el).ripples({ resolution: 512, dropRadius: 26, perturbance: 0.05, interactive: false }); } catch (e) { return; }
+  const R = (x, y, r, s) => { try { $(el).ripples("drop", x, y, r, s); } catch (e) {} };
+  let last = null, on = false;
+  function onMove(e) {
+    if (!on) return;
+    const r = el.getBoundingClientRect();
+    const x = e.clientX - r.left, y = e.clientY - r.top;
+    if (x < 0 || y < 0 || x > r.width || y > r.height) { last = null; return; }
+    if (!last) { R(x, y, 60, 0.06); last = { x, y }; return; }
+    const d = Math.hypot(x - last.x, y - last.y), STEP = 14;
+    if (d < STEP) return;
+    const n = Math.floor(d / STEP), s = Math.min(0.03, 0.008 + d * 0.0004);
+    for (let i = 1; i <= n; i++) R(last.x + (x - last.x) * i / n, last.y + (y - last.y) * i / n, 34, s);
+    last = { x, y };
+  }
+  addEventListener("pointermove", onMove);
+  addEventListener("pointerdown", e => {
+    if (!on) return;
+    const r = el.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+    if (x >= 0 && y >= 0 && x <= r.width && y <= r.height) R(x, y, 72, 0.12);
+  });
+  const makers = [
+    { ax: .30, ay: .22, fx: .043, fy: .031, p: 0.0, w: 1.10 },
+    { ax: .28, ay: .25, fx: .029, fy: .047, p: 2.1, w: 0.85 },
+    { ax: .34, ay: .20, fx: .037, fy: .023, p: 4.2, w: 0.70 },
+  ];
+  const t0 = performance.now();
+  setInterval(() => {
+    if (document.hidden || !on) return;
+    const t = (performance.now() - t0) / 1000, W = el.clientWidth, H = el.clientHeight;
+    makers.forEach(m => {
+      const x = W * (.5 + m.ax * Math.sin(t * m.fx * 6.283 + m.p));
+      const y = H * (.45 + m.ay * Math.sin(t * m.fy * 6.283 + m.p * 1.7));
+      R(x, y, 90, 0.010 * Math.sin(t * m.w * 6.283 * .5 + m.p));
+    });
+  }, 60);
+  $(el).ripples("pause");
+  new IntersectionObserver(([en]) => { on = en.isIntersecting; $(el).ripples(on ? "play" : "pause"); }).observe(el);
+}
+["ing-water", "foot-water"].forEach(id => brewWater(document.getElementById(id)));
+</script>
+<script src="/gallery/hangfive/assets/can-glb.js"></script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+<script type="module">
+import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+import { HorizontalBlurShader } from "three/addons/shaders/HorizontalBlurShader.js";
+import { VerticalBlurShader } from "three/addons/shaders/VerticalBlurShader.js";
+
+const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const canvas = document.getElementById("stage");
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.NoToneMapping; // Dialed: no tone mapping, colours stay exactly as printed
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(26, 1, 0.1, 100);
+camera.position.set(0, 0, 16);
+
+/* ---------- Lighting the Dialed way: image-based light only, from a bright studio HDR ----------
+   Dialed lights the can purely with an HDR environment (envMapIntensity 1), no extra lamps.
+   RoomEnvironment is a bright, soft photo-studio room; rotate it so its main window sits front-left. */
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentRotation.set(0, 0.7, 0);
+
+/* ---------- Can model exported from Blender (Circle.004, subdivided, real lid + pull tab) ---------- */
+const CY = 1.54;                       // pivot at mid-height
+const CX0 = 0.0025, CZ0 = 0.004;      // can axis offset in model space
+const Z0 = 0.165, Z1 = 2.565, ZT = 2.996, RW = 0.892, RT = 0.695;
+const BRIDGE = Math.hypot(ZT - Z1, RW - RT), S = (Z1 - Z0) + BRIDGE, K = BRIDGE / (ZT - Z1);
+
+const tex = new THREE.TextureLoader().load(window.CAN_WRAP);
+tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.ClampToEdgeWrapping;
+
+// Dialed-style can: one standard material, env-lit, printed ink brightened, wet patches, background fresnel
+const PAGE_BG = new THREE.Color("#EEEEEC");
+const wrapTex = src => { const t = new THREE.TextureLoader().load(src); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = renderer.capabilities.getMaxAnisotropy(); t.wrapS = THREE.RepeatWrapping; t.wrapT = THREE.ClampToEdgeWrapping; return t; };
+const texG = wrapTex(window.CAN_WRAP_GREEN || window.CAN_WRAP), texB = wrapTex(window.CAN_WRAP_BLUE || window.CAN_WRAP);
+const canUniforms = { uTime: { value: 0 }, uBg: { value: PAGE_BG.clone() }, uFresnel: { value: 1 }, uMapG: { value: texG }, uMapB: { value: texB }, uVar: { value: 0 }, uGround: { value: 0 }, uGroundH: { value: 1 }, uGroundAO: { value: 0 } };
+const labelMat = new THREE.MeshStandardMaterial({ map: tex, metalness: 0.1, roughness: 0.24, envMapIntensity: 0.85 });
+// Same cylindrical projection as the Blender material: u around the can, v along wall + shoulder arc
+labelMat.onBeforeCompile = (sh) => {
+  Object.assign(sh.uniforms, canUniforms);
+  sh.vertexShader = sh.vertexShader
+    .replace("#include <common>", "#include <common>\nvarying vec3 vObj; varying float vWY;")
+    .replace("#include <begin_vertex>", "#include <begin_vertex>\nvObj = position; vWY = (modelMatrix * vec4(transformed, 1.0)).y;");
+  sh.fragmentShader = sh.fragmentShader
+    .replace("#include <common>", `#include <common>
+      varying vec3 vObj; uniform float uTime; uniform vec3 uBg; uniform float uFresnel; uniform sampler2D uMapG; uniform sampler2D uMapB; uniform float uVar; varying float vWY; uniform float uGround, uGroundH, uGroundAO;
+      float hh(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+      float vn(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);
+        return mix(mix(hh(i), hh(i+vec2(1,0)), f.x), mix(hh(i+vec2(0,1)), hh(i+vec2(1,1)), f.x), f.y); }
+      // surface coords: q.x = arc length around the can, q.y = height (model units)
+      vec2 wetQ(vec3 o){ return vec2(atan(o.z - ${CZ0.toFixed(4)}, o.x - ${CX0.toFixed(4)}) * 0.892, o.y); }
+      // run-off trails: drops that slid down and wiped the condensation away
+      float wetTrail(vec2 q){
+        float m = 0.0;
+        for (int L = 0; L < 2; L++) {
+          float cw = L == 0 ? 0.24 : 0.15;
+          float cx = floor(q.x / cw);
+          float h1 = hh(vec2(cx, 3.1 + float(L) * 9.0)), h2 = hh(vec2(cx, 7.7 + float(L) * 9.0)), h3 = hh(vec2(cx, 11.3 + float(L) * 9.0));
+          if (h1 > (L == 0 ? 0.7 : 0.5)) continue;
+          float yTop = 1.0 + h2 * 1.75, len = 0.55 + h3 * 1.3;
+          // the drop at the head of the trail creeps down, then the trail fades and starts again
+          float period = 9.0 + h1 * 9.0;
+          float ph = fract(uTime / period + h2 * 7.0);
+          float yBot = yTop - len * smoothstep(0.0, 0.85, ph);
+          float life = 1.0 - smoothstep(0.85, 1.0, ph);
+          float t = clamp((yTop - q.y) / max(yTop - yBot, 0.01), 0.0, 1.0);   // 0 at start, 1 at the end
+          float c = (cx + 0.25 + 0.5 * h2) * cw + sin(q.y * 6.0 + h3 * 20.0) * 0.012 + sin(q.y * 17.0 + h1 * 31.0) * 0.004;
+          float w = (0.011 + 0.014 * h3) * (0.6 + 0.8 * t);               // widens as it gathers water
+          float inY = smoothstep(yBot - 0.015, yBot + 0.03, q.y) * (1.0 - smoothstep(yTop - 0.01, yTop + 0.03, q.y));
+          float head = exp(-pow((q.y - yBot) / (w * 1.6), 2.0));            // fat bead at the moving head
+          float wHead = w * (1.0 + 0.9 * head);
+          m = max(m, (1.0 - smoothstep(wHead * 0.6, wHead, abs(q.x - c))) * inY * life);
+        }
+        return m;
+      }
+      // Condensation dew: irregular beads at three scales (jittered, varied size, patchy density).
+      // Each layer fades out when its cells shrink under ~3px, so it never turns into pixel noise.
+      vec4 dewLayer(vec2 q, float sc, float prob, float rmin, float rmax, float seed){
+        vec2 g = q * sc; vec2 id = floor(g);
+        float px = max(length(fwidth(g)), 1e-4);                         // cells per pixel
+        vec4 best = vec4(0.0);
+        for (int j = -1; j <= 1; j++) for (int i = -1; i <= 1; i++) {
+          vec2 c = id + vec2(float(i), float(j));
+          if (hh(c + seed) > prob) continue;
+          vec2 ctr = c + 0.5 + (vec2(hh(c + seed + 1.7), hh(c + seed + 5.3)) - 0.5) * 0.9;
+          float r = mix(rmin, rmax, pow(hh(c + seed + 9.1), 1.8));
+          vec2 d = (g - ctr) / r; d.y *= 0.9;                             // a touch taller than wide
+          float l = length(d);
+          float m = 1.0 - smoothstep(1.0 - min(px / r * 1.5, 0.6), 1.0, l);
+          if (m > best.x) best = vec4(m, d, 0.0);
+        }
+        best.x *= 1.0 - smoothstep(0.22, 0.45, px);
+        return best;
+      }
+      vec4 dewField(vec2 q){
+        float dens = 0.45 + 0.55 * smoothstep(0.2, 0.8, vn(q * 2.2 + 3.0));
+        vec4 a = dewLayer(q, 85.0, 0.75 * dens, 0.16, 0.34, 0.0);
+        vec4 b = dewLayer(q, 38.0, 0.50 * dens, 0.18, 0.36, 13.0);
+        vec4 c = dewLayer(q, 16.0, 0.28 * dens, 0.16, 0.32, 29.0);
+        vec4 r = a; if (b.x > r.x * 0.6) r = b; if (c.x > r.x * 0.5) r = c;
+        return r;
+      }
+      vec4 gDew; vec2 gWQ; float gWT;
+      // fine condensation haze everywhere except where a trail wiped it
+      float wetMist(vec2 q, float trail){ return (1.0 - trail) * (0.72 + 0.28 * vn(q * 70.0)); }`)
+    .replace("#include <roughnessmap_fragment>", `#include <roughnessmap_fragment>
+      {
+        vec2 wq = wetQ(vObj);
+        float wt = wetTrail(wq), wm = wetMist(wq, wt);
+        gWQ = wq; gWT = wt; gDew = dewField(wq); gDew.x *= 1.0 - wt;     // trails wipe the dew away
+        roughnessFactor = mix(roughnessFactor, 0.16, wm * 0.6);          // thin water film = glossier, not matte
+        roughnessFactor = mix(roughnessFactor, 0.05, wt);
+        roughnessFactor = mix(roughnessFactor, 0.03, gDew.x);            // beads are glassy
+      }`)
+    .replace("#include <normal_fragment_maps>", `#include <normal_fragment_maps>
+      {
+        // tilt the normal over each bead (sphere cap) so it reflects the studio like a real water lens
+        vec3 dp1 = dFdx(-vViewPosition), dp2 = dFdy(-vViewPosition);
+        vec2 du1 = dFdx(gWQ), du2 = dFdy(gWQ);
+        float C = 6.2831853 * 0.892;
+        if (abs(du1.x) > 1.0) du1.x -= sign(du1.x) * C;                 // back seam
+        if (abs(du2.x) > 1.0) du2.x -= sign(du2.x) * C;
+        vec3 dp2p = cross(dp2, normal), dp1p = cross(normal, dp1);
+        vec3 T = dp2p * du1.x + dp1p * du2.x, B = dp2p * du1.y + dp1p * du2.y;
+        float im = inversesqrt(max(max(dot(T, T), dot(B, B)), 1e-12));
+        normal = normalize(normal + (T * im * gDew.y + B * im * gDew.z) * gDew.x * 0.95);
+      }`)
+    .replace("#include <dithering_fragment>", `#include <dithering_fragment>
+      // Dialed: fresnel rim picks up the page colour so the can sits in the background, not on it
+      // Cinematic strip lighting (Dialed photo look): two tall softboxes behind-left and behind-right
+      // make BOTH edges glow hot red, the front sits a little lower, and a thin dark shadow line runs
+      // down the front just right of centre.
+      float facing = clamp(dot(normal, vec3(0.0, 0.0, 1.0)), 0.0, 1.0);
+      float nx = normal.x;
+      float rim = smoothstep(0.82, 0.22, facing);                    // 0 at front, 1 toward both edges
+      float band = exp(-pow((nx - 0.28) / 0.17, 2.0));               // soft shadow band (wider)
+      float line = exp(-pow((nx - 0.32) / 0.09, 2.0));               // wider dark line inside it
+      vec3 base = gl_FragColor.rgb;
+      vec3 col = base * 0.98;                                        // front stays true to the printed colour
+      col *= (1.0 - 0.16 * band) * (1.0 - 0.14 * line);              // one soft shadow band, low opacity
+      col *= 1.0 + rim * 0.55;                                       // glowing edges (multiplicative keeps the red saturated)
+      col += base * pow(rim, 2.0) * 0.15;
+      col *= mix(0.7, 1.0, smoothstep(0.0, 0.06, facing));           // gentle roll-off right at the silhouette
+      {
+        vec2 wq = wetQ(vObj);
+        float wt = wetTrail(wq), wm = wetMist(wq, wt);
+        col *= 1.0 + 0.04 * wm;                                            // water film: slightly richer, no white veil
+        col *= mix(1.0, 0.95, wt);                                         // trail: a touch deeper
+        col += vec3(0.16) * wt * pow(rim, 0.6) + vec3(0.05) * wt;        // bright wet streaks catching the light
+        float dm = gDew.x;
+        vec2 dd = gDew.yz; float dl = length(dd);
+        float bottom = smoothstep(0.2, -0.7, dd.y);
+        col *= 1.0 - smoothstep(0.6, 0.95, dl) * dm * (0.16 + 0.3 * bottom);   // meniscus, darker at the bottom
+        float caus = smoothstep(0.15, 0.6, dl) * (1.0 - smoothstep(0.8, 0.98, dl)) * smoothstep(0.1, -0.7, dd.y) * dm;
+        col += col * 0.45 * caus;                                          // light pooling in the lower half
+        vec3 Hh = normalize(normalize(vec3(-0.5, 0.62, 0.6)) + vec3(0.0, 0.0, 1.0));
+        col += vec3(0.9) * pow(max(dot(normal, Hh), 0.0), 90.0) * dm;     // pin-point highlight
+      }
+      gl_FragColor.rgb = col;
+      float fr = pow(1.0 - facing, 5.0) * uFresnel;
+      gl_FragColor.rgb += uBg * fr * 0.08;
+      if (uGroundAO > 0.001) {   // same chime clamp where the label mesh dips into the bottom bevel
+        float lowL = 1.0 - smoothstep(0.0, 1.0, clamp((vWY - uGround) / (uGroundH * 0.32), 0.0, 1.0));
+        gl_FragColor.rgb = mix(gl_FragColor.rgb, min(gl_FragColor.rgb, uBg * 0.42), lowL);
+      }
+      // grounding: light falloff toward the floor (occlusion + down-facing surfaces only see the floor)
+      if (uGroundAO > 0.001) {
+        float hN = clamp((vWY - uGround) / uGroundH, 0.0, 1.0);
+        float occ = 1.0 - smoothstep(0.0, 1.0, pow(hN, 0.55));          // broad: darker toward the base
+        float cont = 1.0 - smoothstep(0.0, 0.12, hN);                    // tight: last few mm at the rim
+        float down = clamp(-normal.y, 0.0, 1.0);                          // chime/bevel facing the floor
+        float k = uGroundAO * (0.42 * occ + 0.35 * cont) + uGroundAO * down * 0.55 * (1.0 - hN * 0.6);
+        gl_FragColor.rgb *= 1.0 - clamp(k, 0.0, 0.85);
+        gl_FragColor.rgb += uBg * 0.035 * down * uGroundAO;              // faint warm floor bounce
+      }`)
+    .replace("#include <map_fragment>", `
+      float ang = atan(-(vObj.z - ${CZ0.toFixed(4)}), vObj.x - ${CX0.toFixed(4)});
+      float uA = fract((ang - 1.5707963) / 6.2831853);
+      float uB = fract(uA + 0.5) - 0.5;            // continuous across the back seam
+      float h = vObj.y;
+      float v = (min(h, ${Z1.toFixed(3)}) - ${Z0.toFixed(3)} + max(h - ${Z1.toFixed(3)}, 0.0) * ${K.toFixed(4)}) / ${S.toFixed(4)};
+      vec2 gA = vec2(dFdx(uA), dFdy(uA)), gB = vec2(dFdx(uB), dFdy(uB));
+      bool useB = dot(gB, gB) < dot(gA, gA);
+      vec2 dx = vec2(useB ? gB.x : gA.x, dFdx(v)), dy = vec2(useB ? gB.y : gA.y, dFdy(v));
+      vec4 sampledDiffuseColor = textureGrad(map, vec2(uA, clamp(v, 0.0, 1.0)), dx, dy);
+      if (uVar > 0.001) {                           // flavour change: red -> green -> blue
+        vec4 sG = textureGrad(uMapG, vec2(uA, clamp(v, 0.0, 1.0)), dx, dy);
+        vec4 sB = textureGrad(uMapB, vec2(uA, clamp(v, 0.0, 1.0)), dx, dy);
+        // dissolve: a short timed crossfade between labels (driven by stepFlavor, so it never stalls half-way)
+        sampledDiffuseColor = mix(mix(sampledDiffuseColor, sG, clamp(uVar, 0.0, 1.0)), sB, clamp(uVar - 1.0, 0.0, 1.0));
+      }
+      {
+        // vivid print: push saturation and a touch of contrast (keeps the red rich instead of milky)
+        vec3 c = sampledDiffuseColor.rgb;
+        float l = dot(c, vec3(0.2126, 0.7152, 0.0722));
+        c = mix(vec3(l), c, mix(1.35, 1.0, clamp(uVar, 0.0, 1.0)));
+        c = clamp((c - 0.5) * 1.08 + 0.5, 0.0, 1.0);
+        sampledDiffuseColor.rgb = c;
+      }
+      diffuseColor *= sampledDiffuseColor;`);
+};
+// plain aluminium lid/base: no anisotropy (needs tangents the model doesn't have — that was the broken lid)
+// High-contrast chrome reflections for the aluminium only: dark studio + a few bright strips,
+// so the lid and base show crisp black/white bands like a product photo (the label keeps the soft room light).
+function chromeEnv() {
+  const s = new THREE.Scene();
+  s.add(new THREE.Mesh(new THREE.SphereGeometry(30, 32, 16), new THREE.MeshBasicMaterial({ side: THREE.BackSide, color: new THREE.Color(0.04, 0.04, 0.045) })));
+  const strip = (w, h, k, x, y, z) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, color: new THREE.Color(k, k, k) }));
+    m.position.set(x, y, z); m.lookAt(0, 0, 0); s.add(m);
+  };
+  strip(16, 6, 6, 0, 12, 2);        // big overhead box -> bright lid face
+  strip(2.2, 22, 7, -7, 1, 6);      // vertical strip front-left -> white band on the rim
+  strip(1.2, 22, 5, 7.5, 1, 4);     // thin strip right
+  strip(3, 22, 3, 0, 0, -10);       // back strip -> edge glint
+  strip(22, 2, 2.5, 0, -6, 8);      // low horizontal strip -> bright line on the bottom chime
+  return s;
+}
+const chromeTex = pmrem.fromScene(chromeEnv(), 0.01).texture;
+const metalMat = new THREE.MeshStandardMaterial({ color: 0xf6f7f9, metalness: 1, roughness: 0.12, envMap: chromeTex, envMapIntensity: 1.25 });
+metalMat.onBeforeCompile = (sh) => {
+  Object.assign(sh.uniforms, canUniforms);
+  sh.vertexShader = sh.vertexShader
+    .replace("#include <common>", "#include <common>\nvarying float vWY;")
+    .replace("#include <begin_vertex>", "#include <begin_vertex>\nvWY = (modelMatrix * vec4(transformed, 1.0)).y;");
+  sh.fragmentShader = sh.fragmentShader
+    .replace("#include <common>", "#include <common>\nuniform vec3 uBg; uniform float uFresnel; varying float vWY; uniform float uGround, uGroundH, uGroundAO;")
+    .replace("#include <dithering_fragment>", `#include <dithering_fragment>
+      float facing = clamp(dot(normal, vec3(0.0, 0.0, 1.0)), 0.0, 1.0);
+      float mrim = smoothstep(0.7, 0.2, facing);
+      gl_FragColor.rgb *= mix(0.75, 1.0, mrim) * (1.0 + mrim * 0.5);   // same strip logic on the aluminium
+      float fr = pow(1.0 - facing, 5.0) * uFresnel;
+      gl_FragColor.rgb += uBg * fr * 0.35;
+      // studio shot: the bottom chime sits on the floor, so it can't mirror a bright strip — clamp it to dim floor tones
+      if (uGroundAO > 0.001) {
+        float low = 1.0 - smoothstep(0.0, 1.0, clamp((vWY - uGround) / (uGroundH * 0.55), 0.0, 1.0));
+        float lum = dot(gl_FragColor.rgb, vec3(0.299, 0.587, 0.114));
+        vec3 tamed = gl_FragColor.rgb * (0.30 / max(lum, 0.30));          // compress highlights to a dull floor-lit grey
+        gl_FragColor.rgb = mix(gl_FragColor.rgb, tamed * 0.85, low);
+      }
+      // grounding: light falloff toward the floor (occlusion + down-facing surfaces only see the floor)
+      if (uGroundAO > 0.001) {
+        float hN = clamp((vWY - uGround) / uGroundH, 0.0, 1.0);
+        float occ = 1.0 - smoothstep(0.0, 1.0, pow(hN, 0.55));          // broad: darker toward the base
+        float cont = 1.0 - smoothstep(0.0, 0.12, hN);                    // tight: last few mm at the rim
+        float down = clamp(-normal.y, 0.0, 1.0);                          // chime/bevel facing the floor
+        float k = uGroundAO * (0.42 * occ + 0.35 * cont) + uGroundAO * down * 0.55 * (1.0 - hN * 0.6);
+        gl_FragColor.rgb *= 1.0 - clamp(k, 0.0, 0.85);
+        gl_FragColor.rgb += uBg * 0.035 * down * uGroundAO;              // faint warm floor bounce
+      }`);
+};
+
+const canInner = new THREE.Group();
+const canRoot = new THREE.Group(); canRoot.add(canInner); scene.add(canRoot);
+
+/* ---------- Condensation: sampled directly on the real can surface (never floats) ---------- */
+function seed(n) { return () => { n = (n * 16807) % 2147483647; return (n - 1) / 2147483646; }; }
+let dropMesh = null, dropData = null;
+// Sliding beads: a few of the larger wall drops creep down, speed up a little, then reappear higher up.
+const _dm = new THREE.Matrix4(), _dq = new THREE.Quaternion(), _dqr = new THREE.Quaternion(), _dz = new THREE.Vector3(0, 0, 1);
+function updateDrops(t) {
+  if (!dropMesh || !dropData) return;
+  let dirty = false;
+  dropData.forEach((d, i) => {
+    if (!d.slides) return;
+    const ph = (t / d.period + d.offset) % 1;
+    const travel = d.dist * (ph * ph * 0.6 + ph * 0.4);                  // eases from a stick into a slide
+    const y = d.p.y - travel;
+    const s = ph < 0.08 ? ph / 0.08 : ph > 0.92 ? (1 - ph) / 0.08 : 1;   // grow in at the top, shrink out at the bottom
+    const ang = Math.atan2(d.p.x - CX0, d.p.z - CZ0) + Math.sin(ph * 6.2831 + d.offset * 9) * 0.004;
+    const rad = Math.hypot(d.p.x - CX0, d.p.z - CZ0);
+    const p = new THREE.Vector3(CX0 + Math.sin(ang) * rad, y - CY, CZ0 + Math.cos(ang) * rad).addScaledVector(d.n, -d.r * 0.08);
+    _dq.setFromUnitVectors(_dz, d.n);
+    const up = new THREE.Vector3(0, 1, 0).sub(d.n.clone().multiplyScalar(d.n.y));
+    if (up.lengthSq() > 1e-4) { up.normalize(); _dqr.setFromUnitVectors(new THREE.Vector3(0, 1, 0).applyQuaternion(_dq), up); _dq.premultiply(_dqr); }
+    const sc = d.r * Math.max(s, 0.001);
+    _dm.compose(p, _dq, new THREE.Vector3(sc, sc * (1.25 + 0.35 * ph), sc * 0.45));   // stretches as it runs
+    dropMesh.setMatrixAt(i, _dm);
+    dirty = true;
+  });
+  if (dirty) dropMesh.instanceMatrix.needsUpdate = true;
+}
+
+// Build drops on the loaded model's actual triangles. Every drop sits on a real face, oriented to its normal.
+function buildDrops(labelGeo, metalGeo) {
+  const rnd = seed(20261116);
+  // area-weighted triangle picker for a geometry, optionally restricted by a per-triangle filter
+  function sampler(geo, keep) {
+    const pos = geo.attributes.position, nor = geo.attributes.normal, idx = geo.index;
+    const tris = [], cum = []; let total = 0;
+    const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3();
+    const n = idx ? idx.count / 3 : pos.count / 3;
+    for (let t = 0; t < n; t++) {
+      const i0 = idx ? idx.getX(t * 3) : t * 3, i1 = idx ? idx.getX(t * 3 + 1) : t * 3 + 1, i2 = idx ? idx.getX(t * 3 + 2) : t * 3 + 2;
+      a.fromBufferAttribute(pos, i0); b.fromBufferAttribute(pos, i1); c.fromBufferAttribute(pos, i2);
+      const cy = (a.y + b.y + c.y) / 3, nyAvg = (nor.getY(i0) + nor.getY(i1) + nor.getY(i2)) / 3;
+      if (keep && !keep(cy, nyAvg)) continue;
+      const area = new THREE.Vector3().subVectors(b, a).cross(new THREE.Vector3().subVectors(c, a)).length() / 2;
+      if (area <= 0) continue;
+      total += area; tris.push([i0, i1, i2]); cum.push(total);
+    }
+    if (!tris.length) return null;
+    return () => {
+      const r = rnd() * total; let lo = 0, hi = cum.length - 1;
+      while (lo < hi) { const mid = (lo + hi) >> 1; if (cum[mid] < r) lo = mid + 1; else hi = mid; }
+      const [i0, i1, i2] = tris[lo];
+      let u = rnd(), v = rnd(); if (u + v > 1) { u = 1 - u; v = 1 - v; } const w = 1 - u - v;
+      const p = new THREE.Vector3().fromBufferAttribute(pos, i0).multiplyScalar(w)
+        .addScaledVector(new THREE.Vector3().fromBufferAttribute(pos, i1), u)
+        .addScaledVector(new THREE.Vector3().fromBufferAttribute(pos, i2), v);
+      const nn = new THREE.Vector3().fromBufferAttribute(nor, i0).multiplyScalar(w)
+        .addScaledVector(new THREE.Vector3().fromBufferAttribute(nor, i1), u)
+        .addScaledVector(new THREE.Vector3().fromBufferAttribute(nor, i2), v).normalize();
+      return [p, nn];
+    };
+  }
+  const onLabel = sampler(labelGeo);
+  // aluminium only where water actually beads: top of the lid, the rolled rim, and the bottom chime
+  const onLid = sampler(metalGeo, (y, ny) => y > 2.9 && ny > 0.25);
+  const onRim = sampler(metalGeo, (y, ny) => y > 2.93 && Math.abs(ny) < 0.85);
+  const onBase = sampler(metalGeo, (y, ny) => y < 0.2 && ny > -0.5);
+
+  const drops = [], placed = [];
+  const tryPlace = (pick, count, rmin, rmax, gapMul) => {
+    if (!pick) return;
+    let tries = 0, made = 0;
+    while (made < count && tries < count * 60) {
+      tries++;
+      const [p, n] = pick();
+      const r = rmin + (rmax - rmin) * rnd() ** 1.3;
+      let ok = true;
+      for (const q of placed) if (q.p.distanceToSquared(p) < ((q.r + r) * gapMul + 0.02) ** 2) { ok = false; break; }
+      if (!ok) continue;
+      placed.push({ p, r });
+      const vertical = Math.abs(n.y) < 0.5;
+      const slides = vertical && r > 0.014 && p.y > 0.9 && rnd() < 0.45;
+      drops.push({ p, n, r, run: vertical && r > 0.026 && rnd() < 0.35 ? 1.3 + rnd() * 0.4 : 1 + rnd() * 0.1,
+        slides, period: 7 + rnd() * 10, offset: rnd(), dist: 0.5 + rnd() * Math.min(1.1, p.y - 0.35) }); made++;
+    }
+  };
+  // big beads first so the small ones fill around them
+  tryPlace(onLabel, 22, 0.028, 0.044, 2.4);
+  tryPlace(onLid, 10, 0.02, 0.034, 2.4);
+  tryPlace(onRim, 14, 0.012, 0.022, 2.2);
+  tryPlace(onBase, 10, 0.012, 0.022, 2.2);
+  tryPlace(onLabel, 95, 0.014, 0.026, 2.4);
+  tryPlace(onLid, 30, 0.008, 0.016, 2.4);
+  tryPlace(onLabel, 270, 0.006, 0.012, 2.4);
+  tryPlace(onLid, 50, 0.004, 0.008, 2.4);
+
+  dropMesh = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 20, 14), dropMat, drops.length);
+  dropData = drops;
+  const m = new THREE.Matrix4(), q = new THREE.Quaternion(), qr = new THREE.Quaternion(), zAxis = new THREE.Vector3(0, 0, 1);
+  drops.forEach((d, i) => {
+    q.setFromUnitVectors(zAxis, d.n);
+    // on walls, point each drop's long axis down the can so running drops stretch the right way
+    const up = new THREE.Vector3(0, 1, 0).sub(d.n.clone().multiplyScalar(d.n.y));
+    if (up.lengthSq() > 1e-4) { up.normalize(); qr.setFromUnitVectors(new THREE.Vector3(0, 1, 0).applyQuaternion(q), up); q.premultiply(qr); }
+    // centre sits just under the surface: the flattened half-sphere reads as a bead resting on the can
+    const p = d.p.clone().addScaledVector(d.n, -d.r * 0.08); p.y -= CY;
+    m.compose(p, q, new THREE.Vector3(d.r, d.r * d.run, d.r * 0.42));
+    dropMesh.setMatrixAt(i, m);
+  });
+  dropMesh.frustumCulled = false;
+  canInner.add(dropMesh);
+}
+
+new GLTFLoader().load(window.CAN_GLB, (gltf) => {
+  const meshes = []; gltf.scene.traverse(o => { if (o.isMesh) meshes.push(o); });
+  let labelGeo = null, metalGeo = null;
+  for (const m of meshes) {
+    // the label primitive is the one that stops at the shoulder (no lid); everything else is aluminium
+    m.geometry.computeBoundingBox();
+    const isLabel = m.geometry.boundingBox.max.y < 3.0 && m.geometry.boundingBox.min.y > 0.1;
+    if (isLabel) labelGeo = m.geometry; else metalGeo = m.geometry;
+    const mesh = new THREE.Mesh(m.geometry, isLabel ? labelMat : metalMat);
+    mesh.position.y = -CY; canInner.add(mesh);
+  }
+  if (labelGeo && metalGeo) buildDrops(labelGeo, metalGeo);
+});
+const dropMat = new THREE.ShaderMaterial({
+  transparent: true,
+  uniforms: { tScene: { value: null }, uRes: { value: new THREE.Vector2(1, 1) }, uStrength: { value: 0.014 } },
+  vertexShader: `
+    varying vec3 vN; varying vec3 vV;
+    void main() {
+      vec3 sc = vec3(length(instanceMatrix[0].xyz), length(instanceMatrix[1].xyz), length(instanceMatrix[2].xyz));
+      vec4 mv = modelViewMatrix * instanceMatrix * vec4(position, 1.0);
+      vN = normalize(normalMatrix * (mat3(instanceMatrix) * (normal / (sc * sc))));
+      vV = -mv.xyz;
+      gl_Position = projectionMatrix * mv;
+    }`,
+  fragmentShader: `
+    uniform sampler2D tScene; uniform vec2 uRes; uniform float uStrength;
+    varying vec3 vN; varying vec3 vV;
+    void main() {
+      vec3 n = normalize(vN), v = normalize(vV);
+      float ndv = clamp(dot(n, v), 0.0, 1.0), edge = 1.0 - ndv;
+      vec2 uv = gl_FragCoord.xy / uRes;
+      vec4 base = texture2D(tScene, uv), bent = texture2D(tScene, uv - n.xy * uStrength);
+      vec3 refr = mix(base.rgb, bent.rgb, step(0.5, bent.a));
+      vec3 col = refr * (1.28 - 0.55 * pow(edge, 1.8));           // clear, bright lens with a readable rim
+      col = mix(col, col * 0.6, smoothstep(0.82, 0.99, edge));     // thin soft meniscus
+      // one small, soft sparkle per drop (matches the single key light) instead of two hard glints
+      float s1 = pow(max(dot(n, normalize(normalize(vec3(-0.6, 0.55, 0.55)) + v)), 0.0), 220.0) * 1.6;
+      float s2 = 0.0;
+      col += vec3(s1 + s2);
+      gl_FragColor = vec4(col, max(max(base.a, bent.a), clamp(s1, 0.0, 1.0)));
+      #include <colorspace_fragment>
+    }`,
+});
+
+const rt = new THREE.WebGLRenderTarget(1, 1, { samples: 4, type: THREE.HalfFloatType });
+dropMat.uniforms.tScene.value = rt.texture;
+
+/* ---------- Scroll choreography ---------- */
+let W = 1, H = 1, canScale = 1, keys = [], storyA = 0, storyB = 1, rollStart = 2;
+const el = id => document.getElementById(id);
+function anchor(node, f) { return node.offsetTop + node.offsetHeight * f - innerHeight / 2; }
+
+function layout() {
+  const w = innerWidth, h = innerHeight;
+  renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+  const db = renderer.getDrawingBufferSize(new THREE.Vector2());
+  rt.setSize(db.x, db.y); dropMat.uniforms.uRes.value.copy(db);
+  H = 2 * camera.position.z * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)); W = H * camera.aspect;
+  const narrow = w < 860;
+  canScale = (H * (narrow ? 0.5 : 0.64)) / 3.08;
+  const side = narrow ? 0 : 0.31;
+  const r = 0.892 * canScale;
+  const roll = el("roll");
+  const rollA = roll.offsetTop, rollB = roll.offsetTop + roll.offsetHeight - innerHeight;
+  rollStart = rollA;
+  const rollX = narrow ? 0.34 : 0.4, rollS = narrow ? 0.66 : 1.02;
+  const spinA = -2.0, spinB = spinA - (2 * rollX * W) / (2 * Math.PI * r * rollS);   // spin sign matches the direction of travel
+  const LIE = Math.PI / 2;
+  const ing = el("ingredients"), ingA = ing.offsetTop;
+  const spinE = spinB - 0.12 * W / (2 * Math.PI * r * rollS);
+  const story = el("story");
+  storyA = story.offsetTop; storyB = story.offsetTop + story.offsetHeight - innerHeight;
+  const midHero = storyA * 0.55;
+  // footer pose: lid sits just under the top head of the testimonials arc, at the very end of the scroll
+  const FOOT_S = narrow ? 0.8 : 1.02;
+  const endY = Math.max(0, document.documentElement.scrollHeight - innerHeight);
+  const stg = document.querySelector(".testi-stage");
+  const stgTop = stg ? stg.getBoundingClientRect().top + scrollY : endY;
+  const lidDoc = stg ? stg.getBoundingClientRect().bottom + scrollY - (narrow ? 70 : 64) : endY + innerHeight * 0.3;
+  const settleY = Math.min(endY, Math.max(0, stgTop - (narrow ? 60 : 50)));   // heads near the top of the screen
+  const lidPy = lidDoc - settleY;                                // where the lid should be on screen at that scroll
+  const footY = (innerHeight / 2 - lidPy) / innerHeight - 0.32 * FOOT_S;
+  const endFootY = footY + (endY - settleY) / innerHeight;       // past that point the can scrolls away with the page
+  const lockA = settleY - (1.2 + footY) * innerHeight;           // scroll where the page-pinned can is still just off screen
+  const S2YAW = 0.92;   // rest angle in section 2: flavour name + wordmark face the viewer
+  keys = [
+    { at: 0,                          x: 0, y: narrow ? -0.24 : -0.4, yaw: 0, tx: 0.14, ty: 0, tz: -0.06, s: narrow ? 0.9 : 1.1 },
+    { at: midHero,                    x: 0,      y: -0.02, yaw: -0.05,        tx: 0.12, ty: 0,     tz: 0,     s: 0.98 },   // to the centre while the title scrolls away
+    { at: storyA,                     x: -side,  y: narrow ? 0.105 : 0, yaw: S2YAW - 2,        tx: 0.14, ty: 0,     tz: 0,     s: narrow ? 0.74 : 1.05 },   // one full turn, settles in the left column
+    { at: storyB,                     x: -side,  y: narrow ? 0.105 : 0, yaw: S2YAW - 2,        tx: 0.14, ty: 0,     tz: 0,     s: narrow ? 0.74 : 1.05 },
+    { at: anchor(el("why"), 0.5),     x: -side,  y: 0,     yaw: -1.30,        tx: 0.16, ty: 0,     tz: -0.10, s: 0.94 },
+    { at: rollA,                      x: -rollX, y: -0.02, yaw: spinA,       tx: 0.14, ty: 0,     tz: 0,     s: rollS },   // upright, spinning as it glides across
+    { at: rollB,                      x: rollX,  y: -0.02, yaw: spinB,       tx: 0.14, ty: 0,     tz: 0,     s: rollS },
+    // no stop at the edge: keeps rolling and dips down, slipping under the black section as it rises
+    { at: ingA - 2,                   x: rollX + 0.12, y: -1.2, yaw: spinE,  tx: 0.14, ty: 0,     tz: 0,     s: rollS },
+    // stays out of sight under the black section and through the café, then rises into the CTA
+    { at: ingA,                       x: 0, y: -2.4, yaw: spinE - 0.1, tx: 0.24, ty: 0, tz: 0, s: 0.86 },
+    { at: Math.min(el("reviews").offsetTop - innerHeight * 0.9, lockA - 1), x: 0, y: -2.4, yaw: Math.round(spinE) - 0.4, tx: 0.14, ty: 0, tz: 0, s: FOOT_S },
+    // from just below the fold the can is pinned to the page, so it rises exactly with the heads and never passes them
+    { at: lockA, x: 0, y: -1.2, yaw: Math.round(spinE) - 1, tx: 0.14, ty: 0, tz: 0, s: FOOT_S },
+    { at: settleY, x: 0, y: footY, yaw: Math.round(spinE) - 1, tx: 0.14, ty: 0, tz: 0, s: FOOT_S, lock: true },
+    { at: Math.max(endY, settleY + 1), x: 0, y: endFootY, yaw: Math.round(spinE) - 1, tx: 0.14, ty: 0, tz: 0, s: FOOT_S, lock: true },
+  ];
+  // phone: the footer uses a still render in the page flow instead (see .foot-canimg), so the 3D can stays hidden
+  if (narrow) { const i = keys.findIndex(k => k.at === ingA); keys.length = i + 1; keys.push({ ...keys[i], at: Math.max(endY, ingA + 1) }); }
+}
+const easeSoft = t => 0.5 - 0.5 * Math.cos(Math.PI * t);
+const ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+function target(scroll) {
+  if (scroll <= keys[0].at) return { ...keys[0] };
+  for (let i = 0; i < keys.length - 1; i++) {
+    const a = keys[i], b = keys[i + 1];
+    if (scroll <= b.at) {
+      let t = (scroll - a.at) / Math.max(b.at - a.at, 1);
+      t = i === 5 || i === 6 || b.lock ? t : i < 2 ? easeSoft(t) : ease(t); // the roll stays linear so spin matches travel
+      if (b.lock) { const o = {}; for (const k of ["x", "y", "yaw", "tx", "ty", "tz", "s"]) o[k] = a[k] + (b[k] - a[k]) * t; o.yaw -= flavorAt(scroll); o.lock = true; return o; }
+      const o = {}; for (const k of ["x", "y", "yaw", "tx", "ty", "tz", "s"]) o[k] = a[k] + (b[k] - a[k]) * t;
+      o.yaw -= flavorAt(scroll); return o;
+    }
+  }
+  const o = { ...keys[keys.length - 1] }; o.yaw -= flavorAt(scroll); return o;
+}
+// flavour index inside section 2: 0 red, 1 green, 2 blue (the can turns once at each change)
+const sm = x => { x = Math.min(1, Math.max(0, x)); return x * x * (3 - 2 * x); };
+// original behaviour: flavour change follows the scroll position directly
+function flavorTarget(scroll) {
+  const p = (scroll - storyA) / Math.max(storyB - storyA, 1);
+  return sm((p - 0.14) / 0.3) + sm((p - 0.56) / 0.3);
+}
+// after the showcase the can goes back to its red Sunrise wrap before the roll section (label only, no extra spin)
+function flavorBack(scroll) { return sm((scroll - storyB) / Math.max(rollStart - innerHeight * 0.3 - storyB, 1)); }
+let fvShown = 0, fvSpin = 0;
+function stepFlavor() { fvSpin = flavorTarget(scrollY); fvShown = fvSpin * (1 - flavorBack(scrollY)); }
+function flavorAt() { return fvSpin; }   // the turn each flavour change adds is kept, so the can never unwinds backwards
+const PAL = [["#1F0005", "#940018", "#DC2A47"], ["#00140B", "#005B33", "#1E9A5E"], ["#001520", "#0076A5", "#3AAEDC"]];
+const _c = [new THREE.Color(), new THREE.Color(), new THREE.Color()];
+const s2 = el("story"), s2Sticky = s2.querySelector(".s2-sticky"), s2Bg = s2.querySelectorAll(".s2-bg"), s2V = s2.querySelectorAll(".v");
+let s2Active = -1;
+s2V.forEach(v => [...v.children].forEach(c => { const m = document.createElement("div"); m.className = "m"; const mt = parseFloat(getComputedStyle(c).marginTop) || 0; c.replaceWith(m); m.appendChild(c); c.style.marginTop = "0"; m.style.marginTop = (mt - 8) + "px"; }));
+// one fixed buy card: it sits on the first flavour's layout slot and only its contents change
+const s2Buy = s2.querySelector(".s2-buy"), s2Slot = s2V[0].querySelector(".buy");
+const BUY_NAMES = ["Sunrise Blend", "Coconut Grove", "Low Tide Vanilla"];
+const BUY_WRAPS = [window.CAN_WRAP, window.CAN_WRAP_GREEN || window.CAN_WRAP, window.CAN_WRAP_BLUE || window.CAN_WRAP];
+s2Buy.querySelectorAll(".thumb-strip i").forEach((t, i) => { if (BUY_WRAPS[i]) t.style.backgroundImage = `url(${BUY_WRAPS[i]})`; });
+function placeBuy() {
+  const host = s2Buy.offsetParent || s2Buy.parentElement, h = host.getBoundingClientRect(), r = s2Slot.getBoundingClientRect();
+  s2Buy.style.left = (r.left - h.left) + "px"; s2Buy.style.top = (r.top - h.top) + "px"; s2Buy.style.width = r.width + "px";
+}
+placeBuy(); addEventListener("resize", placeBuy); document.fonts && document.fonts.ready.then(placeBuy);
+let buyIdx = 0;
+function setBuyFlavor(a) {
+  a = Math.max(0, Math.min(2, a)); if (a === buyIdx) return; buyIdx = a;
+  const name = BUY_NAMES[a], nm = s2Buy.querySelector(".buy-name");
+  s2Buy.querySelector(".thumb-strip").style.transform = `translate3d(0, ${-a * 100}%, 0)`;
+  s2Buy.querySelectorAll(".seg button").forEach(b => b.dataset.name = name);
+  s2Buy.setAttribute("aria-label", "Buy " + name);
+  nm.textContent = name; nm.classList.remove("swap"); void nm.offsetWidth; nm.classList.add("swap");
+}
+let s2Last = -1;
+function updateS2(v) {
+  if (Math.abs(v - s2Last) < 0.0005) return;                // nothing changed: skip the full-screen gradient repaint
+  s2Last = v;
+  const i = Math.min(1, Math.floor(v)), f = v - i;
+  s2Bg[1].style.opacity = Math.min(1, Math.max(0, v)).toFixed(3);
+  s2Bg[2].style.opacity = Math.min(1, Math.max(0, v - 1)).toFixed(3);
+  s2V.forEach((n, j) => {
+    const d = Math.max(-1, Math.min(1, v - j));             // -1 below (incoming) .. 0 shown .. 1 above (gone)
+    // title: each line rolls inside its own mask, staggered (top line leads in and leads out)
+    const lines = n.children[0].querySelectorAll(".ln > span"), L = lines.length, st = 0.4, dd = d * 1.2;
+    lines.forEach((c, li) => {
+      const dk = dd < 0 ? Math.max(-1, Math.min(0, dd * (1 + st * (L - 1)) + st * (L - 1 - li)))
+                        : Math.max(0, Math.min(1, dd * (1 + st * (L - 1)) - st * li));
+      c.style.transform = `translate3d(0, ${(-dk * 110).toFixed(2)}%, 0)`;
+    });
+  });
+  const a = Math.round(v);
+  if (a !== s2Active) {
+    s2Active = a;
+    s2V.forEach((n, j) => { n.classList.toggle("on", j === a); n.classList.toggle("past", j < a); });
+    setBuyFlavor(a);
+  }
+}
+
+const cur = { x: 0, y: 0, yaw: 0, tx: 0.3, ty: 0, tz: -0.1, s: 1 };
+let mouseX = 0, mouseY = 0;
+addEventListener("pointermove", e => { mouseX = e.clientX / innerWidth - 0.5; mouseY = e.clientY / innerHeight - 0.5; });
+
+// fresnel tint follows whichever section background sits behind the can (cream, gold, red)
+const _bg = new THREE.Color();
+function pageBg() {
+  const mid = scrollY + innerHeight / 2;
+  for (const id of ["story", "roll", "ingredients"]) { const n = el(id); if (mid >= n.offsetTop && mid < n.offsetTop + n.offsetHeight) return _bg.set(getComputedStyle(n).backgroundColor); }
+  return _bg.copy(PAGE_BG);
+}
+
+/* ---------- Lineup product shots: rendered once from the real can model ---------- */
+const shotCam = new THREE.PerspectiveCamera(20, 600 / 960, 0.1, 100); shotCam.position.set(0, 0, 16);
+const shotRT = new THREE.WebGLRenderTarget(600, 960, { samples: 4 }); shotRT.texture.colorSpace = THREE.SRGBColorSpace;
+let shotsDone = false;
+const _box = new THREE.Box3();
+function readRT() {
+  const px = new Uint8Array(600 * 960 * 4); renderer.readRenderTargetPixels(shotRT, 0, 0, 600, 960, px);
+  const c = document.createElement("canvas"); c.width = 600; c.height = 960; const g = c.getContext("2d");
+  const img = g.createImageData(600, 960);
+  for (let y = 0; y < 960; y++) img.data.set(px.subarray((959 - y) * 2400, (960 - y) * 2400), y * 2400);
+  g.putImageData(img, 0, 0); return c;
+}
+function snapCan(variant, yaw, withRefl) {
+  const save = { p: canRoot.position.clone(), r: canRoot.rotation.clone(), s: canRoot.scale.clone(), y: canInner.rotation.y, v: canUniforms.uVar.value, f: canUniforms.uFresnel.value };
+  // upright can on a floor; the camera looks slightly down at it (like a product shot)
+  shotCam.position.set(0, 0.35, 16); shotCam.lookAt(0, 0, 0);
+  canRoot.position.set(0, 0, 0); canRoot.rotation.set(0, 0, 0); canRoot.scale.setScalar(1.55);
+  canInner.rotation.y = -yaw * Math.PI * 2; canUniforms.uVar.value = variant; canUniforms.uFresnel.value = 0;
+  if (dropMesh) dropMesh.visible = false;
+  renderer.setClearColor(0x000000, 0);
+  renderer.setRenderTarget(shotRT); renderer.clear(); renderer.render(scene, shotCam);
+  const can = readRT(); let refl = null;
+  if (withRefl) {
+    canRoot.updateMatrixWorld(true); _box.makeEmpty(); canInner.children.forEach(o => { if (o !== dropMesh && o.isMesh) _box.expandByObject(o, true); }); const floor = _box.min.y;
+    canRoot.position.y = 2 * floor; canRoot.scale.y = -1.55;            // mirror across the floor plane
+    // same projection shifted exactly one frame down, so the mirror image continues seamlessly below the can
+    shotCam.setViewOffset(600, 960, 0, 960, 600, 960);
+    renderer.setRenderTarget(shotRT); renderer.clear(); renderer.render(scene, shotCam);
+    shotCam.clearViewOffset();
+    refl = readRT();
+  }
+  renderer.setRenderTarget(null);
+  canRoot.position.copy(save.p); canRoot.rotation.copy(save.r); canRoot.scale.copy(save.s); canInner.rotation.y = save.y;
+  canUniforms.uVar.value = save.v; canUniforms.uFresnel.value = save.f; if (dropMesh) dropMesh.visible = true;
+  return withRefl ? { can, refl } : can;
+}
+const SHOT_BG = [["#1F0005", "#940018", "#DC2A47"], ["#00140B", "#005B33", "#1E9A5E"], ["#001520", "#0076A5", "#3AAEDC"], ["#C9C9C4", "#DFDFDB", "#F2F2EF"]];
+function shotCard(bg, cans) {
+  const c = document.createElement("canvas"); c.width = 900; c.height = 1200; const g = c.getContext("2d");
+  const gr = g.createLinearGradient(0, 1200, 0, 0); gr.addColorStop(0, bg[0]); gr.addColorStop(.55, bg[1]); gr.addColorStop(1, bg[2]);
+  g.fillStyle = gr; g.fillRect(0, 0, 900, 1200);
+  for (const [im, cx, h] of cans) {
+    const w = h * 600 / 960, base = 600 + h * 0.43;
+    const sh = g.createRadialGradient(cx, base, 0, cx, base, w * 0.5);
+    sh.addColorStop(0, "rgba(0,0,0,.35)"); sh.addColorStop(1, "rgba(0,0,0,0)");
+    g.save(); g.translate(cx, base); g.scale(1, 0.16); g.translate(-cx, -base); g.fillStyle = sh; g.beginPath(); g.arc(cx, base, w * 0.5, 0, 7); g.fill(); g.restore();
+    g.drawImage(im, cx - w / 2, 600 - h / 2 + 10, w, h);
+  }
+  return c;
+}
+/* Glass-table product shot: the can and its true mirror image (can flipped across the floor plane)
+   are rendered with the SAME camera, so the reflection meets the bottom rim along its whole curve. */
+const glassCam = new THREE.PerspectiveCamera(24, 900 / 1200, 0.1, 100);
+const glassRT = new THREE.WebGLRenderTarget(900, 1200, { samples: 4 }); glassRT.texture.colorSpace = THREE.SRGBColorSpace;
+function readGlass() {
+  const px = new Uint8Array(900 * 1200 * 4); renderer.readRenderTargetPixels(glassRT, 0, 0, 900, 1200, px);
+  const c = document.createElement("canvas"); c.width = 900; c.height = 1200; const g = c.getContext("2d");
+  const img = g.createImageData(900, 1200), row = 900 * 4;
+  for (let y = 0; y < 1200; y++) img.data.set(px.subarray((1199 - y) * row, (1200 - y) * row), y * row);
+  g.putImageData(img, 0, 0); return c;
+}
+function snapGlass(variant, yaw) {
+  const save = { p: canRoot.position.clone(), r: canRoot.rotation.clone(), s: canRoot.scale.clone(), y: canInner.rotation.y, v: canUniforms.uVar.value, f: canUniforms.uFresnel.value };
+  const S = 1.55, camY = 0.6;
+  canRoot.position.set(0, 0, 0); canRoot.rotation.set(0, 0, 0); canRoot.scale.setScalar(S);
+  canInner.rotation.y = -yaw * Math.PI * 2; canUniforms.uVar.value = variant; canUniforms.uFresnel.value = 0;
+  if (dropMesh) dropMesh.visible = false;
+  glassCam.position.set(0, camY, 16); glassCam.lookAt(0, 0, 0); glassCam.updateMatrixWorld();
+  canRoot.updateMatrixWorld(true);
+  _box.makeEmpty(); canInner.children.forEach(o => { if (o.isMesh && o !== dropMesh) _box.expandByObject(o, true); });
+  const floor = _box.min.y, radius = (_box.max.x - _box.min.x) / 2;
+  renderer.setClearColor(0x000000, 0);
+  renderer.setRenderTarget(glassRT); renderer.clear(); renderer.render(scene, glassCam);
+  const can = readGlass();
+  canRoot.position.y = 2 * floor; canRoot.scale.set(S, -S, S);           // mirror across the floor plane
+  renderer.setRenderTarget(glassRT); renderer.clear(); renderer.render(scene, glassCam);
+  const refl = readGlass();
+  renderer.setRenderTarget(null);
+  // project the contact circle (floor, radius) to pixels: centre row + ellipse half-axes
+  const toPx = v => { v.project(glassCam); return [(v.x + 1) * 450, (1 - v.y) * 600]; };
+  const [cx, cy] = toPx(new THREE.Vector3(0, floor, 0));
+  const [fx, fy] = toPx(new THREE.Vector3(0, floor, radius));
+  const [sx] = toPx(new THREE.Vector3(radius, floor, 0));
+  canRoot.position.copy(save.p); canRoot.rotation.copy(save.r); canRoot.scale.copy(save.s); canInner.rotation.y = save.y;
+  canUniforms.uVar.value = save.v; canUniforms.uFresnel.value = save.f; if (dropMesh) dropMesh.visible = true;
+
+  const c = document.createElement("canvas"); c.width = 900; c.height = 1200; const g = c.getContext("2d");
+  const rx = sx - cx, ry = Math.max(2, fy - cy), front = fy;               // front = lowest point of the rim
+  // tabletop: plain studio grey, floor a touch brighter toward the viewer
+  const bg = g.createLinearGradient(0, 0, 0, 1200);
+  bg.addColorStop(0, "#EEEEEC"); bg.addColorStop(front / 1200, "#E8E8E5"); bg.addColorStop(1, "#F3F3F1");
+  g.fillStyle = bg; g.fillRect(0, 0, 900, 1200);
+  // reflection, fading with distance from the contact line
+  const r = document.createElement("canvas"); r.width = 900; r.height = 1200; const rg = r.getContext("2d");
+  rg.drawImage(refl, 0, 0);
+  rg.globalCompositeOperation = "destination-in";
+  const fade = rg.createLinearGradient(0, cy - ry, 0, front + (front - 120) * 0.32);
+  fade.addColorStop(0, "rgba(0,0,0,.42)"); fade.addColorStop(.18, "rgba(0,0,0,.3)"); fade.addColorStop(1, "rgba(0,0,0,0)");
+  rg.fillStyle = fade; rg.fillRect(0, 0, 900, 1200);
+  g.drawImage(r, 0, 0);
+  // contact occlusion: a dark ring hugging the rim ellipse, exactly where metal meets glass
+  g.save(); g.translate(cx, cy); g.scale(1, ry / rx);
+  const ao = g.createRadialGradient(0, 0, rx * 0.86, 0, 0, rx * 1.1);
+  ao.addColorStop(0, "rgba(0,0,0,.38)"); ao.addColorStop(.35, "rgba(0,0,0,.16)"); ao.addColorStop(1, "rgba(0,0,0,0)");
+  g.fillStyle = ao; g.beginPath(); g.arc(0, 0, rx * 1.1, 0, 7); g.fill(); g.restore();
+  g.drawImage(can, 0, 0);
+  return c;
+}
+/* Studio card: flat hero grey, can centred, soft contact shadow hugging the base (no mirror reflection) */
+function shotStudio(im, bgCol, h) {
+  // measure the can's opaque bounds so it can be centred and the shadow placed on its real base
+  const g0 = im.getContext("2d"), d = g0.getImageData(0, 0, im.width, im.height).data;
+  let top = im.height, bot = 0, l = im.width, r = 0;
+  for (let y = 0; y < im.height; y++) for (let x = 0; x < im.width; x++) if (d[(y * im.width + x) * 4 + 3] > 40) { if (y < top) top = y; if (y > bot) bot = y; if (x < l) l = x; if (x > r) r = x; }
+  const k = h / (bot - top), w = (r - l) * k;
+  const c = document.createElement("canvas"); c.width = 900; c.height = 1200; const g = c.getContext("2d");
+  g.fillStyle = bgCol; g.fillRect(0, 0, 900, 1200);
+  const x0 = 450 - w / 2, y0 = 600 - h / 2 + 10, base = y0 + h;
+  // --- realistic studio shadow, built from the can's own silhouette ---
+  // bottom rim width (the chrome base is narrower than the body)
+  const rowW = y => { let a = -1, z = -1; for (let x = l; x <= r; x++) if (d[(y * im.width + x) * 4 + 3] > 40) { if (a < 0) a = x; z = x; } return a < 0 ? 0 : z - a; };
+  const rimW = rowW(bot - Math.round((bot - top) * 0.015)) * k, rimH = rimW * 0.075;
+  const sil = document.createElement("canvas"); sil.width = r - l; sil.height = bot - top;
+  const sg = sil.getContext("2d"); sg.drawImage(im, l, top, r - l, bot - top, 0, 0, r - l, bot - top);
+  sg.globalCompositeOperation = "source-in"; sg.fillStyle = "#000"; sg.fillRect(0, 0, sil.width, sil.height);
+  // 1) cast shadow: silhouette laid back onto the floor (key light front-left -> falls back-right), blur grows with distance
+  const cast = (len, blur, a) => {
+    g.save(); g.globalAlpha = a; g.filter = `blur(${blur}px)`;
+    g.translate(450, base - rimH * 0.6); g.transform(1, 0, 2.2, -1, 0, 0); g.scale(1, -len);
+    g.drawImage(sil, -w / 2, -h, w, h); g.restore();
+  };
+  cast(0.025, 4, 0.20); cast(0.05, 10, 0.12); cast(0.09, 22, 0.07);
+  // 2) ambient occlusion pooled around the base
+  const ell = (rx, ry, a, blur, dy) => { g.save(); g.filter = `blur(${blur}px)`; g.fillStyle = `rgba(0,0,0,${a})`; g.beginPath(); g.ellipse(450, base - rimH + dy, rx, ry, 0, 0, 7); g.fill(); g.restore(); };
+  ell(rimW * 0.62, rimH * 2.0, 0.10, 18, rimH * 0.4);
+  ell(rimW * 0.53, rimH * 1.15, 0.22, 6, rimH * 0.15);
+  // 3) contact line: thin, dark, sharp exactly where the rim touches the floor
+  ell(rimW * 0.5, rimH * 0.95, 0.55, 1.5, 0);
+  g.drawImage(im, l, top, r - l, bot - top, x0, y0, w, h);
+  return c;
+}
+/* ---------- Studio shot with true contact shadows (three.js ContactShadows technique) ----------
+   The can is rendered from BELOW the floor into a depth texture (closer to the floor = darker), blurred,
+   and laid on the floor plane. The final frame renders can + shadow planes with the same camera, so the
+   shadow hugs the rim exactly in perspective. Two layers: a tight contact shadow + a wide soft one. */
+const STW = 900, STH = 1200;
+const studioRT = new THREE.WebGLRenderTarget(STW, STH, { samples: 4 }); studioRT.texture.colorSpace = THREE.SRGBColorSpace;
+const studioCam = new THREE.PerspectiveCamera(18, STW / STH, 0.1, 200);
+const csDepthMat = new THREE.MeshDepthMaterial(); csDepthMat.userData.darkness = { value: 1 };
+csDepthMat.onBeforeCompile = sh => {
+  sh.uniforms.darkness = csDepthMat.userData.darkness;
+  sh.fragmentShader = "uniform float darkness;\n" + sh.fragmentShader.replace(
+    "gl_FragColor = vec4( vec3( 1.0 - fragCoordZ ), opacity );",
+    "gl_FragColor = vec4( vec3( 0.0 ), ( 1.0 - fragCoordZ ) * darkness );");
+};
+csDepthMat.depthTest = false; csDepthMat.depthWrite = false;
+const csHBlur = new THREE.ShaderMaterial(HorizontalBlurShader); csHBlur.depthTest = false;
+const csVBlur = new THREE.ShaderMaterial(VerticalBlurShader); csVBlur.depthTest = false;
+function makeContactLayer(size, camH, darkness, blur, opacity) {
+  const rt = new THREE.WebGLRenderTarget(512, 512), rtB = new THREE.WebGLRenderTarget(512, 512);
+  rt.texture.generateMipmaps = false; rtB.texture.generateMipmaps = false;
+  const geo = new THREE.PlaneGeometry(size, size).rotateX(Math.PI / 2);
+  const plane = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: rt.texture, transparent: true, opacity, depthWrite: false }));
+  plane.scale.y = -1; plane.renderOrder = 1;
+  const blurPlane = new THREE.Mesh(geo); blurPlane.visible = false;
+  const cam = new THREE.OrthographicCamera(-size / 2, size / 2, size / 2, -size / 2, 0, camH); cam.rotation.x = Math.PI / 2;
+  const group = new THREE.Group(); group.add(plane, blurPlane, cam);
+  const doBlur = amt => {
+    blurPlane.visible = true;
+    blurPlane.material = csHBlur; csHBlur.uniforms.tDiffuse.value = rt.texture; csHBlur.uniforms.h.value = amt / 256;
+    renderer.setRenderTarget(rtB); renderer.render(blurPlane, cam);
+    blurPlane.material = csVBlur; csVBlur.uniforms.tDiffuse.value = rtB.texture; csVBlur.uniforms.v.value = amt / 256;
+    renderer.setRenderTarget(rt); renderer.render(blurPlane, cam);
+    blurPlane.visible = false;
+  };
+  group.bake = () => {
+    plane.visible = false; csDepthMat.userData.darkness.value = darkness;
+    const bg = scene.background; scene.background = null; scene.overrideMaterial = csDepthMat;
+    renderer.setClearColor(0x000000, 0); renderer.setRenderTarget(rt); renderer.clear(); renderer.render(scene, cam);
+    scene.overrideMaterial = null; scene.background = bg;
+    doBlur(blur); doBlur(blur * 0.4);
+    plane.visible = true;
+  };
+  group.dispose = () => { rt.dispose(); rtB.dispose(); geo.dispose(); plane.material.dispose(); };
+  return group;
+}
+
+/* ---------- Accumulated soft shadow (offline, once): hundreds of hard shadow maps from an area light + sky, averaged ---------- */
+const ACC_RES = 1024, SM_RES = 1024;
+const smRT = new THREE.WebGLRenderTarget(SM_RES, SM_RES, { type: THREE.FloatType, minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter });
+const smCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
+const smOverride = new THREE.ShaderMaterial({ side: THREE.DoubleSide, vertexShader: `void main(){ gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`, fragmentShader: `void main(){ gl_FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 1.0); }` });
+const accQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
+  uniforms: { uDepth: { value: smRT.texture }, uLight: { value: new THREE.Matrix4() }, uSize: { value: 1 }, uFloor: { value: 0 }, uW: { value: 0 }, uBias: { value: 0.001 } },
+  vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`,
+  fragmentShader: `uniform sampler2D uDepth; uniform mat4 uLight; uniform float uSize, uFloor, uW, uBias; varying vec2 vUv;
+    void main(){
+      vec3 wp = vec3((vUv.x - 0.5) * uSize, uFloor, (0.5 - vUv.y) * uSize);
+      vec4 lp = uLight * vec4(wp, 1.0); vec3 n = lp.xyz / lp.w * 0.5 + 0.5;
+      float occ = 0.0;
+      if (n.x > 0.0 && n.x < 1.0 && n.y > 0.0 && n.y < 1.0 && n.z < 1.0) occ = step(texture2D(uDepth, n.xy).r, n.z - uBias);
+      gl_FragColor = vec4(occ * uW, 0.0, 0.0, 1.0);
+    }`,
+  blending: THREE.CustomBlending, blendSrc: THREE.OneFactor, blendDst: THREE.OneFactor, blendEquation: THREE.AddEquation,
+  depthTest: false, depthWrite: false
+}));
+accQuad.frustumCulled = false;
+const accScene = new THREE.Scene(); accScene.add(accQuad);
+const _dirTmp = new THREE.Vector3(), _up = new THREE.Vector3(), _t1 = new THREE.Vector3(), _t2 = new THREE.Vector3();
+function bakeSoftShadow(center, R, floor, size, fade = [0.5, 0.36]) {
+  const acc = new THREE.WebGLRenderTarget(ACC_RES, ACC_RES, { type: THREE.HalfFloatType, depthBuffer: false });
+  const tmp = new THREE.Scene(); tmp.overrideMaterial = smOverride;
+  const parent = canRoot.parent; tmp.add(canRoot);
+  renderer.setClearColor(0x000000, 0); renderer.setRenderTarget(acc); renderer.clear();
+  const mu = accQuad.material.uniforms; mu.uSize.value = size; mu.uFloor.value = floor; mu.uBias.value = 0.0015;
+  smCam.left = smCam.bottom = -R * 1.05; smCam.right = smCam.top = R * 1.05; smCam.near = R * 0.5; smCam.far = R * 5.5; smCam.updateProjectionMatrix();
+  // key: big softbox above, slightly front-left (≈30° cone) — the directional part of the shadow
+  // sky: cosine-weighted hemisphere — the ambient occlusion that pools right around the base
+  const KEY = new THREE.Vector3(-0.32, 1, 0.38).normalize(), KEY_N = 180, SKY_N = 260, KEY_W = 0.5, SKY_W = 0.5, CONE = 0.5;
+  let rnd = seed(7);
+  const shoot = (dir, w) => {
+    smCam.position.copy(center).addScaledVector(dir, R * 3); smCam.up.set(0, 0, -1);
+    if (Math.abs(dir.y) < 0.98) smCam.up.set(0, 1, 0);
+    smCam.lookAt(center); smCam.updateMatrixWorld();
+    renderer.setClearColor(0xffffff, 1); renderer.setRenderTarget(smRT); renderer.clear(); renderer.render(tmp, smCam); renderer.setClearColor(0x000000, 0);
+    mu.uLight.value.multiplyMatrices(smCam.projectionMatrix, smCam.matrixWorldInverse); mu.uW.value = w;
+    renderer.setRenderTarget(acc); renderer.autoClear = false; renderer.render(accScene, smCam); renderer.autoClear = true;
+  };
+  _t1.set(1, 0, 0).cross(KEY).normalize(); _t2.copy(KEY).cross(_t1).normalize();
+  for (let i = 0; i < KEY_N; i++) {               // uniform disc in the cone around the key direction
+    const r = Math.sqrt(rnd()) * Math.tan(CONE), a = rnd() * Math.PI * 2;
+    _dirTmp.copy(KEY).addScaledVector(_t1, Math.cos(a) * r).addScaledVector(_t2, Math.sin(a) * r).normalize();
+    shoot(_dirTmp, KEY_W / KEY_N);
+  }
+  for (let i = 0; i < SKY_N; i++) {               // cosine-weighted hemisphere
+    const u = rnd(), a = rnd() * Math.PI * 2, r = Math.sqrt(u);
+    _dirTmp.set(Math.cos(a) * r, Math.sqrt(Math.max(0.02, 1 - u)), Math.sin(a) * r).normalize();
+    shoot(_dirTmp, SKY_W / SKY_N);
+  }
+  parent.add(canRoot);
+  renderer.setRenderTarget(null);
+  const mat = new THREE.ShaderMaterial({
+    uniforms: { uAcc: { value: acc.texture }, uDark: { value: 0.82 }, uFade: { value: new THREE.Vector2(fade[0], fade[1]) } },
+    vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+    fragmentShader: `uniform sampler2D uAcc; uniform float uDark; uniform vec2 uFade; varying vec2 vUv;
+      void main(){
+        float o = texture2D(uAcc, vUv).r;
+        float edge = smoothstep(uFade.x, uFade.y, length(vUv - 0.5));       // fade before the plane border
+        gl_FragColor = vec4(0.0, 0.0, 0.0, clamp(pow(o, 0.9) * uDark * edge, 0.0, 1.0));
+      }`,
+    transparent: true, depthWrite: false
+  });
+  const plane = new THREE.Mesh(new THREE.PlaneGeometry(size, size), mat);
+  plane.rotation.x = -Math.PI / 2; plane.position.y = floor + 0.0004; plane.renderOrder = -1;
+  plane.dispose = () => { acc.dispose(); plane.geometry.dispose(); mat.dispose(); };
+  return plane;
+}
+function shotStudio3D(variant, yaw, bgCol, fade) {
+  const save = { p: canRoot.position.clone(), r: canRoot.rotation.clone(), s: canRoot.scale.clone(), y: canInner.rotation.y, v: canUniforms.uVar.value, f: canUniforms.uFresnel.value };
+  canRoot.position.set(0, 0, 0); canRoot.rotation.set(0, 0, 0); canRoot.scale.setScalar(1.55);
+  canInner.rotation.y = -yaw * Math.PI * 2; canUniforms.uVar.value = variant; canUniforms.uFresnel.value = 0;
+  if (dropMesh) dropMesh.visible = false;
+  canRoot.updateMatrixWorld(true);
+  _box.makeEmpty(); canInner.children.forEach(o => { if (o.isMesh && o !== dropMesh) _box.expandByObject(o, true); });
+  const floor = _box.min.y, hgt = _box.max.y - _box.min.y, dia = _box.max.x - _box.min.x, cy = (floor + _box.max.y) / 2;
+  canUniforms.uGround.value = floor; canUniforms.uGroundH.value = hgt * 0.32; const noSh = new URLSearchParams(location.search).has("noshadow");
+  canUniforms.uGroundAO.value = noSh ? 0 : 0.7;
+  const R = 0.5 * Math.hypot(hgt, dia), shadowPlane = noSh ? null : bakeSoftShadow(new THREE.Vector3(0, cy, 0), R, floor, dia * 7, fade);
+  if (shadowPlane) { scene.add(shadowPlane); shadowPlane.updateMatrixWorld(true); }
+  const contact = noSh ? null : makeContactLayer(dia * 1.6, hgt * 0.03, 2.0, 0.6, 0.8);
+  if (contact) { contact.position.set(0, floor + 0.0006, 0); scene.add(contact); contact.updateMatrixWorld(true); contact.bake(); }
+  // camera: slightly above, can fills ~64% of the frame height
+  const fovR = THREE.MathUtils.degToRad(studioCam.fov), dist = (hgt / 0.64) / (2 * Math.tan(fovR / 2));
+  studioCam.position.set(0, cy + dist * 0.07, dist); studioCam.lookAt(0, cy - hgt * 0.03, 0); studioCam.updateMatrixWorld();
+  renderer.setClearColor(0x000000, 0); renderer.setRenderTarget(studioRT); renderer.clear(); renderer.render(scene, studioCam);
+  const px = new Uint8Array(STW * STH * 4); renderer.readRenderTargetPixels(studioRT, 0, 0, STW, STH, px);
+  renderer.setRenderTarget(null);
+  if (shadowPlane) { scene.remove(shadowPlane); shadowPlane.dispose(); }
+  if (contact) { scene.remove(contact); contact.dispose(); }
+  canRoot.position.copy(save.p); canRoot.rotation.copy(save.r); canRoot.scale.copy(save.s); canInner.rotation.y = save.y;
+  canUniforms.uVar.value = save.v; canUniforms.uFresnel.value = save.f; canUniforms.uGroundAO.value = 0; if (dropMesh) dropMesh.visible = true;
+  const lay = document.createElement("canvas"); lay.width = STW; lay.height = STH; const lg = lay.getContext("2d");
+  const img = lg.createImageData(STW, STH), row = STW * 4;
+  for (let y = 0; y < STH; y++) img.data.set(px.subarray((STH - 1 - y) * row, (STH - y) * row), y * row);
+  lg.putImageData(img, 0, 0);
+  if (!bgCol) return lay;
+  const c = document.createElement("canvas"); c.width = STW; c.height = STH; const g = c.getContext("2d");
+  g.fillStyle = bgCol; g.fillRect(0, 0, STW, STH); g.drawImage(lay, 0, 0);
+  return c;
+}
+/* Trio shot: three studio layers (each with its own baked soft shadow) composited back-to-front */
+function shotStudioTrio(bgCol) {
+  const c = document.createElement("canvas"); c.width = STW; c.height = STH; const g = c.getContext("2d");
+  g.fillStyle = bgCol; g.fillRect(0, 0, STW, STH);
+  for (const [v, cx, cy, sc] of [[1, 255, 560, 0.6], [2, 645, 560, 0.6], [0, 450, 640, 0.68]]) {
+    const lay = shotStudio3D(v, 0.92, null, [0.3, 0.1]), w = STW * sc, h = STH * sc;
+    // feather the layer edges so its floor shadow never shows a rectangular border when shrunk
+    const lg = lay.getContext("2d"); lg.globalCompositeOperation = "destination-in";
+    const gx = lg.createLinearGradient(0, 0, STW, 0);
+    gx.addColorStop(0, "rgba(0,0,0,0)"); gx.addColorStop(0.2, "#000"); gx.addColorStop(0.8, "#000"); gx.addColorStop(1, "rgba(0,0,0,0)");
+    lg.fillStyle = gx; lg.fillRect(0, 0, STW, STH);
+    const gy = lg.createLinearGradient(0, 0, 0, STH);
+    gy.addColorStop(0, "#000"); gy.addColorStop(0.82, "#000"); gy.addColorStop(0.97, "rgba(0,0,0,0)");
+    lg.fillStyle = gy; lg.fillRect(0, 0, STW, STH); lg.globalCompositeOperation = "source-over";
+    g.drawImage(lay, cx - w / 2, cy - h / 2, w, h);
+  }
+  return c;
+}
+function makeShots() {
+  const ready = canInner.children.length >= 2 && [tex, texG, texB].every(t => t.image && t.image.complete !== false && t.image.width);
+  if (!ready) return;
+  shotsDone = true;
+  const cans = [0, 1, 2].map(v => snapCan(v, 0.92)); 
+  { // footer still (phone): front-facing Sunrise Blend, cropped tight to the can
+    const src = snapCan(0, 0), g = src.getContext("2d"), d = g.getImageData(0, 0, src.width, src.height).data;
+    let x0 = src.width, y0 = src.height, x1 = 0, y1 = 0;
+    for (let y = 0; y < src.height; y++) for (let x = 0; x < src.width; x++) if (d[(y * src.width + x) * 4 + 3] > 8) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    if (x1 > x0) {
+      const c = document.createElement("canvas"); c.width = x1 - x0 + 1; c.height = y1 - y0 + 1;
+      c.getContext("2d").drawImage(src, x0, y0, c.width, c.height, 0, 0, c.width, c.height);
+      const im = document.querySelector(".foot-canimg");
+      if (im) c.toBlob(b => { im.onload = () => im.classList.add("on"); im.src = URL.createObjectURL(b); }, "image/png");
+    }
+  }
+  const out = { 0: shotStudio3D(0, 0.92, "#EEEEEC"), 1: shotStudio3D(1, 0.92, "#EEEEEC"), 2: shotStudio3D(2, 0.92, "#EEEEEC"),
+    pack: shotStudioTrio("#EEEEEC") };
+  const urls = {}, thumb = (node, k) => Object.assign(node.style, { backgroundImage: `url(${urls[k]})`, backgroundSize: "cover", backgroundPosition: "50% 50%", backgroundColor: "#EEEEEC" });
+  const keys = Object.keys(out); let left = keys.length;
+  keys.forEach(k => out[k].toBlob(b => {
+    urls[k] = URL.createObjectURL(b);
+    document.querySelectorAll(`.pc[data-shot="${k}"] .pc-img img:not(.pc-alt)`).forEach(im => { im.src = urls[k]; });
+    if (--left) return;
+    // buy-card thumbnails: same grey studio shots with soft shadow
+    document.querySelectorAll(".hero-buy .buy-thumb").forEach(n => thumb(n, "pack"));
+    document.querySelectorAll(".s2-buy .thumb-strip i").forEach((n, i) => thumb(n, String(i)));
+    document.querySelectorAll(".v .buy .buy-thumb").forEach((n, i) => thumb(n, String(i % 3)));
+  }, "image/jpeg", 0.9));
+}
+/* ---------- Second can: a separate, upright red can in the Ingredients section (same model, same droplets, own camera) ---------- */
+const ingCv = document.getElementById("ing-can"), ingCtx = ingCv && ingCv.getContext("2d");
+const ingCam = new THREE.PerspectiveCamera(22, 1, 0.1, 100);
+const _ib = new THREE.Box3(), _ic = new THREE.Vector3(), _is = new THREE.Vector3();
+let ingMX = 0;
+function renderIngCan(t) {
+  if (!ingCtx || !dropMesh) return;
+  const sec = el("ingredients").getBoundingClientRect();
+  if (sec.bottom <= 0 || sec.top >= innerHeight) return;
+  const pr = renderer.getPixelRatio(), db = renderer.getDrawingBufferSize(new THREE.Vector2());
+  const r = ingCv.getBoundingClientRect();
+  const vw = Math.min(Math.round(r.width * pr), db.x), vh = Math.min(Math.round(r.height * pr), db.y);
+  if (vw < 2 || vh < 2) return;
+  if (ingCv.width !== vw || ingCv.height !== vh) { ingCv.width = vw; ingCv.height = vh; }
+  // pose: upright, label to the viewer, a slow sway that follows the cursor
+  ingMX += (mouseX - ingMX) * 0.05;
+  const save = { p: canRoot.position.clone(), r: canRoot.rotation.clone(), s: canRoot.scale.clone(), y: canInner.rotation.y, v: canUniforms.uVar.value };
+  canRoot.position.set(0, 0, 0); canRoot.rotation.set(0, 0, 0); canRoot.scale.setScalar(1.55);
+  canInner.rotation.y = 0; canRoot.updateMatrixWorld(true);
+  _ib.makeEmpty(); canInner.children.forEach(o => { if (o.isMesh && o !== dropMesh) _ib.expandByObject(o, true); });
+  _ib.getCenter(_ic); _ib.getSize(_is);
+  canInner.rotation.y = -(reduce ? 0 : ingMX * 0.12 + Math.sin(t * 0.5) * 0.02) * Math.PI * 2;
+  canUniforms.uVar.value = 2;   // blue (Low Tide Vanilla) label
+  // camera a little above the lid, like a product shot looking down into the glass
+  const e = 0.42, dist = _is.y / (2 * Math.tan(THREE.MathUtils.degToRad(11))) * 1.18;
+  ingCam.aspect = vw / vh; ingCam.updateProjectionMatrix();
+  ingCam.position.set(_ic.x, _ic.y + Math.sin(e) * dist, _ic.z + Math.cos(e) * dist); ingCam.lookAt(_ic.x, _ic.y - _is.y * 0.02, _ic.z);
+  // draw into the bottom-left corner of the main buffer, copy it out, the main pass then clears and redraws as usual
+  const cw = vw / pr, ch = vh / pr;
+  renderer.setScissorTest(true);
+  rt.viewport.set(0, 0, vw, vh); rt.scissor.set(0, 0, vw, vh); rt.scissorTest = true;
+  dropMesh.visible = false;
+  renderer.setRenderTarget(rt); renderer.setClearColor(0x000000, 0); renderer.clear(); renderer.render(scene, ingCam);
+  dropMesh.visible = true;
+  renderer.setRenderTarget(null); renderer.setViewport(0, 0, cw, ch); renderer.setScissor(0, 0, cw, ch);
+  renderer.clear(); renderer.render(scene, ingCam);
+  ingCtx.clearRect(0, 0, vw, vh); ingCtx.drawImage(renderer.domElement, 0, db.y - vh, vw, vh, 0, 0, vw, vh);
+  rt.viewport.set(0, 0, db.x, db.y); rt.scissor.set(0, 0, db.x, db.y); rt.scissorTest = false;
+  renderer.setScissorTest(false); renderer.setViewport(0, 0, db.x / pr, db.y / pr); renderer.setScissor(0, 0, db.x / pr, db.y / pr);
+  canRoot.position.copy(save.p); canRoot.rotation.copy(save.r); canRoot.scale.copy(save.s); canInner.rotation.y = save.y; canUniforms.uVar.value = save.v;
+}
+
+const clock = new THREE.Clock();
+function frame() {
+  const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
+  canUniforms.uTime.value = t;
+  if (!shotsDone) makeShots();
+  if (!reduce) updateDrops(t);
+  stepFlavor(dt); const fv = fvShown;
+  canUniforms.uVar.value = fv; updateS2(fv);
+  canUniforms.uBg.value.copy(pageBg());
+  const tg = target(scrollY);
+  const k = reduce ? 1 : 1 - Math.exp(-dt * (scrollY < storyA + innerHeight * 0.2 ? 3.8 : 6));
+  const hidden = p => Math.abs(p.x) > 0.7 || Math.abs(p.y) > 1.0;
+  if (hidden(cur) && hidden(tg)) Object.assign(cur, tg);   // reposition out of sight without a visible fly-through
+  else if (tg.lock) { for (const p in cur) cur[p] = p === "y" ? tg.y : cur[p] + (tg[p] - cur[p]) * k; }   // in the footer the can rides the page 1:1
+  else for (const p in cur) cur[p] += (tg[p] - cur[p]) * k;
+
+  const heroW = Math.max(0, 1 - scrollY / innerHeight);
+  const idleYaw = reduce ? 0 : Math.sin(t * 0.6) * 0.06 * heroW;
+  const bob = reduce ? 0 : Math.sin(t * 1.3) * 0.04 * heroW;
+
+  const sc = canScale * cur.s;
+  canRoot.position.set(cur.x * W + mouseX * 0.25 * heroW, cur.y * H + bob, 0);
+  canRoot.rotation.set(cur.tx + mouseY * 0.08 * heroW, cur.ty + mouseX * 0.2 * heroW, cur.tz, "YXZ");
+  canRoot.scale.setScalar(sc);
+  canInner.rotation.y = -(cur.yaw + idleYaw) * Math.PI * 2;
+
+
+  renderIngCan(t);
+
+  // pass 1: can without droplets -> texture the droplets refract; pass 2: final frame
+  if (dropMesh) dropMesh.visible = false;
+  renderer.setRenderTarget(rt); renderer.setClearColor(0x000000, 0); renderer.clear(); renderer.render(scene, camera);
+  renderer.setRenderTarget(null); if (dropMesh) dropMesh.visible = true; renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+
+addEventListener("resize", layout);
+document.fonts && document.fonts.ready.then(layout);
+layout(); frame();
+
+/* ---------- Lineup carousel: prev / next ---------- */
+(() => {
+  const tr = document.querySelector(".lu-track"), pv = document.querySelector(".lu-prev"), nx = document.querySelector(".lu-next");
+  if (!tr) return;
+  const step = () => { const c = tr.querySelector(".pc"); return c ? c.getBoundingClientRect().width + 10 : tr.clientWidth; };
+  const sync = () => { pv.disabled = tr.scrollLeft < 4; nx.disabled = tr.scrollLeft > tr.scrollWidth - tr.clientWidth - 4; };
+  pv.addEventListener("click", () => tr.scrollBy({ left: -step(), behavior: "smooth" }));
+  nx.addEventListener("click", () => tr.scrollBy({ left: step(), behavior: "smooth" }));
+  tr.addEventListener("scroll", sync, { passive: true }); addEventListener("resize", sync); sync();
+})();
+
+/* ---------- Nav colour + text reveals ---------- */
+const nav = document.getElementById("nav");
+const darkSections = [el("shop"), el("story"), el("roll"), el("ingredients")];
+addEventListener("scroll", () => {
+  const y = scrollY + 40;
+  nav.classList.toggle("on-dark", darkSections.some(s => y >= s.offsetTop && y < s.offsetTop + s.offsetHeight));
+}, { passive: true });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+<script>
+(() => {
+  if (!window.gsap || !window.ScrollTrigger || !window.SplitText) return;
+  gsap.registerPlugin(ScrollTrigger, SplitText);
+  if (window.lenis) window.lenis.on("scroll", ScrollTrigger.update);
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const EASE = "expo.out";
+  const rise = (el, o = {}) => SplitText.create(el, {
+    type: "lines", mask: "lines", linesClass: "split-line", autoSplit: true,
+    onSplit: self => gsap.from(self.lines, {
+      yPercent: 115, rotate: o.p ? 0 : 3, transformOrigin: "0% 100%", duration: o.p ? 1.1 : 1.3, ease: EASE, stagger: o.p ? .06 : .1, delay: o.delay || 0,
+      scrollTrigger: { trigger: el, start: "top 88%", once: true }
+    })
+  });
+  document.fonts.ready.then(() => {
+    document.querySelectorAll("[data-split]").forEach(el => rise(el, { p: el.dataset.split === "p", delay: el.dataset.split === "p" ? .15 : 0 }));
+    // Why list: hairlines draw left to right, then each row's number + title rise
+    const why = document.querySelector(".why-list");
+    if (why) {
+      const rows = [...why.querySelectorAll(".why-item")];
+      rows.forEach(r => { const h = r.querySelector("h3"); SplitText.create(h, { type: "lines", mask: "lines", linesClass: "split-line" }); });
+      const tl = gsap.timeline({ scrollTrigger: { trigger: why, start: "top 85%", once: true } });
+      tl.from(rows, { "--rule": 0, duration: 1.1, ease: "power3.inOut", stagger: .08 })
+        .from(why.querySelectorAll("h3 .split-line"), { yPercent: 115, duration: 1.1, ease: EASE, stagger: .08 }, .25)
+        .from(why.querySelectorAll(".why-n"), { y: 14, clipPath: "inset(0 0 100% 0)", duration: .9, ease: EASE, stagger: .08 }, .4);
+    }
+    // Ingredients: the four corner notes and the caption slide up inside a clip
+    const ing = document.querySelector(".ing-cs");
+    if (ing) {
+      gsap.from(ing.querySelectorAll("h3, p"), { y: 20, clipPath: "inset(0 0 100% 0)", duration: 1.1, ease: EASE, stagger: .05,
+        scrollTrigger: { trigger: "#ingredients", start: "top 45%", once: true } });
+    }
+    // CTA: eyebrow + button slide up inside a clip
+    const cta = document.querySelector(".cta-copy");
+    if (cta) gsap.from(cta.querySelectorAll(".eyebrow, .btn"), { y: 24, clipPath: "inset(0 0 100% 0)", duration: 1, ease: EASE, stagger: .5,
+      scrollTrigger: { trigger: cta, start: "top 80%", once: true } });
+  });
+})();
+</script>
+<div class="vp-cursor" aria-hidden="true"><span>View<br>Product</span></div>
+<script>
+(() => {
+  const el = document.querySelector(".vp-cursor"), sec = document.getElementById("story");
+  if (!el || !sec || matchMedia("(hover: none)").matches) return;
+  let tx = -200, ty = -200, x = tx, y = ty, inside = false, raf = 0, last = null;
+  const put = () => { el.style.setProperty("--x", x + "px"); el.style.setProperty("--y", y + "px"); };
+  const tick = () => {
+    x += (tx - x) * 0.25; y += (ty - y) * 0.25; put();
+    raf = Math.abs(tx - x) + Math.abs(ty - y) > 0.3 ? requestAnimationFrame(tick) : 0;
+  };
+  const setOn = on => {
+    if (on && !inside) { x = tx; y = ty; put(); }   // appear right under the pointer, no fly-in
+    inside = on; el.classList.toggle("on", on); sec.style.cursor = on ? "none" : "";
+  };
+  const evaluate = () => {
+    if (!last) return;
+    const r = sec.getBoundingClientRect();
+    const inSec = ty >= r.top && ty <= r.bottom && tx >= r.left && tx <= r.right;
+    const t = document.elementFromPoint(tx, ty);
+    setOn(inSec && !(t && t.closest("a, button, input, select, .buy, nav")));
+  };
+  const move = e => {
+    tx = e.clientX; ty = e.clientY; last = e;
+    evaluate();
+    if (inside && !raf) raf = requestAnimationFrame(tick);
+  };
+  addEventListener("pointermove", move, { passive: true });
+  addEventListener("pointerover", move, { passive: true });          // fires on entry, before any movement
+  addEventListener("scroll", evaluate, { passive: true });           // section scrolls under a still pointer
+  window.lenis && window.lenis.on && window.lenis.on("scroll", evaluate);
+  document.documentElement.addEventListener("pointerleave", () => { last = null; setOn(false); });
+  sec.addEventListener("click", e => {
+    if (!inside || e.target.closest("a, button, input, select, .buy")) return;
+    const t = document.getElementById("lineup");
+    window.lenis ? window.lenis.scrollTo(t) : t.scrollIntoView({ behavior: "smooth" });
+  });
+})();
+</script>
+<script>
+(() => {
+  const sec = document.getElementById("why"), items = [...sec.querySelectorAll(".why-item")], imgs = [...sec.querySelectorAll(".why-frames img:not(.why-mark)")];
+  if (!items.length) return;
+  let cur = 0;
+  // decode every frame up front so the wipe always reveals a ready image
+  const ready = imgs.map(m => (m.decode ? m.decode() : Promise.resolve()).catch(() => {}));
+  let want = 0;
+  // phone: move the photo into the open row so it sits right under its text; desktop: back beside the list
+  const media = sec.querySelector(".why-media"), body = sec.querySelector(".why-body"), phone = matchMedia("(max-width: 860px)");
+  const place = () => {
+    const slot = phone.matches ? items[want].querySelector(".why-more > div") : body;
+    if (media.parentNode === slot) return;
+    if (phone.matches) slot.appendChild(media); else body.insertBefore(media, body.firstChild);
+  };
+  place(); phone.addEventListener("change", place);
+  const set = i => {
+    if (i === want) return;
+    want = i;
+    items.forEach((n, k) => n.classList.toggle("on", k === i));
+    place();
+    ready[i].then(() => {
+      if (want !== i || i === cur) return;
+      const nx = imgs[i];
+      // park the incoming frame fully hidden first, so the wipe always plays
+      // (it may still be showing as the last "prev" frame when you go back one step)
+      nx.classList.remove("prev", "on"); nx.style.transition = "none"; nx.style.clipPath = "inset(100% 0 0 0)"; nx.style.transform = "scale(1.08)";
+      void nx.offsetWidth;
+      imgs.forEach(n => { if (n !== nx) n.classList.remove("prev"); }); imgs[cur].classList.add("prev"); imgs[cur].classList.remove("on");
+      nx.style.transition = nx.style.clipPath = nx.style.transform = "";
+      void nx.offsetWidth; nx.classList.add("on");
+      cur = i;
+    });
+  };
+  // auto-advance while the section is on screen; hovering a row holds it
+  items.forEach((n, i) => {
+    n.addEventListener("pointerenter", () => { sec.classList.add("hold"); set(i); });
+    n.addEventListener("focus", () => { sec.classList.add("hold"); set(i); });
+    n.addEventListener("click", () => set(i));
+    n.addEventListener("animationend", () => { if (n.classList.contains("on")) set((want + 1) % items.length); });
+  });
+  sec.querySelector(".why-list").addEventListener("pointerleave", () => sec.classList.remove("hold"));
+  // fixed photo height: the tallest the list ever gets (whichever row is open)
+  const list = sec.querySelector(".why-list"), frames = sec.querySelector(".why-frames");
+  const fit = () => {
+    frames.style.height = "";
+    if (matchMedia("(max-width: 860px)").matches) return;
+    const open = items.map(n => n.classList.contains("on"));
+    list.classList.add("measure");
+    let h = 0;
+    items.forEach((n, k) => { items.forEach((m, j) => m.classList.toggle("on", j === k)); h = Math.max(h, list.offsetHeight); });
+    items.forEach((m, j) => m.classList.toggle("on", open[j]));
+    void list.offsetHeight; list.classList.remove("measure");
+    frames.style.height = h + "px"; frames.style.flex = "none";
+    list.style.minHeight = h + "px";
+  };
+  fit(); addEventListener("load", fit); document.fonts && document.fonts.ready.then(fit);
+  let rz; addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(fit, 150); });
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
+    new IntersectionObserver(([e]) => sec.classList.toggle("run", e.isIntersecting), { threshold: 0.35 }).observe(sec);
+})();
+</script>
+<script>
+// Testimonials: heads ride a tight arc. One "phase" value positions every head each frame.
+// The auto-advance, the wheel / trackpad over the heads and a drag all just move a target phase;
+// the phase eases toward it, snaps to the nearest head when input stops, and that head's bubble opens.
+(() => {
+  const sec = document.getElementById("reviews"); if (!sec) return;
+  const items = [...sec.querySelectorAll(".tq")]; if (!items.length) return;
+  const whos = items.map(it => it.querySelector(".tq-who"));
+  const stage = sec.querySelector(".testi-stage"), rail = sec.querySelector(".testi-rail"), n = items.length;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const STEP = 34 * Math.PI / 180;
+  let R = 250, phase = 0, target = 0, cur = 0, timer = null, visible = false, hover = false, started = false;
+  let raf = 0, scrubbing = false, idle = null, auto = false;
+  const wrap = k => { k = ((k % n) + n) % n; return k > n / 2 ? k - n : k; };
+  const mod = k => ((k % n) + n) % n;
+  const draw = () => {
+    whos.forEach((w, i) => {
+      const k = wrap(i - phase), ak = Math.abs(k), a = k * STEP;
+      const x = R * Math.sin(a), y = R * (1 - Math.cos(a));
+      const sc = 1 - 0.24 * Math.min(1, ak);
+      const op = Math.max(0, Math.min(1, 2 - ak));
+      w.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) scale(${sc.toFixed(3)})`;
+      w.style.opacity = op.toFixed(3);
+      w.style.zIndex = String(10 - Math.round(ak));
+    });
+  };
+  const size = () => { R = Math.min(250, stage.clientWidth * 0.36); draw(); };
+  const speak = () => items.forEach((it, i) => it.classList.toggle("on", i === cur));
+  const hush = () => items.forEach(it => it.classList.remove("on"));
+  // spring the phase toward the target; when it lands, the head on top speaks
+  const run = () => {
+    if (raf) return;
+    let last = performance.now();
+    const tick = now => {
+      const dt = Math.min(0.1, (now - last) / 1000); last = now;
+      const d = target - phase;
+      phase += d * (1 - Math.exp(-dt / (auto ? 0.11 : 0.075)));   // time-based ease: same feel at any frame rate
+      if (!scrubbing && Math.abs(d) < 0.002) {
+        phase = target; draw(); raf = 0;
+        const top = mod(Math.round(phase));
+        if (top !== cur || !items[cur].classList.contains("on")) { cur = top; speak(); }
+        auto = false; return;
+      }
+      draw();
+      if (!scrubbing && !auto && Math.abs(d) < 0.25 && !items[mod(Math.round(target))].classList.contains("on")) { cur = mod(Math.round(target)); speak(); }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+  };
+  const goTo = t => { target = t; run(); };
+  const advance = () => { hush(); auto = true; goTo(Math.round(target) + 1); };
+  const DELAY = 4000;
+  const loop = () => { clearTimeout(timer); if (started && visible && !hover && !scrubbing && !document.hidden) timer = setTimeout(() => { advance(); loop(); }, DELAY); };
+  // user input: wheel / trackpad over the heads rolls them (page scroll is held only while on the heads)
+  const settle = () => { scrubbing = false; rail.classList.remove("drag"); goTo(Math.round(target)); loop(); };
+  const scrub = dPhase => {
+    if (!scrubbing) { scrubbing = true; hush(); clearTimeout(timer); }
+    target += dPhase; run();
+    clearTimeout(idle); idle = setTimeout(settle, 160);
+  };
+  rail.addEventListener("wheel", e => {
+    e.preventDefault();
+    const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+    scrub(Math.max(-0.6, Math.min(0.6, d * (e.deltaMode === 1 ? 0.12 : 0.004))));
+  }, { passive: false });
+  // drag (mouse or touch, horizontal)
+  let px = null;
+  rail.addEventListener("pointerdown", e => { px = e.clientX; rail.setPointerCapture(e.pointerId); rail.classList.add("drag"); });
+  rail.addEventListener("pointermove", e => { if (px === null) return; const dx = e.clientX - px; px = e.clientX; if (dx) scrub(-dx / (R * 0.6)); });
+  const up = () => { if (px === null) return; px = null; clearTimeout(idle); settle(); };
+  rail.addEventListener("pointerup", up); rail.addEventListener("pointercancel", up);
+  // pause only while reading the open bubble
+  items.forEach(it => {
+    const c = it.querySelector(".tq-card");
+    c.addEventListener("pointerenter", () => { if (it.classList.contains("on")) { hover = true; clearTimeout(timer); } });
+    c.addEventListener("pointerleave", () => { if (hover) { hover = false; loop(); } });
+  });
+  document.addEventListener("visibilitychange", loop);
+  addEventListener("resize", size);
+  size();
+  if (reduce) rail.remove();
+  new IntersectionObserver(([e]) => {
+    visible = e.isIntersecting;
+    if (visible && !started) { started = true; setTimeout(speak, 250); }
+    loop();
+  }, { threshold: 0.45 }).observe(sec);
+})();
+</script>
+<script>
+// promo bar: visible at the top of the page, tucks away once you scroll down
+(() => {
+  const sync = () => document.body.classList.toggle("promo-off", scrollY > 40);
+  addEventListener("scroll", sync, { passive: true }); sync();
+})();
+</script>
+<script>
+// phone menu: toggle, lock the page while open, close on any link
+(() => {
+  const btn = document.querySelector(".menu-btn"), panel = document.getElementById("mmenu");
+  if (!btn) return;
+  const set = open => {
+    document.body.classList.toggle("menu-open", open);
+    btn.setAttribute("aria-expanded", open); panel.setAttribute("aria-hidden", !open);
+    if (window.lenis) open ? window.lenis.stop() : window.lenis.start();
+  };
+  btn.addEventListener("click", () => set(!document.body.classList.contains("menu-open")));
+  panel.querySelectorAll("a").forEach(a => a.addEventListener("click", () => set(false), true));
+  addEventListener("keydown", e => { if (e.key === "Escape") set(false); });
+  matchMedia("(max-width: 860px)").addEventListener("change", e => { if (!e.matches) set(false); });
+})();
+</script>
+<script>
+// phone nav: hide while scrolling down, show again on any scroll up
+(() => {
+  const mq = matchMedia("(max-width: 860px)"); let last = scrollY, acc = 0;
+  addEventListener("scroll", () => {
+    const y = scrollY, d = y - last; last = y;
+    if (!mq.matches || y < 90) { acc = 0; document.body.classList.remove("nav-hide"); return; }
+    acc = (Math.sign(d) === Math.sign(acc)) ? acc + d : d;      // small direction-change buffer so it doesn't flicker
+    if (acc > 12) document.body.classList.add("nav-hide");
+    else if (acc < -8) document.body.classList.remove("nav-hide");
+  }, { passive: true });
+})();
+</script>
+</body>
+</html>

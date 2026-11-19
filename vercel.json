@@ -29,6 +29,10 @@
       "destination": "/gallery/saraya/index.html"
     },
     {
+      "source": "/gallery/hangfive",
+      "destination": "/gallery/hangfive/index.html"
+    },
+    {
       "source": "/gallery",
       "destination": "/index.html"
     },
@@ -41,6 +45,11 @@
     {
       "source": "/gallery/saraya/",
       "destination": "/gallery/saraya",
+      "permanent": true
+    },
+    {
+      "source": "/gallery/hangfive/",
+      "destination": "/gallery/hangfive",
       "permanent": true
     }
   ]

@@ -16,6 +16,13 @@ export const galleryProjects = [
     href: '/gallery/saraya',
     video: '/gallery/media/saraya.mp4',
   },
+  {
+    id: 'hangfive',
+    name: 'hangfive',
+    description: 'Surf-town cold brew',
+    href: '/gallery/hangfive',
+    video: '/gallery/media/hangfive.mp4',
+  },
 ]
 
 // Two rings, one above the other, each carrying the same number of cards. The
