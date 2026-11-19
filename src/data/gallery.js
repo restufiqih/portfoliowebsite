@@ -1,13 +1,14 @@
 // The concept sites on the gallery rings. They are hand-built static pages under
 // /public/gallery, so they open with a real page load rather than through the
 // app's router. The card is a muted 4:3 clip of the site itself, looping.
+// Newest first: the first project sits at the front of the upper ring.
 export const galleryProjects = [
   {
-    id: 'lumi',
-    name: 'Lumi',
-    description: 'AI leasing agent',
-    href: '/gallery/lumi/',
-    video: '/gallery/media/lumi.mp4',
+    id: 'hangfive',
+    name: 'hangfive',
+    description: 'Surf-town cold brew',
+    href: '/gallery/hangfive',
+    video: '/gallery/media/hangfive.mp4',
   },
   {
     id: 'saraya',
@@ -17,11 +18,11 @@ export const galleryProjects = [
     video: '/gallery/media/saraya.mp4',
   },
   {
-    id: 'hangfive',
-    name: 'hangfive',
-    description: 'Surf-town cold brew',
-    href: '/gallery/hangfive',
-    video: '/gallery/media/hangfive.mp4',
+    id: 'lumi',
+    name: 'Lumi',
+    description: 'AI leasing agent',
+    href: '/gallery/lumi/',
+    video: '/gallery/media/lumi.mp4',
   },
 ]
 
