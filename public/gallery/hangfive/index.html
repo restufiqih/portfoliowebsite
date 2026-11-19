@@ -58,6 +58,9 @@
   nav#nav { top: 34px; transition: color .4s ease, top .45s cubic-bezier(.2,.7,.2,1); }
   body.promo-off .promo { transform: translateY(-100%); }
   body.promo-off nav#nav { top: 0; }
+  /* nav hides while scrolling down and slides back on any scroll up (all widths) */
+  nav#nav { transition: color .4s ease, background-color .4s ease, top .45s cubic-bezier(.2,.7,.2,1), transform .6s cubic-bezier(.22,1,.36,1); will-change: transform; }
+  body.nav-hide:not(.menu-open) nav#nav { transform: translateY(-100%); transition: color .4s ease, background-color .4s ease, top .45s cubic-bezier(.2,.7,.2,1), transform .5s cubic-bezier(.65,0,.35,1); }
   @media (max-width: 860px) { .promo { font-size: 10px; letter-spacing: .1em; } }
   .brand { color: inherit; display: block; line-height: 0; justify-self: center; }
   .brand .logo { height: 30px; width: auto; display: block; }
@@ -324,8 +327,6 @@
     nav#nav .links.right { grid-column: 3; }
     nav#nav .menu-btn { position: absolute; left: var(--gutter); top: 50%; margin-top: -10px; }
     /* hides on the way down, slides back on the way up */
-    nav#nav { transition: color .4s ease, background-color .4s ease, top .45s cubic-bezier(.2,.7,.2,1), transform .5s cubic-bezier(.2,.7,.2,1); will-change: transform; }
-    body.nav-hide:not(.menu-open) nav#nav { transform: translateY(-100%); }
     .brand .logo { height: 24px; }
     .hero-copy { top: calc(43px + 25.4vh); transform: translateY(-50%); }   /* midway between the nav (86px incl. promo) and the can lid (~51vh) */
     .hero-title { font-size: 13.4vw; line-height: 1; }
@@ -2409,12 +2410,12 @@ addEventListener("scroll", () => {
 })();
 </script>
 <script>
-// phone nav: hide while scrolling down, show again on any scroll up
+// nav: hide while scrolling down, show again on any scroll up
 (() => {
-  const mq = matchMedia("(max-width: 860px)"); let last = scrollY, acc = 0;
+  let last = scrollY, acc = 0;
   addEventListener("scroll", () => {
     const y = scrollY, d = y - last; last = y;
-    if (!mq.matches || y < 90) { acc = 0; document.body.classList.remove("nav-hide"); return; }
+    if (y < 90) { acc = 0; document.body.classList.remove("nav-hide"); return; }
     acc = (Math.sign(d) === Math.sign(acc)) ? acc + d : d;      // small direction-change buffer so it doesn't flicker
     if (acc > 12) document.body.classList.add("nav-hide");
     else if (acc < -8) document.body.classList.remove("nav-hide");
